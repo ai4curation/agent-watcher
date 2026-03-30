@@ -1,0 +1,79 @@
+name: Scan Watched Repos
+
+on:
+  schedule:
+    - cron: "17 13 * * *"
+  workflow_dispatch:
+    inputs:
+      target_repo:
+        description: Optional configured target repo (owner/name)
+        required: false
+        type: string
+        default: ""
+      lookback_days:
+        description: Override lookback days for this run
+        required: false
+        type: string
+        default: "7"
+      max_items:
+        description: Override max recent items scanned per target
+        required: false
+        type: string
+        default: "20"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: watcher-scan
+  cancel-in-progress: false
+
+jobs:
+  scan-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: python -m pip install -e .
+
+      - name: Run watcher
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          WATCHER_SOURCE_TOKEN: ${{ secrets.WATCHER_SOURCE_TOKEN }}
+          WATCHER_SINK_TOKEN: ${{ github.token }}
+          TARGET_REPO: ${{ github.event_name == 'workflow_dispatch' && inputs.target_repo || '' }}
+          LOOKBACK_DAYS: ${{ github.event_name == 'workflow_dispatch' && inputs.lookback_days || '7' }}
+          MAX_ITEMS: ${{ github.event_name == 'workflow_dispatch' && inputs.max_items || '20' }}
+        run: |
+          set -euo pipefail
+          args=(
+            --config config/targets.json
+            --output-dir build/reports
+            --publish
+            --sink-repo "${{ github.repository }}"
+            --lookback-days "${LOOKBACK_DAYS}"
+            --max-items "${MAX_ITEMS}"
+          )
+          if [ -n "${TARGET_REPO}" ]; then
+            args+=(--target "${TARGET_REPO}")
+          fi
+          python scripts/run_watch.py "${args[@]}"
+
+      - name: Upload reports artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: watcher-reports
+          path: build/reports
+
+      - name: Publish job summary
+        run: cat build/reports/summary.md >> "${GITHUB_STEP_SUMMARY}"
