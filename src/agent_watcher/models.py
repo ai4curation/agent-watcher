@@ -47,6 +47,7 @@ class TrackedItem:
     last_agent_event_at: datetime | None = None
     human_follow_up_after_agent: bool = False
     signals: list[str] = field(default_factory=list)
+    events: list[Event] = field(default_factory=list)
 
 
 @dataclass
@@ -57,9 +58,6 @@ class RepoReport:
     recent_items_scanned: int
     tracked_items: list[TrackedItem] = field(default_factory=list)
     metrics: dict[str, int] = field(default_factory=dict)
-    assessment: str = "no_signal"
-    headline: str = ""
-    recommendations: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:

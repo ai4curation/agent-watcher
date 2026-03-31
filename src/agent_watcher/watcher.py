@@ -36,9 +36,6 @@ def scan_target(client: GitHubClient, target: TargetRepo, *, generated_at: datet
         report.errors.append(str(exc))
 
     report.metrics = _build_metrics(report)
-    report.assessment = _select_assessment(report)
-    report.headline = _build_headline(report)
-    report.recommendations = _build_recommendations(report)
     return report
 
 
@@ -121,7 +118,10 @@ def _scan_item(
     human_follow_up_after_agent = False
     if last_agent_event_at is not None:
         human_follow_up_after_agent = any(
-            not event.agent_actor and event.created_at > last_agent_event_at for event in events
+            not event.agent_actor
+            and not _is_bot_actor(event.actor)
+            and event.created_at > last_agent_event_at
+            for event in events
         )
 
     status = _status_label(state=item["state"], merged=merged)
@@ -144,6 +144,7 @@ def _scan_item(
         last_agent_event_at=last_agent_event_at,
         human_follow_up_after_agent=human_follow_up_after_agent,
         signals=[],
+        events=events,
     )
     tracked.signals = _build_item_signals(tracked)
     return tracked
@@ -174,6 +175,7 @@ def _build_metrics(report: RepoReport) -> dict[str, int]:
     return {
         "recent_items_scanned": report.recent_items_scanned,
         "agent_items": len(tracked),
+        "agent_summons": sum(item.agent_reference_hits for item in tracked),
         "merged_prs": sum(1 for item in tracked if item.kind == "pr" and item.status == "merged"),
         "closed_items": sum(1 for item in tracked if item.status in {"closed", "merged"}),
         "open_items": sum(1 for item in tracked if item.status == "open"),
@@ -189,76 +191,6 @@ def _build_metrics(report: RepoReport) -> dict[str, int]:
         "agent_authored_items": sum(1 for item in tracked if item.author_is_agent),
         "errors": len(report.errors),
     }
-
-
-def _select_assessment(report: RepoReport) -> str:
-    metrics = report.metrics
-    if report.errors and not report.tracked_items:
-        return "error"
-    if metrics["agent_items"] == 0:
-        return "no_signal"
-    if metrics["stalled_items"] >= 2 or (
-        metrics["agent_items"] >= 4 and metrics["stalled_items"] * 2 >= metrics["agent_items"]
-    ):
-        return "needs_attention"
-    if metrics["closed_items"] >= max(1, metrics["agent_items"] - metrics["stalled_items"]) and (
-        metrics["stalled_items"] == 0
-    ):
-        return "strong"
-    return "mixed"
-
-
-def _build_headline(report: RepoReport) -> str:
-    metrics = report.metrics
-    days = report.target.lookback_days
-    if report.assessment == "error":
-        return f"Collection failed for {report.target.repo}; see errors below before trusting this run."
-    if report.assessment == "no_signal":
-        return (
-            f"No agent-related issues or PRs were detected in {report.target.repo} "
-            f"within the last {days} days."
-        )
-    if report.assessment == "needs_attention":
-        return (
-            f"Needs attention: {metrics['stalled_items']} open item(s) show human follow-up after "
-            f"the latest agent action in {report.target.repo}."
-        )
-    if report.assessment == "strong":
-        return (
-            f"Strong: {metrics['closed_items']} of {metrics['agent_items']} agent-touched item(s) "
-            f"closed or merged in {report.target.repo} with no obvious stalled follow-up."
-        )
-    return (
-        f"Mixed: {metrics['closed_items']} of {metrics['agent_items']} agent-touched item(s) "
-        f"closed or merged in {report.target.repo}; {metrics['stalled_items']} may need attention."
-    )
-
-
-def _build_recommendations(report: RepoReport) -> list[str]:
-    metrics = report.metrics
-    recommendations: list[str] = []
-
-    if report.errors:
-        recommendations.append("Resolve API or permissions failures before relying on the score.")
-    if metrics["agent_items"] == 0:
-        recommendations.append(
-            "If this repo should have agent traffic, widen the lookback window or add repo-specific match strings."
-        )
-    if metrics["stalled_items"] > 0:
-        recommendations.append(
-            "Inspect open items with human follow-up after the latest agent action; they are the clearest drag signal."
-        )
-    if metrics["mention_only_items"] > 0:
-        recommendations.append(
-            "Some items mention agents without agent-authored artifacts. Confirm the automation still responds in this repo."
-        )
-    if metrics["merged_prs"] > 0:
-        recommendations.append(
-            "Merged agent-authored PRs are showing concrete value; keep logging which workflow or harness produced them."
-        )
-    if not recommendations:
-        recommendations.append("No urgent changes suggested from this run.")
-    return recommendations
 
 
 def _build_item_signals(item: TrackedItem) -> list[str]:
@@ -292,6 +224,11 @@ def _matches_actor(actor: str, fragments: Iterable[str]) -> bool:
 def _matches_text(text: str, patterns: Iterable[str]) -> bool:
     normalized = text.lower()
     return any(pattern in normalized for pattern in patterns)
+
+
+def _is_bot_actor(actor: str) -> bool:
+    normalized = actor.strip().lower()
+    return normalized.endswith("[bot]") or normalized == "github-actions"
 
 
 def _status_label(*, state: str, merged: bool) -> str:

@@ -12,6 +12,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from agent_watcher.models import TargetRepo
+from agent_watcher.reporting import render_report
 from agent_watcher.watcher import scan_target
 
 
@@ -47,7 +48,7 @@ TARGET = TargetRepo(
 
 
 class WatcherTests(TestCase):
-    def test_scores_strong_when_agent_pr_is_merged(self):
+    def test_collects_event_timeline_and_counts_for_agent_pr(self):
         client = FakeGitHubClient(
             items=[
                 {
@@ -67,11 +68,12 @@ class WatcherTests(TestCase):
 
         report = scan_target(client, TARGET, generated_at=_dt("2026-03-30T00:00:00Z"))
 
-        self.assertEqual(report.assessment, "strong")
         self.assertEqual(report.metrics["merged_prs"], 1)
-        self.assertEqual(report.metrics["stalled_items"], 0)
+        self.assertEqual(report.metrics["agent_items"], 1)
+        self.assertEqual(report.metrics["agent_summons"], 1)
+        self.assertEqual(len(report.tracked_items[0].events), 1)
 
-    def test_scores_needs_attention_when_human_follows_up_after_agent(self):
+    def test_marks_human_follow_up_and_renders_context_timeline(self):
         client = FakeGitHubClient(
             items=[
                 {
@@ -108,10 +110,13 @@ class WatcherTests(TestCase):
         )
 
         report = scan_target(client, TARGET, generated_at=_dt("2026-03-30T00:00:00Z"))
+        rendered = render_report(report)
 
-        self.assertEqual(report.assessment, "needs_attention")
         self.assertEqual(report.metrics["stalled_items"], 2)
         self.assertEqual(report.metrics["agent_items"], 2)
+        self.assertIn("#### Event Timeline", rendered)
+        self.assertIn("human follow-up after latest agent action", rendered)
+        self.assertIn("Agent summons / references", rendered)
 
 
 def _comment(login: str, created_at: str, body: str) -> dict:
