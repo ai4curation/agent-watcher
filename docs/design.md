@@ -9,7 +9,7 @@ Run a scheduled watcher in GitHub Actions that inspects selected deployment repo
 - full conversational transcript analysis
 - inline review comment harvesting
 - autonomous remediation in watched repos
-- cross-run trend analytics beyond rolling issue history
+- cross-run trend analytics beyond dated issue history
 
 ## Architecture
 
@@ -18,7 +18,9 @@ The current architecture has four phases:
 1. `Select`
    - Load watched repos from [`config/targets.json`](/Users/cjm/repos/agent-watcher/config/targets.json)
    - Merge defaults with repo-specific overrides
-   - Allow workflow or local CLI overrides for lookback window, max items, and single-target runs
+   - Compute which repos are due for the current schedule slot based on cadence, preferred weekday, and preferred hour
+   - Compute deterministic report metadata including `report_date` and exact issue title
+   - Allow workflow or local CLI overrides for single-target runs and collection window
 
 2. `Collect`
    - Use the GitHub REST API to list recently updated issues and PRs per watched repo
@@ -36,8 +38,8 @@ The current architecture has four phases:
 
 4. `Review And Publish`
    - Run `anthropics/claude-code-action@v1`
-   - Ask Claude to read the generated dossier and, if needed, inspect a small number of linked GitHub items directly
-   - Maintain one rolling issue per watched repo in this repository
+   - Ask Claude to read the generated dossier as the evidence base for the review
+   - Create or update one dated issue per watched repo and report date in this repository
    - Replace the issue body with a concise current-status summary
    - Append a dated comment per run with the fuller qualitative review
 
@@ -63,16 +65,22 @@ config/targets.json
  agent-related item signals
         |
         v
- neutral Markdown dossier
+neutral Markdown dossier
         |
         +--> build/context/*.json
         +--> build/context/*.md
         |
         v
+ selector metadata
+        |
+        +--> report_date
+        +--> exact issue title
+        |
+        v
  Claude Code Action
         |
         v
- rolling issue update in this repo
+ dated issue update in this repo
 ```
 
 ## GitHub Actions Design
@@ -83,8 +91,9 @@ config/targets.json
 
 - runs on cron and manual dispatch
 - selects configured targets, optionally filtered by workflow input
+- includes only repos due for the current schedule slot on scheduled runs
 - generates one context artifact per target
-- asks Claude to update the corresponding rolling issue in this repo
+- asks Claude to create or update the corresponding dated report issue in this repo
 - uploads the generated context artifacts
 
 ### Validation Workflow
@@ -111,12 +120,31 @@ Two token roles are enough for the first pass:
 
 This keeps publishing scoped to this repo while allowing watched repos to remain read-only.
 
+## Matrix Model
+
+The workflow uses a dynamic matrix, not one workflow per ontology.
+
+The selector emits rows like:
+
+```json
+{
+  "repo": "geneontology/go-ontology",
+  "display_name": "GO",
+  "short_name": "go-ontology",
+  "slug": "geneontology__go-ontology",
+  "report_date": "2026-03-31",
+  "issue_title": "go-ontology report for 2026-03-31"
+}
+```
+
+GitHub Actions then creates one job per row. Adding a new ontology means adding a new config row, not a new workflow.
+
 ## Current Limitations
 
 - inline PR review comments are not fetched yet
 - the qualitative review depends on the prompt and the available context
 - detection relies on configured agent names and textual markers
-- there is no persistent data store besides rolling issue history and workflow artifacts
+- there is no persistent data store besides dated issue history and workflow artifacts
 
 ## Natural Next Steps
 

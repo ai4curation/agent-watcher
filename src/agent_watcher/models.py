@@ -9,9 +9,17 @@ from typing import Any
 class TargetRepo:
     repo: str
     display_name: str
+    short_name: str
     lookback_days: int
     max_items: int
     max_comments_per_item: int
+    report_timezone: str
+    issue_mode: str
+    issue_title_template: str
+    cadence: str
+    preferred_weekday_utc: int | None
+    preferred_hour_utc: int | None
+    extra_prompt: str
     agent_login_substrings: tuple[str, ...]
     agent_text_patterns: tuple[str, ...]
 
@@ -55,6 +63,8 @@ class RepoReport:
     target: TargetRepo
     generated_at: datetime
     window_start: datetime
+    report_date: str
+    issue_title: str
     recent_items_scanned: int
     tracked_items: list[TrackedItem] = field(default_factory=list)
     metrics: dict[str, int] = field(default_factory=dict)

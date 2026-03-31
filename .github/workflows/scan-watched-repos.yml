@@ -14,12 +14,12 @@ on:
         description: Override lookback window in days
         required: false
         type: string
-        default: "14"
+        default: ""
       max_items:
         description: Override max recent issues or PRs scanned per target
         required: false
         type: string
-        default: "25"
+        default: ""
 
 permissions:
   contents: read
@@ -34,8 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.select.outputs.matrix }}
-      lookback_days: ${{ steps.select.outputs.lookback_days }}
-      max_items: ${{ steps.select.outputs.max_items }}
+      has_targets: ${{ steps.select.outputs.has_targets }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -44,41 +43,20 @@ jobs:
         id: select
         env:
           TARGET_REPO: ${{ github.event_name == 'workflow_dispatch' && inputs.target_repo || '' }}
-          LOOKBACK_DAYS: ${{ github.event_name == 'workflow_dispatch' && inputs.lookback_days || '14' }}
-          MAX_ITEMS: ${{ github.event_name == 'workflow_dispatch' && inputs.max_items || '25' }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
+          python3 scripts/select_targets.py \
+            --config config/targets.json \
+            --event-name "${EVENT_NAME}" \
+            --target-repo "${TARGET_REPO}" \
+            --output-file build/selector/matrix.json
 
-          payload = json.loads(Path("config/targets.json").read_text())
-          target_repo = os.environ.get("TARGET_REPO", "").strip()
-          targets = payload.get("targets", [])
-          if target_repo:
-              targets = [target for target in targets if target["repo"] == target_repo]
-          if not targets:
-              raise SystemExit("No configured targets matched the requested filter.")
-
-          matrix = {
-              "include": [
-                  {
-                      "repo": target["repo"],
-                      "display_name": target.get("display_name", target["repo"]),
-                      "slug": target["repo"].replace("/", "__"),
-                  }
-                  for target in targets
-              ]
-          }
-
-          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as handle:
-              print(f"matrix={json.dumps(matrix)}", file=handle)
-              print(f"lookback_days={os.environ['LOOKBACK_DAYS']}", file=handle)
-              print(f"max_items={os.environ['MAX_ITEMS']}", file=handle)
-          PY
+      - name: Publish selection summary
+        run: cat build/selector/matrix.json >> "${GITHUB_STEP_SUMMARY}"
 
   review-target:
     needs: select-targets
+    if: needs.select-targets.outputs.has_targets == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     strategy:
@@ -101,14 +79,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           WATCHER_SOURCE_TOKEN: ${{ secrets.WATCHER_SOURCE_TOKEN }}
+          LOOKBACK_DAYS_OVERRIDE: ${{ github.event_name == 'workflow_dispatch' && inputs.lookback_days || '' }}
+          MAX_ITEMS_OVERRIDE: ${{ github.event_name == 'workflow_dispatch' && inputs.max_items || '' }}
         run: |
-          python scripts/run_watch.py \
-            --config config/targets.json \
-            --target "${{ matrix.repo }}" \
-            --lookback-days "${{ needs.select-targets.outputs.lookback_days }}" \
-            --max-items "${{ needs.select-targets.outputs.max_items }}" \
-            --output-dir build/context \
+          args=(
+            --config config/targets.json
+            --target "${{ matrix.repo }}"
+            --output-dir build/context
             --dry-run
+          )
+          if [ -n "${LOOKBACK_DAYS_OVERRIDE}" ]; then
+            args+=(--lookback-days "${LOOKBACK_DAYS_OVERRIDE}")
+          fi
+          if [ -n "${MAX_ITEMS_OVERRIDE}" ]; then
+            args+=(--max-items "${MAX_ITEMS_OVERRIDE}")
+          fi
+          python scripts/run_watch.py "${args[@]}"
 
       - name: Upload context artifact
         uses: actions/upload-artifact@v4
@@ -135,18 +121,18 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
-            Review the last `${{ needs.select-targets.outputs.lookback_days }}` days of agent-related GitHub activity for `${{ matrix.repo }}`.
+            Review the recent agent-related GitHub activity for `${{ matrix.repo }}` for report date `${{ matrix.report_date }}`.
 
             Start with the local context file `@build/context/${{ matrix.slug }}.md`.
 
-            Your job is to maintain a rolling watcher issue in `${{ github.repository }}` titled `Watcher: ${{ matrix.repo }}`.
+            Your job is to maintain the dated watcher issue in `${{ github.repository }}` titled `${{ matrix.issue_title }}`.
 
             Required workflow:
             1. Read the local context file.
             2. Use that dossier as the evidence base for your review. Do not rely on live reads from `${{ matrix.repo }}`.
-            3. Find the rolling issue in `${{ github.repository }}` by exact title. If it does not exist, create it. If it exists and is closed, reopen it.
-            4. Replace the issue body with a concise current-status summary for this run.
-            5. Append a new dated comment with the fuller qualitative review.
+            3. Find the issue in `${{ github.repository }}` by exact title `${{ matrix.issue_title }}`. If it does not exist, create it. If it exists and is closed, reopen it.
+            4. Replace the issue body with a concise current-status summary for this report date.
+            5. Append a fuller qualitative review comment for this report date.
 
             The review should emphasize:
             - what seems to be working
@@ -159,9 +145,13 @@ jobs:
             - Be concrete and cite issue/PR numbers.
             - Keep the body concise and the appended comment substantial but practical.
             - Use Markdown headings and flat bullets only when they help readability.
+            - The issue title must be exactly `${{ matrix.issue_title }}`.
+
+            Repo-specific guidance:
+            `${{ matrix.extra_prompt }}`
 
             Command guidance:
-            - Find the issue with something like `gh issue list --repo "${{ github.repository }}" --state all --search '"Watcher: ${{ matrix.repo }}" in:title' --json number,title,state`
+            - Find the issue with something like `gh issue list --repo "${{ github.repository }}" --state all --search '"${{ matrix.issue_title }}" in:title' --json number,title,state`
             - Create it with `gh issue create --repo "${{ github.repository }}"`
             - Update it with `gh issue edit --repo "${{ github.repository }}"`
             - Reopen it with `gh issue reopen --repo "${{ github.repository }}"`

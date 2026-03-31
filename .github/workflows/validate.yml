@@ -43,6 +43,14 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -p "test_*.py"
 
+      - name: Validate target selection
+        run: |
+          python scripts/select_targets.py \
+            --config config/targets.json \
+            --event-name workflow_dispatch \
+            --target-repo geneontology/go-ontology \
+            --output-file build/validate-selector/matrix.json
+
       - name: Dry-run watcher
         env:
           GITHUB_TOKEN: ${{ github.token }}

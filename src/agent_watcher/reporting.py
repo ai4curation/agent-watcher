@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from .models import RepoReport, TrackedItem
+from .scheduling import repo_slug
 
 
 def write_reports(output_dir: str | Path, reports: list[RepoReport]) -> None:
@@ -24,6 +25,8 @@ def render_report(report: RepoReport) -> str:
         f"- Repo: `{report.target.repo}`",
         f"- Generated: `{report.generated_at.isoformat()}`",
         f"- Window start: `{report.window_start.isoformat()}`",
+        f"- Report date: `{report.report_date}`",
+        f"- Suggested issue title: `{report.issue_title}`",
         f"- Lookback days: `{report.target.lookback_days}`",
         f"- Agent-touched items found: `{report.metrics.get('agent_items', 0)}`",
         f"- Agent summons or textual references: `{report.metrics.get('agent_summons', 0)}`",
@@ -104,11 +107,6 @@ def render_summary(reports: list[RepoReport]) -> str:
         )
 
     return "\n".join(lines) + "\n"
-
-
-def repo_slug(repo: str) -> str:
-    return repo.replace("/", "__")
-
 
 def escape_cell(value: str) -> str:
     return value.replace("\n", " ").replace("|", "\\|")

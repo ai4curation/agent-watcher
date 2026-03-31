@@ -8,7 +8,7 @@ The current shape is:
 - collection uses the GitHub REST API
 - the collector produces neutral context, not a score
 - the scheduled workflow uses `anthropics/claude-code-action@v1`
-- Claude updates one rolling issue per watched repo in this repo
+- Claude creates or updates one dated issue per watched repo and report date
 
 ## Initial Scope
 
@@ -16,8 +16,9 @@ The current shape is:
 - Inspect recently updated issues and PRs in a lookback window
 - Detect agent involvement from author logins, comments, PR reviews, and common agent markers in text
 - Generate a context file per watched repo with lightweight counts and event timelines
+- Select only repos due for the current schedule slot based on config
 - Ask Claude to summarize what appears to be working, not working, and where the friction is
-- Publish findings back into this repo as rolling issues titled `Watcher: owner/repo`
+- Publish findings back into this repo as dated issues such as `go-ontology report for 2026-03-31`
 
 ## Repo Layout
 
@@ -63,13 +64,43 @@ The scheduled workflow expects:
 
 ## Publishing Model
 
-For each watched repo, the workflow keeps one rolling issue in this repo:
+For each watched repo, the workflow maintains one issue per report date:
 
-- title: `Watcher: owner/repo`
-- issue body: concise current status written by Claude for the latest run
-- comments: one appended qualitative review per scheduled run
+- title: derived from config, by default `{short_name} report for {report_date}`
+- reruns on the same date update that issue
+- issue body: concise current status written by Claude for that report date
+- comments: one appended qualitative review per run
 
-This keeps longitudinal history in one place without creating a new issue every day.
+This keeps reports easy to scan historically while still allowing reruns to update the same day’s issue.
+
+## How Scheduling Works
+
+The workflow is still a single YAML file. Staggering happens in [`config/targets.json`](/Users/cjm/repos/agent-watcher/config/targets.json), not by cloning workflows.
+
+Each target can declare:
+
+- `short_name`
+- `cadence`: `weekly`, `daily`, or `manual`
+- `preferred_weekday_utc`: `0` for Monday through `6` for Sunday
+- `preferred_hour_utc`
+- `issue_title_template`
+
+The selector script [`scripts/select_targets.py`](/Users/cjm/repos/agent-watcher/scripts/select_targets.py) reads that config and builds the matrix dynamically.
+
+## Adding A Repo
+
+Add one object to [`config/targets.json`](/Users/cjm/repos/agent-watcher/config/targets.json), for example:
+
+```json
+{
+  "repo": "obophenotype/human-developmental-anatomy-ontology",
+  "display_name": "EHDAA",
+  "short_name": "ehdaa",
+  "preferred_weekday_utc": 2
+}
+```
+
+That is enough for the same workflow to pick it up. No new YAML is required.
 
 ## Manual Workflow Runs
 

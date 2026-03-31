@@ -39,9 +39,17 @@ class FakeGitHubClient:
 TARGET = TargetRepo(
     repo="example/repo",
     display_name="Example",
+    short_name="repo",
     lookback_days=7,
     max_items=10,
     max_comments_per_item=10,
+    report_timezone="America/Los_Angeles",
+    issue_mode="dated",
+    issue_title_template="{short_name} report for {report_date}",
+    cadence="weekly",
+    preferred_weekday_utc=0,
+    preferred_hour_utc=13,
+    extra_prompt="",
     agent_login_substrings=("dragon-ai-agent", "claude", "codex"),
     agent_text_patterns=("@dragon-ai-agent", "claude code"),
 )
@@ -71,6 +79,7 @@ class WatcherTests(TestCase):
         self.assertEqual(report.metrics["merged_prs"], 1)
         self.assertEqual(report.metrics["agent_items"], 1)
         self.assertEqual(report.metrics["agent_summons"], 1)
+        self.assertEqual(report.issue_title, "repo report for 2026-03-29")
         self.assertEqual(len(report.tracked_items[0].events), 1)
 
     def test_marks_human_follow_up_and_renders_context_timeline(self):
@@ -117,6 +126,7 @@ class WatcherTests(TestCase):
         self.assertIn("#### Event Timeline", rendered)
         self.assertIn("human follow-up after latest agent action", rendered)
         self.assertIn("Agent summons / references", rendered)
+        self.assertIn("Suggested issue title", rendered)
 
 
 def _comment(login: str, created_at: str, body: str) -> dict:

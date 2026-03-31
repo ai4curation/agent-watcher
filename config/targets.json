@@ -1,8 +1,14 @@
 {
   "defaults": {
-    "lookback_days": 7,
+    "lookback_days": 14,
     "max_items": 20,
     "max_comments_per_item": 25,
+    "report_timezone": "America/Los_Angeles",
+    "issue_mode": "dated",
+    "issue_title_template": "{short_name} report for {report_date}",
+    "cadence": "weekly",
+    "preferred_hour_utc": 13,
+    "extra_prompt": "",
     "agent_login_substrings": [
       "dragon-ai-agent",
       "claude",
@@ -28,6 +34,8 @@
     {
       "repo": "geneontology/go-ontology",
       "display_name": "GO",
+      "short_name": "go-ontology",
+      "preferred_weekday_utc": 0,
       "agent_login_substrings": [
         "dragon-ai-agent",
         "claude",
@@ -43,19 +51,27 @@
     },
     {
       "repo": "obophenotype/cell-ontology",
-      "display_name": "Cell Ontology"
+      "display_name": "Cell Ontology",
+      "short_name": "cell-ontology",
+      "preferred_weekday_utc": 1
     },
     {
       "repo": "obophenotype/uberon",
-      "display_name": "Uberon"
+      "display_name": "Uberon",
+      "short_name": "uberon",
+      "preferred_weekday_utc": 2
     },
     {
       "repo": "monarch-initiative/mondo",
-      "display_name": "Mondo"
+      "display_name": "Mondo",
+      "short_name": "mondo",
+      "preferred_weekday_utc": 3
     },
     {
       "repo": "EBISPOT/efo",
-      "display_name": "EFO"
+      "display_name": "EFO",
+      "short_name": "efo",
+      "preferred_weekday_utc": 4
     }
   ]
 }

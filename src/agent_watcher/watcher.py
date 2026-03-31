@@ -5,14 +5,18 @@ from typing import Iterable
 
 from .github_api import GitHubClient
 from .models import Event, RepoReport, TargetRepo, TrackedItem
+from .scheduling import build_target_run_metadata
 
 
 def scan_target(client: GitHubClient, target: TargetRepo, *, generated_at: datetime) -> RepoReport:
     window_start = generated_at - timedelta(days=target.lookback_days)
+    run_metadata = build_target_run_metadata(target, generated_at)
     report = RepoReport(
         target=target,
         generated_at=generated_at,
         window_start=window_start,
+        report_date=run_metadata.report_date,
+        issue_title=run_metadata.issue_title,
         recent_items_scanned=0,
     )
 

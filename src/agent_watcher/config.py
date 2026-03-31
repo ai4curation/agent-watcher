@@ -28,9 +28,20 @@ def load_targets(
             TargetRepo(
                 repo=repo,
                 display_name=merged.get("display_name", repo),
+                short_name=merged.get("short_name", repo.split("/")[-1]),
                 lookback_days=lookback_days or int(merged.get("lookback_days", 7)),
                 max_items=max_items or int(merged.get("max_items", 20)),
                 max_comments_per_item=int(merged.get("max_comments_per_item", 25)),
+                report_timezone=merged.get("report_timezone", "America/Los_Angeles"),
+                issue_mode=merged.get("issue_mode", "dated"),
+                issue_title_template=merged.get(
+                    "issue_title_template",
+                    "{short_name} report for {report_date}",
+                ),
+                cadence=merged.get("cadence", "weekly"),
+                preferred_weekday_utc=_optional_int(merged.get("preferred_weekday_utc")),
+                preferred_hour_utc=_optional_int(merged.get("preferred_hour_utc")),
+                extra_prompt=merged.get("extra_prompt", ""),
                 agent_login_substrings=_normalize_strings(
                     merged.get("agent_login_substrings", [])
                 ),
@@ -53,3 +64,9 @@ def _normalize_strings(values: list[str]) -> tuple[str, ...]:
         seen.add(cleaned)
         normalized.append(cleaned)
     return tuple(normalized)
+
+
+def _optional_int(value: object) -> int | None:
+    if value is None or value == "":
+        return None
+    return int(value)
