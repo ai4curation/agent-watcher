@@ -56,7 +56,7 @@ python3 scripts/run_watch.py \
 The scheduled workflow expects:
 
 - `WATCHER_SOURCE_TOKEN`: token with read access to watched repositories
-- `ANTHROPIC_API_KEY`: used by the Claude Code Action
+- one of `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN`: used by the Claude Code Action
 - `GITHUB_TOKEN`: the default workflow token is used by Claude to create or append issues in this repo
 
 `WATCHER_SOURCE_TOKEN` can be a fine-grained PAT or GitHub App token. The collector only needs read access to issues, pull requests, metadata, comments, and reviews on watched repos.

@@ -103,8 +103,8 @@ Two token roles are enough for the first pass:
 - `WATCHER_SOURCE_TOKEN`
   - read access on watched repos
   - used for listing issues, comments, PRs, and reviews in watched repos
-- `ANTHROPIC_API_KEY`
-  - used by the Claude Code Action
+- `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN`
+  - one of these must be present for the Claude Code Action
 - `GITHUB_TOKEN`
   - write access on this repo issues
   - used by Claude for issue creation, reopening, body updates, and appended comments

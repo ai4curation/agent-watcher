@@ -116,6 +116,16 @@ jobs:
           name: watcher-context-${{ matrix.slug }}
           path: build/context/${{ matrix.slug }}.*
 
+      - name: Verify Claude credentials are configured
+        env:
+          HAS_ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' && 'true' || 'false' }}
+          HAS_CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' && 'true' || 'false' }}
+        run: |
+          if [ "${HAS_ANTHROPIC_API_KEY}" != "true" ] && [ "${HAS_CLAUDE_CODE_OAUTH_TOKEN}" != "true" ]; then
+            echo "::error::Set either ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN for the Claude review workflow."
+            exit 1
+          fi
+
       - name: Ask Claude for qualitative review
         uses: anthropics/claude-code-action@v1
         env:
@@ -123,6 +133,7 @@ jobs:
         with:
           github_token: ${{ github.token }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             Review the last `${{ needs.select-targets.outputs.lookback_days }}` days of agent-related GitHub activity for `${{ matrix.repo }}`.
 
