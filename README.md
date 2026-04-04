@@ -1,32 +1,32 @@
 # Agent Watcher
 
-`agent-watcher` runs scheduled scans against selected GitHub repositories where we deploy agents, builds a neutral activity digest for the last N days or weeks, and then asks Claude Code to write a qualitative watcher summary in this repository.
+`agent-watcher` runs scheduled scans against selected GitHub repositories where we deploy agents, builds a neutral activity digest for the last N days or weeks, and then asks Codex to write a qualitative watcher summary in this repository.
 
 The current shape is:
 
 - target repos are configured in [`config/targets.json`](/Users/cjm/repos/agent-watcher/config/targets.json)
 - collection uses the GitHub REST API
 - the collector produces neutral context, not a score
-- the scheduled workflow uses `anthropics/claude-code-action@v1`
-- Claude creates or updates one dated issue per watched repo and report date
+- the scheduled workflow uses `codex exec --profile yolo`
+- Codex creates or updates one dated multi-repo watcher issue per report date
 
 ## Initial Scope
 
-- Watch selected repos such as `geneontology/go-ontology`, `obophenotype/cell-ontology`, `obophenotype/uberon`, `monarch-initiative/mondo`, and `EBISPOT/efo`
+- Watch selected repos such as `geneontology/go-ontology`, `monarch-initiative/dismech`, `ai4curation/ai-gene-review`, `obophenotype/cell-ontology`, and `obophenotype/uberon`
 - Inspect recently updated issues and PRs in a lookback window
 - Detect agent involvement from author logins, comments, PR reviews, and common agent markers in text
 - Generate a context file per watched repo with lightweight counts and event timelines
 - Select only repos due for the current schedule slot based on config
-- Ask Claude to summarize what appears to be working, not working, and where the friction is
-- Publish findings back into this repo as dated issues such as `go-ontology report for 2026-03-31`
+- Ask Codex to summarize what appears to be working, not working, and where the friction is
+- Publish findings back into this repo as dated issues such as `Dragon AI watcher summary for 2026-04-04`
 
 ## Repo Layout
 
 - [`config/targets.json`](/Users/cjm/repos/agent-watcher/config/targets.json): watched repos and match heuristics
-- [`docs/design.md`](/Users/cjm/repos/agent-watcher/docs/design.md): watcher and Claude review architecture
+- [`docs/design.md`](/Users/cjm/repos/agent-watcher/docs/design.md): watcher and Codex review architecture
 - [`scripts/run_watch.py`](/Users/cjm/repos/agent-watcher/scripts/run_watch.py): local and workflow entrypoint
 - [`src/agent_watcher`](/Users/cjm/repos/agent-watcher/src/agent_watcher): scanner and Markdown context generation code
-- [`.github/workflows/scan-watched-repos.yml`](/Users/cjm/repos/agent-watcher/.github/workflows/scan-watched-repos.yml): scheduled and manual Claude review workflow
+- [`.github/workflows/scan-watched-repos.yml`](/Users/cjm/repos/agent-watcher/.github/workflows/scan-watched-repos.yml): scheduled and manual Codex review workflow
 - [`.github/workflows/validate.yml`](/Users/cjm/repos/agent-watcher/.github/workflows/validate.yml): validation and dry-run workflow
 
 ## Local Usage
@@ -52,30 +52,43 @@ python3 scripts/run_watch.py \
   --output-dir build/context
 ```
 
+Dry-run a selected batch and emit a multi-repo `summary.md`:
+
+```bash
+export WATCHER_SOURCE_TOKEN=ghp_xxx
+python3 scripts/run_watch.py \
+  --config config/targets.json \
+  --target monarch-initiative/dismech \
+  --target ai4curation/ai-gene-review \
+  --target geneontology/go-ontology \
+  --output-dir build/context \
+  --dry-run
+```
+
 ## Required Secrets
 
 The scheduled workflow expects:
 
 - `WATCHER_SOURCE_TOKEN`: token with read access to watched repositories
-- one of `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN`: used by the Claude Code Action
-- `GITHUB_TOKEN`: the default workflow token is used by Claude to create or append issues in this repo
+- one of `OPENAI_API_KEY` or `CODEX_API_KEY`: used by `codex exec`
+- `GITHUB_TOKEN`: the default workflow token is used by Codex to create or append issues in this repo
 
 `WATCHER_SOURCE_TOKEN` can be a fine-grained PAT or GitHub App token. The collector only needs read access to issues, pull requests, metadata, comments, and reviews on watched repos.
 
 ## Publishing Model
 
-For each watched repo, the workflow maintains one issue per report date:
+The workflow maintains one issue per report date:
 
-- title: derived from config, by default `{short_name} report for {report_date}`
+- title: `Dragon AI watcher summary for {report_date}`
 - reruns on the same date update that issue
-- issue body: concise current status written by Claude for that report date
+- issue body: concise cross-repo current status written by Codex for that report date
 - comments: one appended qualitative review per run
 
-This keeps reports easy to scan historically while still allowing reruns to update the same day’s issue.
+The collector still emits per-repo dossiers and a local `summary.md`. Codex uses those local artifacts as its evidence base for the posted summary.
 
 ## How Scheduling Works
 
-The workflow is still a single YAML file. Staggering happens in [`config/targets.json`](/Users/cjm/repos/agent-watcher/config/targets.json), not by cloning workflows.
+The workflow is a single YAML file. Target selection still happens in [`config/targets.json`](/Users/cjm/repos/agent-watcher/config/targets.json), not by cloning workflows.
 
 Each target can declare:
 
@@ -85,7 +98,7 @@ Each target can declare:
 - `preferred_hour_utc`
 - `issue_title_template`
 
-The selector script [`scripts/select_targets.py`](/Users/cjm/repos/agent-watcher/scripts/select_targets.py) reads that config and builds the matrix dynamically.
+The selector script [`scripts/select_targets.py`](/Users/cjm/repos/agent-watcher/scripts/select_targets.py) reads that config and builds the target list dynamically. The scheduled workflow then scans all selected repos in one batch so the existing `summary.md` can drive a multi-repo Codex review.
 
 ## Adding A Repo
 
@@ -118,5 +131,5 @@ gh workflow run validate.yml \
 
 ## Notes
 
-- The collector deliberately stays simple and deterministic; Claude is used for the actual qualitative judgment.
-- The context artifacts in `build/` are for debugging and for giving Claude enough evidence to write a useful review.
+- The collector deliberately stays simple and deterministic; Codex is used for the actual qualitative judgment.
+- The context artifacts in `build/` are for debugging and for giving Codex enough evidence to write a useful review.

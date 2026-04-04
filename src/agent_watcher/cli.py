@@ -12,11 +12,12 @@ from .watcher import scan_target, utc_now
 
 def main() -> int:
     args = _parse_args()
+    selected_repos = set(args.target) if args.target else None
     targets = load_targets(
         args.config,
         lookback_days=args.lookback_days,
         max_items=args.max_items,
-        only_repo=args.target,
+        only_repos=selected_repos,
     )
     if not targets:
         raise SystemExit("No targets matched the supplied configuration and filters.")
@@ -46,7 +47,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", default="build/reports", help="Directory for markdown and JSON output.")
     parser.add_argument("--lookback-days", type=int, default=None, help="Override lookback window for all targets.")
     parser.add_argument("--max-items", type=int, default=None, help="Override max items scanned per target.")
-    parser.add_argument("--target", default=None, help="Scan only one configured repo, e.g. owner/name.")
+    parser.add_argument(
+        "--target",
+        action="append",
+        default=None,
+        help="Scan only configured repo(s), e.g. owner/name. Repeat the flag to include multiple repos.",
+    )
     parser.add_argument(
         "--dry-run",
         action="store_true",

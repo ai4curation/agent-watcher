@@ -1,4 +1,4 @@
-name: Claude Review Watched Repos
+name: Codex Review Watched Repos
 
 on:
   schedule:
@@ -26,7 +26,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: claude-watcher-scan
+  group: codex-watcher-scan
   cancel-in-progress: false
 
 jobs:
@@ -35,6 +35,7 @@ jobs:
     outputs:
       matrix: ${{ steps.select.outputs.matrix }}
       has_targets: ${{ steps.select.outputs.has_targets }}
+      target_count: ${{ steps.select.outputs.target_count }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -54,14 +55,11 @@ jobs:
       - name: Publish selection summary
         run: cat build/selector/matrix.json >> "${GITHUB_STEP_SUMMARY}"
 
-  review-target:
+  summarize-targets:
     needs: select-targets
     if: needs.select-targets.outputs.has_targets == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(needs.select-targets.outputs.matrix) }}
+    timeout-minutes: 40
 
     steps:
       - name: Checkout repository
@@ -72,8 +70,16 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Install package
         run: python -m pip install -e .
+
+      - name: Install Codex CLI
+        run: npm install -g @openai/codex
 
       - name: Generate neutral activity context
         env:
@@ -82,9 +88,9 @@ jobs:
           LOOKBACK_DAYS_OVERRIDE: ${{ github.event_name == 'workflow_dispatch' && inputs.lookback_days || '' }}
           MAX_ITEMS_OVERRIDE: ${{ github.event_name == 'workflow_dispatch' && inputs.max_items || '' }}
         run: |
+          set -euo pipefail
           args=(
             --config config/targets.json
-            --target "${{ matrix.repo }}"
             --output-dir build/context
             --dry-run
           )
@@ -94,72 +100,136 @@ jobs:
           if [ -n "${MAX_ITEMS_OVERRIDE}" ]; then
             args+=(--max-items "${MAX_ITEMS_OVERRIDE}")
           fi
+          mapfile -t repos < <(
+            python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          matrix = json.loads(Path("build/selector/matrix.json").read_text())
+          for item in matrix.get("include", []):
+              print(item["repo"])
+          PY
+          )
+          for repo in "${repos[@]}"; do
+            args+=(--target "${repo}")
+          done
           python scripts/run_watch.py "${args[@]}"
 
-      - name: Upload context artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: watcher-context-${{ matrix.slug }}
-          path: build/context/${{ matrix.slug }}.*
-
-      - name: Verify Claude credentials are configured
-        env:
-          HAS_ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' && 'true' || 'false' }}
-          HAS_CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' && 'true' || 'false' }}
+      - name: Prepare Codex profile
         run: |
-          if [ "${HAS_ANTHROPIC_API_KEY}" != "true" ] && [ "${HAS_CLAUDE_CODE_OAUTH_TOKEN}" != "true" ]; then
-            echo "::error::Set either ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN for the Claude review workflow."
+          mkdir -p "$HOME/.codex"
+          cat > "$HOME/.codex/config.toml" <<'EOF'
+          [profiles.yolo]
+          approval_policy = "never"
+          sandbox_mode = "danger-full-access"
+          model = "gpt-5.4"
+          model_reasoning_effort = "high"
+          EOF
+
+      - name: Verify Codex credentials are configured
+        env:
+          OPENAI_API_KEY_SECRET: ${{ secrets.OPENAI_API_KEY }}
+          CODEX_API_KEY_SECRET: ${{ secrets.CODEX_API_KEY }}
+        run: |
+          if [ -z "${OPENAI_API_KEY_SECRET}" ] && [ -z "${CODEX_API_KEY_SECRET}" ]; then
+            echo "::error::Set OPENAI_API_KEY or CODEX_API_KEY for the Codex review workflow."
             exit 1
           fi
 
-      - name: Ask Claude for qualitative review
-        uses: anthropics/claude-code-action@v1
+      - name: Prepare Codex prompt
+        id: prompt
+        env:
+          WATCHER_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p build/codex
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          matrix = json.loads(Path("build/selector/matrix.json").read_text())
+          selected = matrix.get("include", [])
+          repos = [item["repo"] for item in selected]
+          report_date = selected[0]["report_date"]
+          watcher_repo = os.environ["WATCHER_REPO"]
+          issue_title = f"Dragon AI watcher summary for {report_date}"
+          repo_bullets = "\n".join(f"- `{repo}`" for repo in repos)
+          context_files = "\n".join(
+              f"- `build/context/{repo.replace('/', '__')}.md`" for repo in repos
+          )
+          prompt = f"""Review the recent Dragon AI GitHub activity across the selected repositories for report date `{report_date}`.
+
+          Start with `@build/context/summary.md`, then read these repo dossiers:
+          {context_files}
+
+          Selected repos for this run:
+          {repo_bullets}
+
+          Your job is to maintain the dated watcher issue in `{watcher_repo}` titled `{issue_title}`.
+
+          Required workflow:
+          1. Read the local summary and per-repo context files.
+          2. Use only those local files as evidence. Do not live-read the watched repos.
+          3. Find the issue in `{watcher_repo}` by exact title `{issue_title}`. If it does not exist, create it. If it exists and is closed, reopen it.
+          4. Replace the issue body with a concise multi-repo current-status summary for this report date.
+          5. Append a fuller qualitative review comment.
+
+          The review should emphasize:
+          - repo-by-repo status for Dragon AI work
+          - cross-repo patterns
+          - what seems to be working
+          - what seems not to be working
+          - recurring failure modes or friction
+          - light quantitative context only when useful
+
+          Constraints:
+          - Use only the local watcher artifacts as your evidence base.
+          - Do not assign a score or pass/fail label.
+          - Be concrete and cite issue or PR numbers and repo names.
+          - Keep the issue body concise and the appended comment practical.
+          - The issue title must be exactly `{issue_title}`.
+
+          Command guidance:
+          - Find the issue with `gh issue list --repo "{watcher_repo}" --state all --search "{issue_title} in:title" --json number,title,state`
+          - Create it with `gh issue create --repo "{watcher_repo}"`
+          - Update it with `gh issue edit --repo "{watcher_repo}"`
+          - Reopen it with `gh issue reopen --repo "{watcher_repo}"`
+          - Append the full review with `gh issue comment --repo "{watcher_repo}"`
+
+          You may create temporary markdown files under `build/codex/` before posting.
+          """
+
+          Path("build/codex/prompt.md").write_text(prompt)
+
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as handle:
+              print(f"report_date={report_date}", file=handle)
+              print("issue_title<<EOF", file=handle)
+              print(issue_title, file=handle)
+              print("EOF", file=handle)
+          PY
+
+      - name: Ask Codex for qualitative review
         env:
           GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          OPENAI_API_KEY_SECRET: ${{ secrets.OPENAI_API_KEY }}
+          CODEX_API_KEY_SECRET: ${{ secrets.CODEX_API_KEY }}
+        run: |
+          set -euo pipefail
+          export CODEX_API_KEY="${CODEX_API_KEY_SECRET:-$OPENAI_API_KEY_SECRET}"
+          codex exec --profile yolo -C . -o build/codex/final-message.md - < build/codex/prompt.md
+
+      - name: Upload watcher artifacts
+        uses: actions/upload-artifact@v4
         with:
-          github_token: ${{ github.token }}
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          prompt: |
-            Review the recent agent-related GitHub activity for `${{ matrix.repo }}` for report date `${{ matrix.report_date }}`.
+          name: watcher-summary-${{ steps.prompt.outputs.report_date }}
+          path: |
+            build/context
+            build/codex
 
-            Start with the local context file `@build/context/${{ matrix.slug }}.md`.
-
-            Your job is to maintain the dated watcher issue in `${{ github.repository }}` titled `${{ matrix.issue_title }}`.
-
-            Required workflow:
-            1. Read the local context file.
-            2. Use that dossier as the evidence base for your review. Do not rely on live reads from `${{ matrix.repo }}`.
-            3. Find the issue in `${{ github.repository }}` by exact title `${{ matrix.issue_title }}`. If it does not exist, create it. If it exists and is closed, reopen it.
-            4. Replace the issue body with a concise current-status summary for this report date.
-            5. Append a fuller qualitative review comment for this report date.
-
-            The review should emphasize:
-            - what seems to be working
-            - what seems not to be working
-            - recurring failure modes or friction
-            - light quantitative context only when useful, such as number of summons or number of agent-touched PRs/issues
-
-            Constraints:
-            - Do not assign a score or labels like strong, mixed, needs_attention, or pass/fail.
-            - Be concrete and cite issue/PR numbers.
-            - Keep the body concise and the appended comment substantial but practical.
-            - Use Markdown headings and flat bullets only when they help readability.
-            - The issue title must be exactly `${{ matrix.issue_title }}`.
-
-            Repo-specific guidance:
-            `${{ matrix.extra_prompt }}`
-
-            Command guidance:
-            - Find the issue with something like `gh issue list --repo "${{ github.repository }}" --state all --search '"${{ matrix.issue_title }}" in:title' --json number,title,state`
-            - Create it with `gh issue create --repo "${{ github.repository }}"`
-            - Update it with `gh issue edit --repo "${{ github.repository }}"`
-            - Reopen it with `gh issue reopen --repo "${{ github.repository }}"`
-            - Append the full review with `gh issue comment --repo "${{ github.repository }}"`
-
-            You may create temporary markdown files under `build/claude/` before posting.
-          claude_args: |
-            --allowedTools "Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh issue edit:*),Bash(gh issue reopen:*),Bash(gh issue comment:*),Read,Write,Edit"
-
-      - name: Publish matrix summary
-        run: cat build/context/${{ matrix.slug }}.md >> "${GITHUB_STEP_SUMMARY}"
+      - name: Publish summary output
+        run: |
+          cat build/context/summary.md >> "${GITHUB_STEP_SUMMARY}"
+          printf '\n\n## Codex Final Message\n\n' >> "${GITHUB_STEP_SUMMARY}"
+          cat build/codex/final-message.md >> "${GITHUB_STEP_SUMMARY}"
