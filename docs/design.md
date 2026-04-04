@@ -2,7 +2,7 @@
 
 ## Goal
 
-Run a scheduled watcher in GitHub Actions that inspects selected deployment repos, gathers recent issues and PRs involving agents, and asks Claude Code to write a practical qualitative assessment of what appears to be working or not working.
+Run a scheduled watcher in GitHub Actions that inspects selected deployment repos, gathers recent issues and PRs involving Dragon AI, and asks Codex to write a practical qualitative assessment of what appears to be working or not working.
 
 ## Non-Goals For The First Pass
 
@@ -20,7 +20,7 @@ The current architecture has four phases:
    - Merge defaults with repo-specific overrides
    - Compute which repos are due for the current schedule slot based on cadence, preferred weekday, and preferred hour
    - Compute deterministic report metadata including `report_date` and exact issue title
-   - Allow workflow or local CLI overrides for single-target runs and collection window
+   - Allow workflow or local CLI overrides for selected-target runs and collection window
 
 2. `Collect`
    - Use the GitHub REST API to list recently updated issues and PRs per watched repo
@@ -31,27 +31,27 @@ The current architecture has four phases:
 3. `Prepare Context`
    - Mark an item as agent-related when any of the following are true:
      - an author or commenter login matches configured agent substrings
-     - a body, comment, or review contains agent markers such as `@dragon-ai-agent` or `Claude Code`
-   - Produce a neutral Markdown dossier per watched repo
+     - a body, comment, or review contains configured agent markers such as `@dragon-ai-agent`
+   - Produce a neutral Markdown dossier per watched repo plus a batch `summary.md`
    - Include event timelines and lightweight supporting counts such as summons, merged PRs, and open items
    - Avoid making the final judgment in code
 
 4. `Review And Publish`
-   - Run `anthropics/claude-code-action@v1`
-   - Ask Claude to read the generated dossier as the evidence base for the review
-   - Create or update one dated issue per watched repo and report date in this repository
+   - Run `codex exec --profile yolo`
+   - Ask Codex to read the generated batch dossier as the evidence base for the review
+   - Create or update one dated summary issue in this repository
    - Replace the issue body with a concise current-status summary
    - Append a dated comment per run with the fuller qualitative review
 
-## Why Claude For The Final Review
+## Why Codex For The Final Review
 
-The user goal is a qualitative operational readout, not just metrics. Claude is the right place for that judgment because:
+The user goal is a qualitative operational readout, not just metrics. Codex is the right place for that judgment because:
 
 - it can weigh patterns across issues and PRs instead of just counting states
 - it can explain what seems to be working and not working in plain language
 - it can use the structured collector output without the collector pretending to be the evaluator
 
-The collector still matters because it gives Claude a bounded, auditable slice of evidence and keeps the workflow fast.
+The collector still matters because it gives Codex a bounded, auditable slice of evidence and keeps the workflow fast.
 
 ## Data Flow
 
@@ -77,7 +77,7 @@ neutral Markdown dossier
         +--> exact issue title
         |
         v
- Claude Code Action
+ Codex CLI
         |
         v
  dated issue update in this repo
@@ -92,8 +92,8 @@ neutral Markdown dossier
 - runs on cron and manual dispatch
 - selects configured targets, optionally filtered by workflow input
 - includes only repos due for the current schedule slot on scheduled runs
-- generates one context artifact per target
-- asks Claude to create or update the corresponding dated report issue in this repo
+- generates one context artifact per target plus a batch `summary.md`
+- asks Codex to create or update the dated summary issue in this repo
 - uploads the generated context artifacts
 
 ### Validation Workflow
@@ -112,19 +112,17 @@ Two token roles are enough for the first pass:
 - `WATCHER_SOURCE_TOKEN`
   - read access on watched repos
   - used for listing issues, comments, PRs, and reviews in watched repos
-- `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN`
-  - one of these must be present for the Claude Code Action
+- `OPENAI_API_KEY` or `CODEX_API_KEY`
+  - one of these must be present for `codex exec`
 - `GITHUB_TOKEN`
   - write access on this repo issues
-  - used by Claude for issue creation, reopening, body updates, and appended comments
+  - used by Codex for issue creation, reopening, body updates, and appended comments
 
 This keeps publishing scoped to this repo while allowing watched repos to remain read-only.
 
-## Matrix Model
+## Batch Selection Model
 
-The workflow uses a dynamic matrix, not one workflow per ontology.
-
-The selector emits rows like:
+The selector still emits target rows like:
 
 ```json
 {
@@ -137,7 +135,7 @@ The selector emits rows like:
 }
 ```
 
-GitHub Actions then creates one job per row. Adding a new ontology means adding a new config row, not a new workflow.
+The scheduled workflow now scans all selected rows in one batch so the local `summary.md` can drive a single multi-repo Codex summary. Adding a new ontology still means adding a new config row, not a new workflow.
 
 ## Current Limitations
 

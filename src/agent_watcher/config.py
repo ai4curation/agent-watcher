@@ -11,7 +11,7 @@ def load_targets(
     *,
     lookback_days: int | None = None,
     max_items: int | None = None,
-    only_repo: str | None = None,
+    only_repos: set[str] | None = None,
 ) -> list[TargetRepo]:
     path = Path(config_path)
     payload = json.loads(path.read_text())
@@ -20,7 +20,7 @@ def load_targets(
 
     for raw_target in payload.get("targets", []):
         repo = raw_target["repo"]
-        if only_repo and repo != only_repo:
+        if only_repos and repo not in only_repos:
             continue
 
         merged = {**defaults, **raw_target}
