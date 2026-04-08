@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import json
 from typing import Any
 from urllib.error import HTTPError
@@ -68,6 +69,52 @@ class GitHubClient:
 
     def get_pr(self, repo: str, number: int) -> dict[str, Any]:
         return self._request_json("GET", f"/repos/{repo}/pulls/{number}")
+
+    def get_repo(self, repo: str) -> dict[str, Any]:
+        return self._request_json("GET", f"/repos/{repo}")
+
+    def list_directory_contents(
+        self,
+        repo: str,
+        path: str,
+        *,
+        ref: str | None = None,
+    ) -> list[dict[str, Any]] | None:
+        encoded_path = quote(path, safe="/")
+        suffix = f"?ref={quote(ref, safe='')}" if ref else ""
+        try:
+            payload = self._request_json("GET", f"/repos/{repo}/contents/{encoded_path}{suffix}")
+        except RuntimeError as exc:
+            if "404" in str(exc):
+                return None
+            raise
+        if isinstance(payload, list):
+            return payload
+        return None
+
+    def get_file_text(
+        self,
+        repo: str,
+        path: str,
+        *,
+        ref: str | None = None,
+    ) -> str | None:
+        encoded_path = quote(path, safe="/")
+        suffix = f"?ref={quote(ref, safe='')}" if ref else ""
+        try:
+            payload = self._request_json("GET", f"/repos/{repo}/contents/{encoded_path}{suffix}")
+        except RuntimeError as exc:
+            if "404" in str(exc):
+                return None
+            raise
+        if not isinstance(payload, dict) or payload.get("type") != "file":
+            return None
+        content = payload.get("content", "")
+        if not content:
+            return ""
+        if payload.get("encoding") == "base64":
+            return base64.b64decode(content).decode("utf-8", errors="replace")
+        return str(content)
 
     def find_issue_by_title(self, repo: str, title: str) -> dict[str, Any] | None:
         page = 1

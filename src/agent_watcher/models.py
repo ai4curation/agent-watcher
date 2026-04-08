@@ -67,6 +67,7 @@ class RepoReport:
     issue_title: str
     recent_items_scanned: int
     tracked_items: list[TrackedItem] = field(default_factory=list)
+    opportunity_items: list[TrackedItem] = field(default_factory=list)
     metrics: dict[str, int] = field(default_factory=dict)
     errors: list[str] = field(default_factory=list)
 

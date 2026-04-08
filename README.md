@@ -9,6 +9,7 @@ The current shape is:
 - the collector produces neutral context, not a score
 - the scheduled workflow uses `anthropics/claude-code-action@v1`
 - Claude creates or updates one dated issue per watched repo and report date
+- a separate weekly workflow compares ontology repos together for agentic setup best practices
 
 ## Initial Scope
 
@@ -16,6 +17,7 @@ The current shape is:
 - Inspect recently updated issues and PRs in a lookback window
 - Detect agent involvement from author logins, comments, PR reviews, and common agent markers in text
 - Generate a context file per watched repo with lightweight counts and event timelines
+- Surface a small set of recent open non-agent issues as possible missed opportunities when agent activity is absent
 - Select only repos due for the current schedule slot based on config
 - Ask Claude to summarize what appears to be working, not working, and where the friction is
 - Publish findings back into this repo as dated issues such as `go-ontology report for 2026-03-31`
@@ -27,6 +29,7 @@ The current shape is:
 - [`scripts/run_watch.py`](/Users/cjm/repos/agent-watcher/scripts/run_watch.py): local and workflow entrypoint
 - [`src/agent_watcher`](/Users/cjm/repos/agent-watcher/src/agent_watcher): scanner and Markdown context generation code
 - [`.github/workflows/scan-watched-repos.yml`](/Users/cjm/repos/agent-watcher/.github/workflows/scan-watched-repos.yml): scheduled and manual Claude review workflow
+- [`.github/workflows/review-agentic-setup.yml`](/Users/cjm/repos/agent-watcher/.github/workflows/review-agentic-setup.yml): weekly cross-repo setup review workflow
 - [`.github/workflows/validate.yml`](/Users/cjm/repos/agent-watcher/.github/workflows/validate.yml): validation and dry-run workflow
 
 ## Local Usage
@@ -50,6 +53,15 @@ export WATCHER_SOURCE_TOKEN=ghp_xxx
 python3 scripts/run_watch.py \
   --config config/targets.json \
   --output-dir build/context
+```
+
+Collect weekly cross-repo setup-review context for the marked ontology repos:
+
+```bash
+export WATCHER_SOURCE_TOKEN=ghp_xxx
+python3 scripts/run_setup_review.py \
+  --config config/targets.json \
+  --output-dir build/setup-review
 ```
 
 ## Required Secrets
@@ -84,6 +96,7 @@ Each target can declare:
 - `preferred_weekday_utc`: `0` for Monday through `6` for Sunday
 - `preferred_hour_utc`
 - `issue_title_template`
+- `include_in_setup_review`: whether the repo participates in the weekly cross-repo setup review
 
 The selector script [`scripts/select_targets.py`](/Users/cjm/repos/agent-watcher/scripts/select_targets.py) reads that config and builds the matrix dynamically.
 
@@ -112,6 +125,8 @@ gh workflow run scan-watched-repos.yml \
   -f lookback_days=14 \
   -f max_items=25
 
+gh workflow run review-agentic-setup.yml
+
 gh workflow run validate.yml \
   -f target_repo=geneontology/go-ontology
 ```
@@ -119,4 +134,5 @@ gh workflow run validate.yml \
 ## Notes
 
 - The collector deliberately stays simple and deterministic; Claude is used for the actual qualitative judgment.
-- The context artifacts in `build/` are for debugging and for giving Claude enough evidence to write a useful review.
+- The context artifacts in `build/` are for debugging and for giving Claude enough evidence to write a useful review, including possible missed-opportunity tickets when no agent activity was detected.
+- Because reports are posted in this repository rather than the watched repo, cross-repo issue and PR references should be rendered as full Markdown links, not bare `#123` shorthand.

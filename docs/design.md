@@ -4,6 +4,8 @@
 
 Run a scheduled watcher in GitHub Actions that inspects selected deployment repos, gathers recent issues and PRs involving agents, and asks Claude Code to write a practical qualitative assessment of what appears to be working or not working.
 
+In addition, run a weekly cross-repo review over the marked ontology repos that compares their agentic setup: instruction files, workflow conventions, and whether repeated work is decomposed into skills, commands, or subagents.
+
 ## Non-Goals For The First Pass
 
 - full conversational transcript analysis
@@ -33,6 +35,7 @@ The current architecture has four phases:
      - an author or commenter login matches configured agent substrings
      - a body, comment, or review contains agent markers such as `@dragon-ai-agent` or `Claude Code`
    - Produce a neutral Markdown dossier per watched repo
+   - When a recent open issue has no detected agent involvement, surface it as a possible missed opportunity for reviewer consideration
    - Include event timelines and lightweight supporting counts such as summons, merged PRs, and open items
    - Avoid making the final judgment in code
 
@@ -42,6 +45,7 @@ The current architecture has four phases:
    - Create or update one dated issue per watched repo and report date in this repository
    - Replace the issue body with a concise current-status summary
    - Append a dated comment per run with the fuller qualitative review
+   - Use full Markdown links for watched-repo issues and PRs because the published report lives in a separate repository
 
 ## Why Claude For The Final Review
 
@@ -95,6 +99,16 @@ neutral Markdown dossier
 - generates one context artifact per target
 - asks Claude to create or update the corresponding dated report issue in this repo
 - uploads the generated context artifacts
+
+### Weekly Setup Review Workflow
+
+[`.github/workflows/review-agentic-setup.yml`](/Users/cjm/repos/agent-watcher/.github/workflows/review-agentic-setup.yml)
+
+- runs weekly and on manual dispatch
+- collects setup context across all targets with `include_in_setup_review=true`
+- inspects repo-level instruction files, agent-related workflows, and detected skill/subagent directories
+- asks Claude to compare repos against one another and recommend best-practice improvements
+- creates or updates one dated cross-repo review issue in this repo with the `agent-watcher` label
 
 ### Validation Workflow
 
@@ -151,5 +165,5 @@ GitHub Actions then creates one job per row. Adding a new ontology means adding 
 - add repo-specific match rules where agents have distinct identities
 - add inline review comment collection for PR-heavy repos
 - persist run summaries as JSON history for trend charts
-- improve prompt guidance for repo-specific ontology expectations
+- improve prompt guidance for repo-specific ontology expectations and opportunity triage
 - tag noteworthy findings, such as repeated duplicate agent PRs or human rework after merge

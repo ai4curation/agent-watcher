@@ -66,11 +66,28 @@ jobs:
             --output-dir build/validate \
             --dry-run
 
+      - name: Dry-run setup review
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          WATCHER_SOURCE_TOKEN: ${{ secrets.WATCHER_SOURCE_TOKEN }}
+        run: |
+          set -euo pipefail
+          python scripts/run_setup_review.py \
+            --config config/targets.json \
+            --target geneontology/go-ontology \
+            --target obophenotype/cell-ontology \
+            --output-dir build/validate-setup-review
+
       - name: Upload validation artifact
         uses: actions/upload-artifact@v4
         with:
           name: watcher-validation-preview
-          path: build/validate
+          path: |
+            build/validate
+            build/validate-setup-review
 
       - name: Publish validation summary
-        run: cat build/validate/summary.md >> "${GITHUB_STEP_SUMMARY}"
+        run: |
+          cat build/validate/summary.md >> "${GITHUB_STEP_SUMMARY}"
+          printf '\n\n## Setup Review Preview\n\n' >> "${GITHUB_STEP_SUMMARY}"
+          cat build/validate-setup-review/summary.md >> "${GITHUB_STEP_SUMMARY}"

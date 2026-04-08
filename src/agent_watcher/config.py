@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 from .models import TargetRepo
 
@@ -49,6 +50,38 @@ def load_targets(
                     merged.get("agent_text_patterns", [])
                 ),
             )
+        )
+
+    return targets
+
+
+def load_setup_review_targets(
+    config_path: str | Path,
+    *,
+    only_repos: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    path = Path(config_path)
+    payload = json.loads(path.read_text())
+    defaults = payload.get("defaults", {})
+    targets: list[dict[str, Any]] = []
+
+    for raw_target in payload.get("targets", []):
+        repo = raw_target["repo"]
+        if only_repos and repo not in only_repos:
+            continue
+
+        merged = {**defaults, **raw_target}
+        if not merged.get("include_in_setup_review", True):
+            continue
+
+        targets.append(
+            {
+                "repo": repo,
+                "display_name": merged.get("display_name", repo),
+                "short_name": merged.get("short_name", repo.split("/")[-1]),
+                "report_timezone": merged.get("report_timezone", "America/Los_Angeles"),
+                "extra_prompt": merged.get("extra_prompt", ""),
+            }
         )
 
     return targets
