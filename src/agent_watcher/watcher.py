@@ -7,6 +7,8 @@ from .github_api import GitHubClient
 from .models import Event, RepoReport, TargetRepo, TrackedItem
 from .scheduling import build_target_run_metadata
 
+MAX_OPPORTUNITY_ITEMS = 5
+
 
 def scan_target(client: GitHubClient, target: TargetRepo, *, generated_at: datetime) -> RepoReport:
     window_start = generated_at - timedelta(days=target.lookback_days)
@@ -29,13 +31,18 @@ def scan_target(client: GitHubClient, target: TargetRepo, *, generated_at: datet
         report.recent_items_scanned = len(items)
 
         tracked_items: list[TrackedItem] = []
+        opportunity_items: list[TrackedItem] = []
         for item in items:
-            tracked = _scan_item(client, target, item)
-            if tracked is not None:
-                tracked_items.append(tracked)
+            scanned = _scan_item(client, target, item)
+            if _has_agent_activity(scanned):
+                tracked_items.append(scanned)
+            elif _is_opportunity_candidate(scanned):
+                opportunity_items.append(scanned)
 
         tracked_items.sort(key=lambda item: item.updated_at, reverse=True)
+        opportunity_items.sort(key=lambda item: item.updated_at, reverse=True)
         report.tracked_items = tracked_items
+        report.opportunity_items = opportunity_items[:MAX_OPPORTUNITY_ITEMS]
     except Exception as exc:  # pragma: no cover - operational safety
         report.errors.append(str(exc))
 
@@ -47,7 +54,7 @@ def _scan_item(
     client: GitHubClient,
     target: TargetRepo,
     item: dict,
-) -> TrackedItem | None:
+) -> TrackedItem:
     number = int(item["number"])
     title = item.get("title", "")
     url = item.get("html_url", "")
@@ -108,8 +115,6 @@ def _scan_item(
             )
 
     events.sort(key=lambda event: event.created_at)
-    if not any(event.agent_actor or event.agent_reference for event in events):
-        return None
 
     latest_event = events[-1]
     author_is_agent = _matches_actor(author, target.agent_login_substrings)
@@ -193,6 +198,7 @@ def _build_metrics(report: RepoReport) -> dict[str, int]:
             1 for item in tracked if not item.agent_actor_logins and item.agent_reference_hits > 0
         ),
         "agent_authored_items": sum(1 for item in tracked if item.author_is_agent),
+        "potential_opportunities": len(report.opportunity_items),
         "errors": len(report.errors),
     }
 
@@ -205,6 +211,8 @@ def _build_item_signals(item: TrackedItem) -> list[str]:
     elif item.agent_actor_logins:
         logins = ", ".join(f"`{login}`" for login in item.agent_actor_logins)
         signals.append(f"agent activity from {logins}")
+    else:
+        signals.append("no agent involvement detected")
 
     if item.agent_reference_hits:
         signals.append(f"{item.agent_reference_hits} agent mention(s)")
@@ -218,6 +226,18 @@ def _build_item_signals(item: TrackedItem) -> list[str]:
         signals.append("waiting on human response")
 
     return signals
+
+
+def _has_agent_activity(item: TrackedItem) -> bool:
+    return item.author_is_agent or bool(item.agent_actor_logins) or item.agent_reference_hits > 0
+
+
+def _is_opportunity_candidate(item: TrackedItem) -> bool:
+    if item.kind != "issue" or item.status != "open":
+        return False
+    if _has_agent_activity(item):
+        return False
+    return not _is_bot_actor(item.latest_actor)
 
 
 def _matches_actor(actor: str, fragments: Iterable[str]) -> bool:

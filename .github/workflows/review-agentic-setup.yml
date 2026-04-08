@@ -1,0 +1,133 @@
+name: Claude Review Ontology Agentic Setup
+
+on:
+  schedule:
+    - cron: "47 14 * * 1"
+  workflow_dispatch:
+    inputs:
+      target_repos:
+        description: Optional comma-separated configured repos to include
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: claude-agentic-setup-review
+  cancel-in-progress: false
+
+jobs:
+  review-setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: python -m pip install -e .
+
+      - name: Generate setup review context
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          WATCHER_SOURCE_TOKEN: ${{ secrets.WATCHER_SOURCE_TOKEN }}
+          TARGET_REPOS_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.target_repos || '' }}
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          args=(
+            --config config/targets.json
+            --output-dir build/setup-review
+          )
+          if [ -n "${TARGET_REPOS_INPUT}" ]; then
+            python3 - <<'PY' > build/setup-review-targets.txt
+          import os
+
+          raw = os.environ["TARGET_REPOS_INPUT"]
+          for part in raw.split(","):
+              cleaned = part.strip()
+              if cleaned:
+                  print(cleaned)
+          PY
+            while IFS= read -r repo; do
+              args+=(--target "${repo}")
+            done < build/setup-review-targets.txt
+          fi
+          python3 scripts/run_setup_review.py "${args[@]}"
+
+      - name: Upload setup review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ontology-agentic-setup-review
+          path: build/setup-review
+
+      - name: Verify Claude credentials are configured
+        env:
+          HAS_ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' && 'true' || 'false' }}
+          HAS_CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' && 'true' || 'false' }}
+        run: |
+          if [ "${HAS_ANTHROPIC_API_KEY}" != "true" ] && [ "${HAS_CLAUDE_CODE_OAUTH_TOKEN}" != "true" ]; then
+            echo "::error::Set either ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN for the Claude setup-review workflow."
+            exit 1
+          fi
+
+      - name: Ask Claude for cross-repo setup review
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          github_token: ${{ github.token }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Review the ontology agentic setup across the selected watched repositories.
+
+            Start with the local summary file `@build/setup-review/summary.md`, then read the per-repo setup dossiers under `build/setup-review/*.md`.
+
+            Read `build/setup-review/metadata.json` to get the exact report date and issue title.
+
+            Your job is to maintain the dated watcher issue in `${{ github.repository }}` whose exact title is the `issue_title` value from `build/setup-review/metadata.json`.
+
+            Required workflow:
+            1. Read `build/setup-review/metadata.json`, `build/setup-review/summary.md`, and the per-repo markdown dossiers.
+            2. Use only those local files as evidence. Do not rely on live reads from the watched repos.
+            3. Find the issue in `${{ github.repository }}` by exact title from the metadata file. If it does not exist, create it with the labels `agent-watcher` and `report`. If it exists and is closed, reopen it.
+            4. Ensure the issue has the labels `agent-watcher` and `report`.
+            5. Replace the issue body with a concise cross-repo current-status summary for this review date.
+            6. Append a fuller comparative review comment.
+
+            The review should emphasize:
+            - whether each repo has sufficient central agent instructions
+            - whether recurring tasks appear partitioned into skills, commands, or subagents where appropriate
+            - whether the agent-related workflows look coherent and maintainable
+            - differences across repos and obvious outliers
+            - concrete best-practice recommendations, prioritized for the highest-leverage repos
+
+            Constraints:
+            - Do not assign a score or pass/fail label.
+            - Use full Markdown links when referring to watched repos or file paths outside `${{ github.repository }}`.
+            - Be concrete and compare repos explicitly.
+            - Keep the issue body concise and the appended comment practical.
+
+            Command guidance:
+            - Find the issue with `gh issue list --repo "${{ github.repository }}" --state all --search '<exact title from metadata> in:title' --json number,title,state`
+            - Create it with `gh issue create --repo "${{ github.repository }}" --label agent-watcher --label report`
+            - Update it with `gh issue edit --repo "${{ github.repository }}" --add-label agent-watcher --add-label report`
+            - Reopen it with `gh issue reopen --repo "${{ github.repository }}"`
+            - Append the full review with `gh issue comment --repo "${{ github.repository }}"`
+
+            You may create temporary markdown files under `build/claude/` before posting.
+          claude_args: |
+            --allowedTools "Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh issue edit:*),Bash(gh issue reopen:*),Bash(gh issue comment:*),Read,Write,Edit"
+
+      - name: Publish setup review summary
+        run: cat build/setup-review/summary.md >> "${GITHUB_STEP_SUMMARY}"

@@ -128,6 +128,47 @@ class WatcherTests(TestCase):
         self.assertIn("Agent summons / references", rendered)
         self.assertIn("Suggested issue title", rendered)
 
+    def test_surfaces_recent_open_non_agent_issues_as_potential_opportunities(self):
+        client = FakeGitHubClient(
+            items=[
+                {
+                    "number": 301,
+                    "title": "Add missing xref to mature cell term",
+                    "html_url": "https://github.com/example/repo/issues/301",
+                    "state": "open",
+                    "created_at": "2026-03-29T08:00:00Z",
+                    "updated_at": "2026-03-29T12:00:00Z",
+                    "body": "This should be a narrow ontology edit with a straightforward PR.",
+                    "user": {"login": "curator-1"},
+                },
+                {
+                    "number": 302,
+                    "title": "Discussion: longer term roadmap",
+                    "html_url": "https://github.com/example/repo/issues/302",
+                    "state": "closed",
+                    "created_at": "2026-03-29T08:00:00Z",
+                    "updated_at": "2026-03-29T12:00:00Z",
+                    "body": "Not open, so not an opportunity.",
+                    "user": {"login": "curator-2"},
+                },
+            ],
+            comments={
+                301: [
+                    _comment("curator-1", "2026-03-29T12:00:00Z", "Likely a quick follow-up if someone picks it up."),
+                ],
+            },
+        )
+
+        report = scan_target(client, TARGET, generated_at=_dt("2026-03-30T00:00:00Z"))
+        rendered = render_report(report)
+
+        self.assertEqual(report.metrics["agent_items"], 0)
+        self.assertEqual(report.metrics["potential_opportunities"], 1)
+        self.assertEqual(len(report.opportunity_items), 1)
+        self.assertIn("## Potential Missed Opportunities", rendered)
+        self.assertIn("Why surfaced: recent open issue with no detected agent involvement", rendered)
+        self.assertIn("Add missing xref to mature cell term", rendered)
+
 
 def _comment(login: str, created_at: str, body: str) -> dict:
     return {

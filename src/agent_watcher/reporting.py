@@ -50,38 +50,22 @@ def render_report(report: RepoReport) -> str:
     lines.extend(["", "## Agent-Related Items", ""])
     if not report.tracked_items:
         lines.append("No agent-related items detected in this run.")
-        return "\n".join(lines) + "\n"
+    else:
+        for item in report.tracked_items:
+            lines.extend(_render_item(item, include_agent_fields=True, timeline_heading="#### Event Timeline"))
 
-    for item in report.tracked_items:
+    if report.opportunity_items:
         lines.extend(
             [
-                f"### {_item_link(item)}",
+                "## Potential Missed Opportunities",
                 "",
-                f"- Status: `{item.status}`",
-                f"- Author: `{item.author}`",
-                f"- Updated: `{item.updated_at.strftime('%Y-%m-%d %H:%M UTC')}`",
-                f"- Agent actors: {_csv_or_none(item.agent_actor_logins)}",
-                f"- Agent summons / references: `{item.agent_reference_hits}`",
-                f"- Latest actor: `{item.latest_actor}`",
-                f"- Signals: {escape_cell('; '.join(item.signals))}",
-                f"- Latest note excerpt: {escape_cell(item.latest_excerpt or '(none)')}",
-                "",
-                "#### Event Timeline",
+                "These are recent open issues with no detected agent involvement in the scan window.",
+                "They are candidate starting points for reviewer consideration, not automatic recommendations.",
                 "",
             ]
         )
-        for event in item.events:
-            markers: list[str] = []
-            if event.agent_actor:
-                markers.append("agent actor")
-            if event.agent_reference:
-                markers.append("agent reference")
-            marker_suffix = f" [{', '.join(markers)}]" if markers else ""
-            lines.append(
-                f"- `{event.created_at.strftime('%Y-%m-%d %H:%M UTC')}` "
-                f"`{event.kind}` by `{event.actor}`{marker_suffix}: {escape_cell(_excerpt(event.body))}"
-            )
-        lines.append("")
+        for item in report.opportunity_items:
+            lines.extend(_render_item(item, include_agent_fields=False, timeline_heading="#### Recent Activity"))
 
     return "\n".join(lines) + "\n"
 
@@ -131,6 +115,44 @@ def _excerpt(text: str, *, limit: int = 180) -> str:
     if len(cleaned) <= limit:
         return cleaned
     return cleaned[: limit - 3] + "..."
+
+
+def _render_item(
+    item: TrackedItem,
+    *,
+    include_agent_fields: bool,
+    timeline_heading: str,
+) -> list[str]:
+    lines = [
+        f"### {_item_link(item)}",
+        "",
+        f"- Status: `{item.status}`",
+        f"- Author: `{item.author}`",
+        f"- Updated: `{item.updated_at.strftime('%Y-%m-%d %H:%M UTC')}`",
+        f"- Latest actor: `{item.latest_actor}`",
+        f"- Signals: {escape_cell('; '.join(item.signals))}",
+        f"- Latest note excerpt: {escape_cell(item.latest_excerpt or '(none)')}",
+    ]
+    if include_agent_fields:
+        lines.insert(4, f"- Agent actors: {_csv_or_none(item.agent_actor_logins)}")
+        lines.insert(5, f"- Agent summons / references: `{item.agent_reference_hits}`")
+    else:
+        lines.append("- Why surfaced: recent open issue with no detected agent involvement")
+
+    lines.extend(["", timeline_heading, ""])
+    for event in item.events:
+        markers: list[str] = []
+        if event.agent_actor:
+            markers.append("agent actor")
+        if event.agent_reference:
+            markers.append("agent reference")
+        marker_suffix = f" [{', '.join(markers)}]" if markers else ""
+        lines.append(
+            f"- `{event.created_at.strftime('%Y-%m-%d %H:%M UTC')}` "
+            f"`{event.kind}` by `{event.actor}`{marker_suffix}: {escape_cell(_excerpt(event.body))}"
+        )
+    lines.append("")
+    return lines
 
 
 def _json(report: RepoReport) -> str:

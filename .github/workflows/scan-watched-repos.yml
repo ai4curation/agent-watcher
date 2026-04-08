@@ -130,19 +130,29 @@ jobs:
             Required workflow:
             1. Read the local context file.
             2. Use that dossier as the evidence base for your review. Do not rely on live reads from `${{ matrix.repo }}`.
-            3. Find the issue in `${{ github.repository }}` by exact title `${{ matrix.issue_title }}`. If it does not exist, create it. If it exists and is closed, reopen it.
-            4. Replace the issue body with a concise current-status summary for this report date.
-            5. Append a fuller qualitative review comment for this report date.
+            3. Find the issue in `${{ github.repository }}` by exact title `${{ matrix.issue_title }}`. If it does not exist, create it with the labels `agent-watcher` and `report`. If it exists and is closed, reopen it.
+            4. Ensure the issue has the labels `agent-watcher` and `report`.
+            5. Replace the issue body with a concise current-status summary for this report date.
+            6. Append a fuller qualitative review comment for this report date.
 
             The review should emphasize:
             - what seems to be working
             - what seems not to be working
             - recurring failure modes or friction
             - light quantitative context only when useful, such as number of summons or number of agent-touched PRs/issues
+            - when agent activity is sparse or absent, whether the dossier shows missed opportunities: recent open issues that look like plausible low-friction starting points for an agent-authored PR
+
+            Opportunity guidance:
+            - Start with the `Potential Missed Opportunities` section when the repo has little or no agent activity.
+            - Recommend at most 3 candidates.
+            - Only recommend a candidate when the local dossier shows a concrete, bounded ask in the issue body or recent human comments.
+            - If the dossier does not support a confident recommendation, say that clearly instead of inventing one.
 
             Constraints:
             - Do not assign a score or labels like strong, mixed, needs_attention, or pass/fail.
             - Be concrete and cite issue/PR numbers.
+            - When referring to issues or PRs from `${{ matrix.repo }}`, do not use bare `#123` shorthand. Use full Markdown links to the watched repo items, for example `[issue #123](https://github.com/${{ matrix.repo }}/issues/123)` or `[PR #456](https://github.com/${{ matrix.repo }}/pull/456)`.
+            - Bare `#123` references are only acceptable for issues in `${{ github.repository }}` itself.
             - Keep the body concise and the appended comment substantial but practical.
             - Use Markdown headings and flat bullets only when they help readability.
             - The issue title must be exactly `${{ matrix.issue_title }}`.
@@ -152,8 +162,8 @@ jobs:
 
             Command guidance:
             - Find the issue with something like `gh issue list --repo "${{ github.repository }}" --state all --search '"${{ matrix.issue_title }}" in:title' --json number,title,state`
-            - Create it with `gh issue create --repo "${{ github.repository }}"`
-            - Update it with `gh issue edit --repo "${{ github.repository }}"`
+            - Create it with `gh issue create --repo "${{ github.repository }}" --label agent-watcher --label report`
+            - Update it with `gh issue edit --repo "${{ github.repository }}" --add-label agent-watcher --add-label report`
             - Reopen it with `gh issue reopen --repo "${{ github.repository }}"`
             - Append the full review with `gh issue comment --repo "${{ github.repository }}"`
 
