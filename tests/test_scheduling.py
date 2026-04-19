@@ -28,7 +28,6 @@ def _target(**overrides) -> TargetRepo:
         "issue_title_template": "{short_name} report for {report_date}",
         "cadence": "weekly",
         "preferred_weekday_utc": 0,
-        "preferred_hour_utc": 13,
         "extra_prompt": "",
         "agent_login_substrings": ("dragon-ai-agent",),
         "agent_text_patterns": ("@dragon-ai-agent",),
@@ -44,17 +43,18 @@ class SchedulingTests(TestCase):
         self.assertEqual(metadata.report_date, "2026-03-30")
         self.assertEqual(metadata.issue_title, "go-ontology report for 2026-03-30")
 
-    def test_weekly_target_due_only_on_matching_weekday_and_hour(self):
-        target = _target(preferred_weekday_utc=0, preferred_hour_utc=13)
+    def test_weekly_target_due_only_on_matching_weekday(self):
+        target = _target(preferred_weekday_utc=0)
         self.assertTrue(target_is_due(target, _dt("2026-03-30T13:17:00Z")))
         self.assertFalse(target_is_due(target, _dt("2026-03-31T13:17:00Z")))
-        self.assertFalse(target_is_due(target, _dt("2026-03-30T12:17:00Z")))
+        self.assertTrue(target_is_due(target, _dt("2026-03-30T12:17:00Z")))
+        self.assertTrue(target_is_due(target, _dt("2026-03-30T14:17:00Z")))
 
-    def test_daily_target_due_each_day_at_matching_hour(self):
-        target = _target(cadence="daily", preferred_weekday_utc=None, preferred_hour_utc=13)
+    def test_daily_target_due_each_day_regardless_of_hour(self):
+        target = _target(cadence="daily", preferred_weekday_utc=None)
         self.assertTrue(target_is_due(target, _dt("2026-03-30T13:17:00Z")))
         self.assertTrue(target_is_due(target, _dt("2026-03-31T13:17:00Z")))
-        self.assertFalse(target_is_due(target, _dt("2026-03-31T11:17:00Z")))
+        self.assertTrue(target_is_due(target, _dt("2026-03-31T11:17:00Z")))
 
 
 def _dt(value: str) -> datetime:

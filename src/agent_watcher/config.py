@@ -41,7 +41,6 @@ def load_targets(
                 ),
                 cadence=merged.get("cadence", "weekly"),
                 preferred_weekday_utc=_optional_int(merged.get("preferred_weekday_utc")),
-                preferred_hour_utc=_optional_int(merged.get("preferred_hour_utc")),
                 extra_prompt=merged.get("extra_prompt", ""),
                 agent_login_substrings=_normalize_strings(
                     merged.get("agent_login_substrings", [])

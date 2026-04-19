@@ -20,7 +20,7 @@ The current architecture has four phases:
 1. `Select`
    - Load watched repos from [`config/targets.json`](/Users/cjm/repos/agent-watcher/config/targets.json)
    - Merge defaults with repo-specific overrides
-   - Compute which repos are due for the current schedule slot based on cadence, preferred weekday, and preferred hour
+   - Compute which repos are due for the current schedule slot based on cadence and preferred weekday
    - Compute deterministic report metadata including `report_date` and exact issue title
    - Allow workflow or local CLI overrides for single-target runs and collection window
 

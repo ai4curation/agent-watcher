@@ -29,9 +29,6 @@ def build_target_run_metadata(target: TargetRepo, now_utc: datetime) -> TargetRu
 def target_is_due(target: TargetRepo, now_utc: datetime) -> bool:
     now_utc = now_utc.astimezone(timezone.utc)
 
-    if target.preferred_hour_utc is not None and now_utc.hour != target.preferred_hour_utc:
-        return False
-
     cadence = target.cadence.lower()
     if cadence == "daily":
         return True
