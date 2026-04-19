@@ -18,7 +18,6 @@ class TargetRepo:
     issue_title_template: str
     cadence: str
     preferred_weekday_utc: int | None
-    preferred_hour_utc: int | None
     extra_prompt: str
     agent_login_substrings: tuple[str, ...]
     agent_text_patterns: tuple[str, ...]

@@ -87,18 +87,17 @@ This keeps reports easy to scan historically while still allowing reruns to upda
 
 ## How Scheduling Works
 
-The workflow is still a single YAML file. Staggering happens in [`config/targets.json`](/Users/cjm/repos/agent-watcher/config/targets.json), not by cloning workflows.
+The workflow is still a single YAML file. GitHub cron is the real schedule, and [`config/targets.json`](/Users/cjm/repos/agent-watcher/config/targets.json) only decides which repos participate on a given day.
 
 Each target can declare:
 
 - `short_name`
 - `cadence`: `weekly`, `daily`, or `manual`
 - `preferred_weekday_utc`: `0` for Monday through `6` for Sunday
-- `preferred_hour_utc`
 - `issue_title_template`
 - `include_in_setup_review`: whether the repo participates in the weekly cross-repo setup review
 
-The selector script [`scripts/select_targets.py`](/Users/cjm/repos/agent-watcher/scripts/select_targets.py) reads that config and builds the matrix dynamically.
+The selector script [`scripts/select_targets.py`](/Users/cjm/repos/agent-watcher/scripts/select_targets.py) reads that config and builds the matrix dynamically. Weekly repos are staggered by weekday, while the actual clock time comes from the workflow cron in [`.github/workflows/scan-watched-repos.yml`](/Users/cjm/repos/agent-watcher/.github/workflows/scan-watched-repos.yml). The review job still fans out per repo with a bounded matrix, so we avoid one large monolithic run without relying on a second scheduler in Python.
 
 ## Adding A Repo
 

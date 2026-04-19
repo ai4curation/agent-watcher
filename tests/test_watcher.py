@@ -48,7 +48,6 @@ TARGET = TargetRepo(
     issue_title_template="{short_name} report for {report_date}",
     cadence="weekly",
     preferred_weekday_utc=0,
-    preferred_hour_utc=13,
     extra_prompt="",
     agent_login_substrings=("dragon-ai-agent", "claude", "codex"),
     agent_text_patterns=("@dragon-ai-agent", "claude code"),
