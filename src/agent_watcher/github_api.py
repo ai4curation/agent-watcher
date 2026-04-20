@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import json
+from datetime import datetime, timezone
 from typing import Any
 from urllib.error import HTTPError
 from urllib.parse import quote
@@ -23,25 +24,11 @@ class GitHubClient:
         since: str,
         max_items: int,
     ) -> list[dict[str, Any]]:
-        items: list[dict[str, Any]] = []
-        page = 1
-
-        while len(items) < max_items:
-            payload = self._request_json(
-                "GET",
-                f"/repos/{repo}/issues?state=all&sort=updated&direction=desc&since={quote(since)}&per_page=100&page={page}",
-            )
-            if not payload:
-                break
-
-            for item in payload:
-                items.append(item)
-                if len(items) >= max_items:
-                    break
-
-            page += 1
-
-        return items
+        recent_issues = self._list_recent_issues(repo, since=since, limit=max_items)
+        recent_prs = self._list_recent_pull_requests(repo, since=since, limit=max_items)
+        combined = recent_issues + recent_prs
+        combined.sort(key=lambda item: _parse_datetime(item["updated_at"]), reverse=True)
+        return combined[:max_items]
 
     def list_issue_comments(
         self,
@@ -189,6 +176,80 @@ class GitHubClient:
             data={"body": body},
         )
 
+    def _list_recent_issues(
+        self,
+        repo: str,
+        *,
+        since: str,
+        limit: int,
+    ) -> list[dict[str, Any]]:
+        items: list[dict[str, Any]] = []
+        page = 1
+        since_dt = _parse_datetime(since)
+
+        while len(items) < limit:
+            payload = self._request_json(
+                "GET",
+                f"/repos/{repo}/issues?state=all&sort=updated&direction=desc&since={quote(since)}&per_page=100&page={page}",
+            )
+            if not payload:
+                break
+
+            for item in payload:
+                if item.get("pull_request"):
+                    continue
+                if _parse_datetime(item["updated_at"]) < since_dt:
+                    return items
+                items.append(item)
+                if len(items) >= limit:
+                    break
+
+            if len(payload) < 100:
+                break
+            page += 1
+
+        return items
+
+    def _list_recent_pull_requests(
+        self,
+        repo: str,
+        *,
+        since: str,
+        limit: int,
+    ) -> list[dict[str, Any]]:
+        items: list[dict[str, Any]] = []
+        page = 1
+        since_dt = _parse_datetime(since)
+
+        while len(items) < limit:
+            payload = self._request_json(
+                "GET",
+                f"/repos/{repo}/pulls?state=all&sort=updated&direction=desc&per_page=100&page={page}",
+            )
+            if not payload:
+                break
+
+            for item in payload:
+                if _parse_datetime(item["updated_at"]) < since_dt:
+                    return items
+                normalized = dict(item)
+                normalized.setdefault(
+                    "pull_request",
+                    {
+                        "url": item.get("url"),
+                        "html_url": item.get("html_url"),
+                    },
+                )
+                items.append(normalized)
+                if len(items) >= limit:
+                    break
+
+            if len(payload) < 100:
+                break
+            page += 1
+
+        return items
+
     def _request_json(
         self,
         method: str,
@@ -220,3 +281,7 @@ class GitHubClient:
             raise RuntimeError(
                 f"GitHub API {method} {url} failed with {exc.code}: {detail[:400]}"
             ) from exc
+
+
+def _parse_datetime(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
