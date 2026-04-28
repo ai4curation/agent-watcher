@@ -21,6 +21,7 @@ ASSET_DIRECTORY_KINDS = (
     (".claude/agents", "subagents"),
     (".codex/agents", "subagents"),
     (".github/agents", "subagents"),
+    (".claude/skills", "skills"),
     (".codex/skills", "skills"),
     (".github/skills", "skills"),
     ("skills", "skills"),
