@@ -60,6 +60,9 @@ class SetupReviewTests(TestCase):
                 ("example/ontology", ".claude/agents"): [
                     {"name": "curation.md", "path": ".claude/agents/curation.md", "type": "file"}
                 ],
+                ("example/ontology", ".claude/skills"): [
+                    {"name": "term-editing", "path": ".claude/skills/term-editing", "type": "dir"}
+                ],
                 ("example/ontology", ".github/workflows"): [
                     {
                         "name": "agent-review.yml",
@@ -83,9 +86,10 @@ class SetupReviewTests(TestCase):
         report = reports[0]
         self.assertEqual(report.default_branch, "main")
         self.assertEqual(len(report.instruction_files), 1)
-        self.assertEqual(len(report.asset_directories), 1)
+        self.assertEqual(len(report.asset_directories), 2)
         self.assertEqual(len(report.agent_workflows), 1)
         self.assertIn("anthropics/claude-code-action@v1", report.agent_workflows[0].agent_signals)
+        self.assertIn(".claude/skills", [item.path for item in report.asset_directories])
         self.assertIn("`example/ontology`", render_setup_review_summary(reports))
 
     def test_flags_missing_instruction_file(self):
