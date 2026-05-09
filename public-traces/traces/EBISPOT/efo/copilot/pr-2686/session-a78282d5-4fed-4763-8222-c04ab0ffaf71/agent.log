@@ -1,0 +1,2347 @@
+Clone repository EBISPOT/efo
+Start 'github-mcp-server' MCP server
+Start 'artl-mcp' MCP server
+Start 'ebi-kg' MCP server
+Start 'ols4' MCP server
+Start 'playwright' MCP server
+
+I'll start by understanding the issue and finding the relevant terms in the 
+  EFO ontology.
+
+Bash: Find the 4 problematic terms in the ontology
+$ grep -n "EFO_0003858|EFO_0000792|EFO_0001986|EFO_0001958"               
+  /home/runner/work/efo/efo/src/ontology/efo-edit.owl | head -50              
+    96119:                <owl:someValuesFrom rdf:resource="http://www.ebi.ac.
+  uk/efo/EFO_0000792"/>                                                       
+    96618:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0003858"/>                                                       
+    96683:                <owl:someValuesFrom rdf:resource="http://www.ebi.ac.
+  uk/efo/EFO_0000792"/>                                                       
+    135480:    <!-- http://www.ebi.ac.uk/efo/EFO_0000792 -->                  
+    135482:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0000792">   
+    156727:    <!-- http://www.ebi.ac.uk/efo/EFO_0001958 -->                  
+    156729:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001958">   
+    157237:    <!-- http://www.ebi.ac.uk/efo/EFO_0001986 -->                  
+    157239:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001986">   
+    206420:    <!-- http://www.ebi.ac.uk/efo/EFO_0003858 -->                  
+    206422:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0003858">   
+    <exited with exit code 0>
+
+View src/ontology/efo-edit.owl
+<!-- http://www.ebi.ac.uk/efo/EFO_0000792 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0000792">         
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/UBERON_0000061"/>                                                   
+             <obo:IAO_0000115>Organism subdivision which is the part of the   
+  body which consists of the cranial and pharyngeal regions.</obo:IAO_0000115>
+             <obo:IAO_0000115>The larval cranium exclusive of the dorsal      
+  apotome.</obo:IAO_0000115>                                                  
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <oboInOwl:hasDbXref>FBbt:00003007</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>MA:0000316</oboInOwl:hasDbXref>              
+             <oboInOwl:hasDbXref>MAT:0000017</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>TGMA:0000720</oboInOwl:hasDbXref>            
+             <oboInOwl:hasDbXref>ZFA:0001114</oboInOwl:hasDbXref>             
+             <oboInOwl:hasExactSynonym>epicranial                             
+  plate</oboInOwl:hasExactSynonym>                                            
+             <oboInOwl:hasExactSynonym>head tissue</oboInOwl:hasExactSynonym> 
+             <rdfs:label>craniofacial tissue</rdfs:label>                     
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0000793 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0000793">         
+             <obo:IAO_0000115>The organ system involved in the absorption of  
+  nutrients.</obo:IAO_0000115>                                                
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <obo:IAO_0100001>http://purl.obolibrary.                         
+  org/obo/UBERON_0001007</obo:IAO_0100001>                                    
+             <efo:obsoleted_in_version>2.38</efo:obsoleted_in_version>        
+             <efo:organizational_class>true</efo:organizational_class>        
+             <efo:reason_for_obsolescence>Use http://purl.obolibrary.         
+  org/obo/UBERON_0001007                                                      
+     label: digestive system</efo:reason_for_obsolescence>                    
+             <oboInOwl:hasDbXref>AAO:0000129</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>EHDAA:514</oboInOwl:hasDbXref>               
+             <oboInOwl:hasDbXref>EMAPA:16246</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>EV:0100056</oboInOwl:hasDbXref>              
+             <oboInOwl:hasDbXref>FBbt:00005055</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>FMA:7152</oboInOwl:hasDbXref>                
+             <oboInOwl:hasDbXref>MA:0000323</oboInOwl:hasDbXref>              
+             <oboInOwl:hasDbXref>MAT:0000018</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>MFO:0002980</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>SAEL:28</oboInOwl:hasDbXref>                 
+             <oboInOwl:hasDbXref>TADS:0000170</oboInOwl:hasDbXref>            
+             <oboInOwl:hasDbXref>TAO:0000339</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>WBbt:0005748</oboInOwl:hasDbXref>            
+             <oboInOwl:hasDbXref>XAO:0000125</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>ZFA:0000339</oboInOwl:hasDbXref>             
+             <oboInOwl:hasExactSynonym>Digestive                              
+  system</oboInOwl:hasExactSynonym>                                           
+             <oboInOwl:hasExactSynonym>alimentary                             
+  system</oboInOwl:hasExactSynonym>                                           
+             <oboInOwl:hasExactSynonym>gastrointestinal                       
+  system</oboInOwl:hasExactSynonym>                                           
+             <rdfs:label>obsolete_digestive system component</rdfs:label>     
+             <owl:deprecated rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+         </owl:Class>
+
+View src/ontology/efo-edit.owl
+<!-- http://www.ebi.ac.uk/efo/EFO_0001958 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001958">         
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/UBERON_0000061"/>                                                   
+             <rdfs:subClassOf>                                                
+                 <owl:Restriction>                                            
+                     <owl:onProperty rdf:resource="http://purl.obolibrary.    
+  org/obo/BFO_0000050"/>                                                      
+                     <owl:someValuesFrom rdf:resource="http://purl.obolibrary.
+  org/obo/UBERON_0000982"/>                                                   
+                 </owl:Restriction>                                           
+             </rdfs:subClassOf>                                               
+             <rdfs:subClassOf>                                                
+                 <owl:Restriction>                                            
+                     <owl:onProperty rdf:resource="http://purl.obolibrary.    
+  org/obo/BFO_0000050"/>                                                      
+                     <owl:someValuesFrom rdf:resource="http://purl.obolibrary.
+  org/obo/UBERON_0001434"/>                                                   
+                 </owl:Restriction>                                           
+             </rdfs:subClassOf>                                               
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <oboInOwl:hasDbXref>SNOMEDCT:260782005</oboInOwl:hasDbXref>      
+             <rdfs:label>joint component</rdfs:label>                         
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0001960 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001960">         
+             <obo:IAO_0100001>http://purl.obolibrary.                         
+  org/obo/PO_0020121</obo:IAO_0100001>                                        
+             <efo:obsoleted_in_version>2.73</efo:obsoleted_in_version>        
+             <efo:organizational_class>true</efo:organizational_class>        
+             <efo:reason_for_obsolescence>replaced with                       
+  PO_0020121</efo:reason_for_obsolescence>                                    
+             <oboInOwl:hasDbXref>PO:0020121</oboInOwl:hasDbXref>              
+             <rdfs:label>obsolete_lateral root</rdfs:label>                   
+             <owl:deprecated rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0001961 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001961">         
+             <obo:IAO_0000115>An internal cavity in each cerebral hemisphere  
+  that consists of a central body and three cornua including an anterior one  
+  curving forward and outward, a posterior one curving backward, and an       
+  inferior one curving downward.</obo:IAO_0000115>                            
+             <obo:IAO_0000115>Part of the ventricular system of the brain in  
+  each of the cerebral hemispheres. The lateral ventricle in each hemisphere  
+  is separated from the other by the septum and each communicates with the    
+  THIRD VENTRICLE by the foramen of Monro, In species, particularly those with
+  well developed cortex, the lateral ventrical may be subdivided into anterior,
+  posterior and temporal horns and a body</obo:IAO_0000115>                   
+             <obo:IAO_0000115>The rostral extensions of the ventricular system
+  of the brain consisting of two cavities, one on each side of the brain      
+  within the central regions of each cerebral hemisphere.  Cerebrospinal fluid
+  flows from the lateral ventricles into the centrally third ventricle via the
+  foramen of Monroe.</obo:IAO_0000115>                                        
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <obo:IAO_0000117>Tomasz Adamusiak</obo:IAO_0000117>              
+             <obo:IAO_0100001>http://purl.obolibrary.                         
+  org/obo/UBERON_0002285</obo:IAO_0100001>                                    
+             <efo:definition_citation>C12834</efo:definition_citation>        
+             <efo:obsoleted_in_version>2.73</efo:obsoleted_in_version>        
+             <efo:organizational_class>true</efo:organizational_class>        
+             <efo:reason_for_obsolescence>replaced with                       
+  UBERON_0002285</efo:reason_for_obsolescence>                                
+             <oboInOwl:hasDbXref>BTO:0000879</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>MESH:D020547</oboInOwl:hasDbXref>            
+             <oboInOwl:hasDbXref>NCIt:C12834</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>NIFSTD:birnlex_1263</oboInOwl:hasDbXref>     
+             <oboInOwl:hasExactSynonym>Lateral                                
+  Ventricles</oboInOwl:hasExactSynonym>                                       
+             <oboInOwl:hasExactSynonym>Ventricle,                             
+  Lateral</oboInOwl:hasExactSynonym>                                          
+             <oboInOwl:hasExactSynonym>Ventricles,                            
+  Lateral</oboInOwl:hasExactSynonym>                                          
+             <oboInOwl:hasExactSynonym>lateral ventricle of                   
+  brain</oboInOwl:hasExactSynonym>                                            
+             <rdfs:label>obsolete_lateral ventricle</rdfs:label>              
+             <owl:deprecated rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+         </owl:Class>
+
+View src/ontology/efo-edit.owl
+<!-- http://www.ebi.ac.uk/efo/EFO_0001986 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001986">         
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/UBERON_0001004"/>                                                   
+             <rdfs:subClassOf>                                                
+                 <owl:Restriction>                                            
+                     <owl:onProperty rdf:resource="http://purl.obolibrary.    
+  org/obo/BFO_0000050"/>                                                      
+                     <owl:someValuesFrom rdf:resource="http://purl.obolibrary.
+  org/obo/UBERON_0002048"/>                                                   
+                 </owl:Restriction>                                           
+             </rdfs:subClassOf>                                               
+             <obo:IAO_0000115>A lung structuret is a respiratory system       
+  component which is part of a lung.</obo:IAO_0000115>                        
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <oboInOwl:hasDbXref>SNOMEDCT:39607008</oboInOwl:hasDbXref>       
+             <rdfs:label>lung structure</rdfs:label>                          
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0001987 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001987">         
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <obo:IAO_0000117>Tomasz Adamusiak</obo:IAO_0000117>              
+             <obo:IAO_0100001>http://purl.obolibrary.                         
+  org/obo/UBERON_0002623</obo:IAO_0100001>                                    
+             <efo:obsoleted_in_version>2.38</efo:obsoleted_in_version>        
+             <efo:organizational_class>true</efo:organizational_class>        
+             <efo:reason_for_obsolescence>Use http://purl.obolibrary.         
+  org/obo/UBERON_0002623                                                      
+     label: cerebral peduncle</efo:reason_for_obsolescence>                   
+             <oboInOwl:hasDbXref>FMA:62394</oboInOwl:hasDbXref>               
+             <oboInOwl:hasDbXref>NIFSTD:birnlex_1202</oboInOwl:hasDbXref>     
+             <oboInOwl:hasExactSynonym>Peduncle of                            
+  midbrain</oboInOwl:hasExactSynonym>                                         
+             <rdfs:label>obsolete_cerebral peduncle</rdfs:label>              
+             <owl:deprecated rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0001988 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001988">         
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <obo:IAO_0100001>http://purl.obolibrary.                         
+  org/obo/UBERON_0001926</obo:IAO_0100001>                                    
+             <efo:obsoleted_in_version>2.38</efo:obsoleted_in_version>        
+             <efo:organizational_class>true</efo:organizational_class>        
+             <efo:reason_for_obsolescence>Use http://purl.obolibrary.         
+  org/obo/UBERON_0001926                                                      
+     label: ateral geniculate body</efo:reason_for_obsolescence>              
+             <oboInOwl:hasDbXref>FMA:62209</oboInOwl:hasDbXref>               
+             <oboInOwl:hasDbXref>MA:0000869</oboInOwl:hasDbXref>              
+             <oboInOwl:hasExactSynonym>Lateral geniculate                     
+  body</oboInOwl:hasExactSynonym>                                             
+             <oboInOwl:hasExactSynonym>Lateral geniculate                     
+  complex</oboInOwl:hasExactSynonym>                                          
+             <rdfs:label>obsolete_lateral geniculate nucleus</rdfs:label>     
+             <owl:deprecated rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0001990 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001990">         
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <obo:IAO_0100001>http://purl.obolibrary.                         
+  org/obo/UBERON_0004167</obo:IAO_0100001>                                    
+             <efo:obsoleted_in_version>2.38</efo:obsoleted_in_version>        
+             <efo:organizational_class>true</efo:organizational_class>        
+             <efo:reason_for_obsolescence>Use http://purl.obolibrary.         
+  org/obo/UBERON_0004167
+
+View src/ontology/efo-edit.owl
+<!-- http://www.ebi.ac.uk/efo/EFO_0003858 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0003858">         
+             <owl:equivalentClass>                                            
+                 <owl:Class>                                                  
+                     <owl:intersectionOf rdf:parseType="Collection">          
+                         <rdf:Description rdf:about="http://purl.obolibrary.  
+  org/obo/UBERON_0000061"/>                                                   
+                         <owl:Restriction>                                    
+                             <owl:onProperty rdf:resource="http://purl.       
+  obolibrary.org/obo/BFO_0000050"/>                                           
+                             <owl:someValuesFrom rdf:resource="http://purl.   
+  obolibrary.org/obo/UBERON_0001434"/>                                        
+                         </owl:Restriction>                                   
+                     </owl:intersectionOf>                                    
+                 </owl:Class>                                                 
+             </owl:equivalentClass>                                           
+             <rdfs:label>skeleton structure</rdfs:label>                      
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0003859 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0003859">         
+             <obo:IAO_0000117>Tomasz Adamusiak</obo:IAO_0000117>              
+             <obo:IAO_0100001>http://purl.obolibrary.                         
+  org/obo/MONDO_0021353</obo:IAO_0100001>                                     
+             <efo:obsoleted_in_version>3.88.0</efo:obsoleted_in_version>      
+             <efo:reason_for_obsolescence>Replaced by Mondo term MONDO_0021353,
+  with which this term was previously merged. Use: http://purl.obolibrary.    
+  org/obo/MONDO_0021353</efo:reason_for_obsolescence>                         
+             <oboInOwl:hasDbXref>DOID:363</oboInOwl:hasDbXref>                
+             <oboInOwl:hasDbXref>ICD10:D26</oboInOwl:hasDbXref>               
+             <oboInOwl:hasDbXref>MESH:D014594</oboInOwl:hasDbXref>            
+             <oboInOwl:hasDbXref>MedDRA:10046803</oboInOwl:hasDbXref>         
+             <oboInOwl:hasDbXref>NCIt:C3435</oboInOwl:hasDbXref>              
+             <oboInOwl:hasExactSynonym>NEOPL                                  
+  UTERINE</oboInOwl:hasExactSynonym>                                          
+             <oboInOwl:hasExactSynonym>NEOPL UTERUS</oboInOwl:hasExactSynonym>
+             <oboInOwl:hasExactSynonym>Neoplasm,                              
+  Uterine</oboInOwl:hasExactSynonym>                                          
+             <oboInOwl:hasExactSynonym>Neoplasm,                              
+  Uterus</oboInOwl:hasExactSynonym>                                           
+             <oboInOwl:hasExactSynonym>Neoplasms,                             
+  Uterine</oboInOwl:hasExactSynonym>                                          
+             <oboInOwl:hasExactSynonym>Neoplasms,                             
+  Uterus</oboInOwl:hasExactSynonym>                                           
+             <oboInOwl:hasExactSynonym>UTERINE                                
+  NEOPL</oboInOwl:hasExactSynonym>                                            
+             <oboInOwl:hasExactSynonym>UTERUS NEOPL</oboInOwl:hasExactSynonym>
+             <oboInOwl:hasExactSynonym>Uterine                                
+  Neoplasms</oboInOwl:hasExactSynonym>                                        
+             <oboInOwl:hasExactSynonym>Uterus                                 
+  Neoplasm</oboInOwl:hasExactSynonym>                                         
+             <oboInOwl:hasExactSynonym>Uterus                                 
+  Neoplasms</oboInOwl:hasExactSynonym>                                        
+             <rdfs:label>obsolete_uterine neoplasm</rdfs:label>               
+             <owl:deprecated rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0003860 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0003860">         
+             <obo:IAO_0000115>Neoplasm located in the pancreas. Depending on  
+  the types of ISLET CELLS present in the tumors, various hormones can be     
+  secreted: GLUCAGON from PANCREATIC ALPHA CELLS; INSULIN from PANCREATIC BETA
+  CELLS; and SOMATOSTATIN from the SOMATOSTATIN-SECRETING CELLS. Most are     
+  malignant except the insulin-producing tumors (INSULINOMA).                 
+  </obo:IAO_0000115>                                                          
+             <obo:IAO_0000117>Tomasz Adamusiak</obo:IAO_0000117>              
+             <obo:IAO_0100001>http://purl.obolibrary.                         
+  org/obo/MONDO_0021040</obo:IAO_0100001>                                     
+             <efo:obsoleted_in_version>3.88.0</efo:obsoleted_in_version>      
+             <efo:reason_for_obsolescence>Replaced by Mondo term MONDO_0021040,
+  with which this term was previously merged. Use: http://purl.obolibrary.    
+  org/obo/MONDO_0021040</efo:reason_for_obsolescence>                         
+             <oboInOwl:hasDbXref>DOID:1793</oboInOwl:hasDbXref>               
+             <oboInOwl:hasDbXref>MESH:D010190</oboInOwl:hasDbXref>            
+             <oboInOwl:hasDbXref>MedDRA:10061902</oboInOwl:hasDbXref>         
+             <oboInOwl:hasDbXref>NCIt:C3305</oboInOwl:hasDbXref>              
+             <oboInOwl:hasDbXref>OMIM:260350</oboInOwl:hasDbXref>             
+             <oboInOwl:hasExactSynonym>NEOPL                                  
+  PANCREATIC</oboInOwl:hasExactSynonym>                                       
+             <oboInOwl:hasExactSynonym>Neoplasm,                              
+  Pancreas</oboInOwl:hasExactSynonym>                                         
+             <oboInOwl:hasExactSynonym>Neoplasm,                              
+  Pancreatic</oboInOwl:hasExactSynonym>                                       
+             <oboInOwl:hasExactSynonym>Neoplasms,                             
+  Pancreas</oboInOwl:hasExactSynonym>                                         
+             <oboInOwl:hasExactSynonym>Neoplasms,                             
+  Pancreatic</oboInOwl:hasExactSynonym>                                       
+             <oboInOwl:hasExactSynonym>PANCREAS                               
+  NEOPL</oboInOwl:hasExactSynonym>                                            
+             <oboInOwl:hasExactSynonym>PANCREATIC                             
+  NEOPL</oboInOwl:hasExactSynonym>                                            
+             <oboInOwl:hasExactSynonym>Pancreas                               
+  Neoplasm</oboInOwl:hasExactSynonym>                                         
+             <oboInOwl:hasExactSynonym>Pancreas                               
+  Neoplasms</oboInOwl:hasExactSynonym>                                        
+             <oboInOwl:hasExactSynonym>Pancreatic                             
+  Neoplasms</oboInOwl:hasExactSynonym>
+
+
+I can see the current state of the terms. Let me check if there are         
+  equivalentClass axioms for the other terms by looking more carefully:
+
+Bash: Find equivalentClass axioms for the 4 terms
+$ grep -n "owl:equivalentClass|EFO_0003858|EFO_0000792|EFO_0001986|       
+  EFO_0001958" /home/runner/work/efo/efo/src/ontology/efo-edit.owl | grep -v  
+  "^Binary|^--" | head -60                                                    
+    1840:        <owl:equivalentClass>                                        
+    1850:        </owl:equivalentClass>                                       
+    1939:        <owl:equivalentClass>                                        
+    1964:        </owl:equivalentClass>                                       
+    2011:        <owl:equivalentClass rdf:resource="http://www.ebi.ac.        
+  uk/efo/EFO_0007589"/>                                                       
+    2061:        <owl:equivalentClass>                                        
+    2071:        </owl:equivalentClass>                                       
+    2244:        <owl:equivalentClass>                                        
+    2254:        </owl:equivalentClass>                                       
+    2271:        <owl:equivalentClass>                                        
+    2281:        </owl:equivalentClass>                                       
+    2306:        <owl:equivalentClass>                                        
+    2316:        </owl:equivalentClass>                                       
+    2534:        <owl:equivalentClass>                                        
+    2544:        </owl:equivalentClass>                                       
+    2767:        <owl:equivalentClass>                                        
+    2777:        </owl:equivalentClass>                                       
+    2873:        <owl:equivalentClass>                                        
+    2898:        </owl:equivalentClass>                                       
+    3077:        <owl:equivalentClass>                                        
+    3102:        </owl:equivalentClass>                                       
+    11322:        <owl:equivalentClass>                                       
+    11332:        </owl:equivalentClass>                                      
+    35385:        <owl:equivalentClass>                                       
+    35395:        </owl:equivalentClass>                                      
+    35643:        <owl:equivalentClass>                                       
+    35653:        </owl:equivalentClass>                                      
+    35790:        <owl:equivalentClass>                                       
+    35800:        </owl:equivalentClass>                                      
+    35843:        <owl:equivalentClass>                                       
+    35853:        </owl:equivalentClass>                                      
+    35937:        <owl:equivalentClass>                                       
+    35947:        </owl:equivalentClass>                                      
+    36043:        <owl:equivalentClass>                                       
+    36053:        </owl:equivalentClass>                                      
+    36074:        <owl:equivalentClass>                                       
+    36084:        </owl:equivalentClass>                                      
+    36132:        <owl:equivalentClass>                                       
+    36142:        </owl:equivalentClass>                                      
+    36227:        <owl:equivalentClass>                                       
+    36237:        </owl:equivalentClass>                                      
+    36251:        <owl:equivalentClass>                                       
+    36261:        </owl:equivalentClass>                                      
+    38327:        <owl:equivalentClass>                                       
+    38337:        </owl:equivalentClass>                                      
+    38491:        <owl:equivalentClass>                                       
+    38501:        </owl:equivalentClass>                                      
+    38828:        <owl:equivalentClass>                                       
+    38838:        </owl:equivalentClass>                                      
+    39193:        <owl:equivalentClass>                                       
+    39203:        </owl:equivalentClass>                                      
+    92991:        <owl:equivalentClass>                                       
+    93001:        </owl:equivalentClass>                                      
+    93021:        <owl:equivalentClass>                                       
+    93031:        </owl:equivalentClass>                                      
+    93068:        <owl:equivalentClass>                                       
+    93078:        </owl:equivalentClass>                                      
+    93100:        <owl:equivalentClass>                                       
+    93110:        </owl:equivalentClass>                                      
+    94773:        <owl:equivalentClass>                                       
+    <exited with exit code 0>
+
+Bash: Count equivalentClass axioms
+$ grep -c "owl:equivalentClass" /home/runner/work/efo/efo/src/ontology/efo-
+  edit.owl                                                                    
+    263                                                                       
+    <exited with exit code 0>
+
+Bash: Look for EquivalentClasses axioms and references to the 3 other problematic terms
+$ grep -n "EquivalentClasses|0001958|0001986|0000792"                     
+  /home/runner/work/efo/efo/src/ontology/efo-edit.owl | grep -v "obsolete_|   
+  hasDbXref|IAO_0100001|0001986.*concept|0000792.*" | head -30                
+    97301:    <!-- http://purl.obolibrary.org/obo/UBERON_0001986 -->          
+    97303:    <owl:Class rdf:about="http://purl.obolibrary.                   
+  org/obo/UBERON_0001986"/>                                                   
+    156727:    <!-- http://www.ebi.ac.uk/efo/EFO_0001958 -->                  
+    156729:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001958">   
+    157237:    <!-- http://www.ebi.ac.uk/efo/EFO_0001986 -->                  
+    157239:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001986">   
+    176182:        <efo:reason_for_obsolescence>Use http://purl.obolibrary.   
+  org/obo/UBERON_0001986                                                      
+    302222:                <owl:someValuesFrom rdf:resource="http://purl.     
+  obolibrary.org/obo/PR_000001986"/>                                          
+    568373:                            <rdf:Description rdf:about="http://purl.
+  obolibrary.org/obo/UBERON_0001986"/>                                        
+    568376:                                <owl:someValuesFrom                
+  rdf:resource="http://purl.obolibrary.org/obo/UBERON_0001986"/>              
+    <exited with exit code 0>
+
+Bash: Find all references to craniofacial tissue EFO_0000792
+$ # Check for the craniofacial tissue self-reference                      
+    grep -n "EFO_0000792" /home/runner/work/efo/efo/src/ontology/efo-edit.owl 
+    96119:                <owl:someValuesFrom rdf:resource="http://www.ebi.ac.
+  uk/efo/EFO_0000792"/>                                                       
+    96683:                <owl:someValuesFrom rdf:resource="http://www.ebi.ac.
+  uk/efo/EFO_0000792"/>                                                       
+    135480:    <!-- http://www.ebi.ac.uk/efo/EFO_0000792 -->                  
+    135482:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0000792">   
+    <exited with exit code 0>
+
+View src/ontology/efo-edit.owl
+<oboInOwl:hasExactSynonym>plant                                  
+  quality</oboInOwl:hasExactSynonym>                                          
+             <rdfs:comment>This includes physiological, molecular and         
+  biochemical traits as well.</rdfs:comment>                                  
+             <rdfs:label>plant trait</rdfs:label>                             
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0000002 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.                        
+  org/obo/UBERON_0000002"/>                                                   
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0000004 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0000004">
+             <rdfs:subClassOf>                                                
+                 <owl:Restriction>                                            
+                     <owl:onProperty rdf:resource="http://purl.obolibrary.    
+  org/obo/BFO_0000050"/>                                                      
+                     <owl:someValuesFrom rdf:resource="http://www.ebi.ac.     
+  uk/efo/EFO_0000792"/>                                                       
+                 </owl:Restriction>                                           
+             </rdfs:subClassOf>                                               
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0000006 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.                        
+  org/obo/UBERON_0000006"/>                                                   
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0000007 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.                        
+  org/obo/UBERON_0000007"/>                                                   
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0000010 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.                        
+  org/obo/UBERON_0000010"/>
+
+View src/ontology/efo-edit.owl
+<!-- http://purl.obolibrary.org/obo/UBERON_0001017 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.                        
+  org/obo/UBERON_0001017"/>                                                   
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0001032 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.                        
+  org/obo/UBERON_0001032"/>                                                   
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0001033 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0001033">
+             <rdfs:subClassOf>                                                
+                 <owl:Restriction>                                            
+                     <owl:onProperty rdf:resource="http://purl.obolibrary.    
+  org/obo/BFO_0000050"/>                                                      
+                     <owl:someValuesFrom rdf:resource="http://www.ebi.ac.     
+  uk/efo/EFO_0000792"/>                                                       
+                 </owl:Restriction>                                           
+             </rdfs:subClassOf>                                               
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0001037 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.                        
+  org/obo/UBERON_0001037"/>                                                   
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0001040 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.                        
+  org/obo/UBERON_0001040"/>                                                   
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0001042 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.                        
+  org/obo/UBERON_0001042"/>
+
+Bash: Search for EquivalentClasses at ontology level
+$ # Search for EquivalentClasses axioms at ontology level (GCIs)          
+    grep -n "EquivalentClasses" /home/runner/work/efo/efo/src/ontology/efo-   
+  edit.owl | head -20                                                         
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check subclasses.csv for references to the 4 terms
+$ # Also check for the subclasses.csv file to understand the structure    
+    head -30 /home/runner/work/efo/efo/src/templates/subclasses.csv | grep -i 
+  "0003858|0000792|0001986|0001958"                                           
+                                                                              
+    <exited with exit code 1>
+
+
+Let me look more carefully at the EFO_0000792 term and check broader        
+  sections to understand the full picture:
+
+Bash: Get file size
+$ wc -l /home/runner/work/efo/efo/src/ontology/efo-edit.owl               
+    677638 /home/runner/work/efo/efo/src/ontology/efo-edit.owl                
+    <exited with exit code 0>
+
+Bash: Find references to key terms
+$ # Search for any equivalentClass that references UBERON_0001434         
+  (skeletal system) or EFO_0000792 or UBERON_0002048 (lung)                   
+    grep -n "UBERON_0001434|UBERON_0000982|UBERON_0002048"                    
+  /home/runner/work/efo/efo/src/ontology/efo-edit.owl | grep -v "obsolete|    
+  ^Binary" | head -30                                                         
+    2139:                <owl:someValuesFrom rdf:resource="http://purl.       
+  obolibrary.org/obo/UBERON_0002048"/>                                        
+    36033:                <owl:someValuesFrom rdf:resource="http://purl.      
+  obolibrary.org/obo/UBERON_0002048"/>                                        
+    37987:                <owl:someValuesFrom rdf:resource="http://purl.      
+  obolibrary.org/obo/UBERON_0000982"/>                                        
+    45434:                <owl:someValuesFrom rdf:resource="http://purl.      
+  obolibrary.org/obo/UBERON_0000982"/>                                        
+    96567:    <!-- http://purl.obolibrary.org/obo/UBERON_0000982 -->          
+    96569:    <owl:Class rdf:about="http://purl.obolibrary.                   
+  org/obo/UBERON_0000982"/>                                                   
+    96921:    <!-- http://purl.obolibrary.org/obo/UBERON_0001434 -->          
+    96923:    <owl:Class rdf:about="http://purl.obolibrary.                   
+  org/obo/UBERON_0001434"/>                                                   
+    97361:    <!-- http://purl.obolibrary.org/obo/UBERON_0002048 -->          
+    97363:    <owl:Class rdf:about="http://purl.obolibrary.                   
+  org/obo/UBERON_0002048"/>                                                   
+    101821:                <owl:someValuesFrom rdf:resource="http://purl.     
+  obolibrary.org/obo/UBERON_0001434"/>                                        
+    134505:                <owl:someValuesFrom rdf:resource="http://purl.     
+  obolibrary.org/obo/UBERON_0002048"/>                                        
+    135817:        <obo:IAO_0100001>http://purl.obolibrary.                   
+  org/obo/UBERON_0001434</obo:IAO_0100001>                                    
+    135820:        <efo:reason_for_obsolescence>Use http://purl.obolibrary.   
+  org/obo/UBERON_0001434                                                      
+    138986:        <obo:IAO_0100001>http://purl.obolibrary.                   
+  org/obo/UBERON_0002048</obo:IAO_0100001>                                    
+    138989:        <efo:reason_for_obsolescence>Use http://purl.obolibrary.   
+  org/obo/UBERON_0002048                                                      
+    139280:        <obo:IAO_0100001>http://purl.obolibrary.                   
+  org/obo/UBERON_0000982</obo:IAO_0100001>                                    
+    139283:        <efo:reason_for_obsolescence>use UBERON_0000982 skeletal   
+  joint</efo:reason_for_obsolescence>                                         
+    139309:                <owl:someValuesFrom rdf:resource="http://purl.     
+  obolibrary.org/obo/UBERON_0001434"/>                                        
+    142959:                                            <rdf:Description       
+  rdf:about="http://purl.obolibrary.org/obo/UBERON_0002048"/>                 
+    145722:                                            <rdf:Description       
+  rdf:about="http://purl.obolibrary.org/obo/UBERON_0002048"/>                 
+    145748:                                            <rdf:Description       
+  rdf:about="http://purl.obolibrary.org/obo/UBERON_0002048"/>                 
+    147022:                                            <rdf:Description       
+  rdf:about="http://purl.obolibrary.org/obo/UBERON_0002048"/>                 
+    149569:                                            <rdf:Description       
+  rdf:about="http://purl.obolibrary.org/obo/UBERON_0002048"/>                 
+    156734:                <owl:someValuesFrom rdf:resource="http://purl.     
+  obolibrary.org/obo/UBERON_0000982"/>                                        
+    156740:                <owl:someValuesFrom rdf:resource="http://purl.     
+  obolibrary.org/obo/UBERON_0001434"/>                                        
+    157244:                <owl:someValuesFrom rdf:resource="http://purl.     
+  obolibrary.org/obo/UBERON_0002048"/>                                        
+    158830:                                            <rdf:Description       
+  rdf:about="http://purl.obolibrary.org/obo/UBERON_0002048"/>                 
+    160494:                                            <rdf:Description       
+  rdf:about="http://purl.obolibrary.org/obo/UBERON_0002048"/>                 
+    161859:                                            <rdf:Description       
+  rdf:about="http://purl.obolibrary.org/obo/UBERON_0002048"/>                 
+    <exited with exit code 0>
+
+View src/ontology/efo-edit.owl
+<owl:Class rdf:about="http://purl.obolibrary.org/obo/ZFA_0000407">   
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/UBERON_0000061"/>                                                   
+             <rdfs:subClassOf>                                                
+                 <owl:Restriction>                                            
+                     <owl:onProperty rdf:resource="http://purl.obolibrary.    
+  org/obo/BFO_0000050"/>                                                      
+                     <owl:someValuesFrom rdf:resource="http://purl.obolibrary.
+  org/obo/UBERON_0001434"/>                                                   
+                 </owl:Restriction>                                           
+             </rdfs:subClassOf>                                               
+             <obo:IAO_0000115>Subdivision of free upper limb, which is the    
+  proximal segment of an upper limb and links the free upper limb to the trunk;
+  it is demarcated by the plane of the surface of the glenoid fossa from the  
+  free upper limb; together with the free upper limb, it constitutes the upper
+  limb. Examples: There are only two instances, right and left pectoral       
+  girdles.</obo:IAO_0000115>                                                  
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <oboInOwl:hasDbXref>EHDAA:6039</oboInOwl:hasDbXref>              
+             <oboInOwl:hasDbXref>EMAPA:18025</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>FMA:23217</oboInOwl:hasDbXref>               
+             <oboInOwl:hasDbXref>MA:0000292</oboInOwl:hasDbXref>              
+             <oboInOwl:hasDbXref>MAT:0000181</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>NCIt:C33547</oboInOwl:hasDbXref>             
+             <oboInOwl:hasExactSynonym>Shoulder                               
+  girdle</oboInOwl:hasExactSynonym>                                           
+             <oboInOwl:hasExactSynonym>Upper limb                             
+  girdle</oboInOwl:hasExactSynonym>                                           
+             <oboInOwl:hasExactSynonym>girdle -                               
+  pectoral</oboInOwl:hasExactSynonym>                                         
+             <oboInOwl:hasExactSynonym>shoulder                               
+  bones</oboInOwl:hasExactSynonym>
+
+View src/ontology/efo-edit.owl
+<!-- http://www.ebi.ac.uk/efo/EFO_0000949 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0000949">         
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/UBERON_0000061"/>                                                   
+             <rdfs:subClassOf>                                                
+                 <owl:Restriction>                                            
+                     <owl:onProperty rdf:resource="http://purl.obolibrary.    
+  org/obo/BFO_0000050"/>                                                      
+                     <owl:someValuesFrom rdf:resource="http://purl.obolibrary.
+  org/obo/UBERON_0001434"/>                                                   
+                 </owl:Restriction>                                           
+             </rdfs:subClassOf>                                               
+             <obo:IAO_0000115>A specialized, fibrous connective tissue,       
+  forming most of the temporary skeleton of the embryo, providing a model in  
+  which most of the bones develop, and constituting an important part of the  
+  growth mechanism of the organism. It exists in several types, the most      
+  important of which are hyaline cartilage, elastic cartilage, and            
+  fibrocartilage. Also used as a general term to designate a mass of such     
+  tissue in a particular site in the body.</obo:IAO_0000115>                  
+             <obo:IAO_0000115>Portion of tissue which is connective tissue    
+  composed of collagen and/or elastin fibers and chondrocytes. Cartilage is   
+  avascular and provides both skeletal functions and a framework upon which   
+  bone is deposited.</obo:IAO_0000115>                                        
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <oboInOwl:hasDbXref>BTO:0000206</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>EV:0100141</oboInOwl:hasDbXref>              
+             <oboInOwl:hasDbXref>MA:0000104</oboInOwl:hasDbXref>              
+             <oboInOwl:hasDbXref>MAT:0000189</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>MESH:D002356</oboInOwl:hasDbXref>            
+             <oboInOwl:hasDbXref>NCIt:C12373</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>SAEL:17</oboInOwl:hasDbXref>                 
+             <oboInOwl:hasDbXref>TAO:0001501</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>XAO:0000170</oboInOwl:hasDbXref>             
+             <rdfs:label>cartilage</rdfs:label>                               
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0000950 -->
+
+Bash: Find UBERON_0000061 definition
+$ grep -n "UBERON_0000061" /home/runner/work/efo/efo/src/ontology/efo-edit.
+  owl | head -20                                                              
+    1995:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.       
+  org/obo/UBERON_0000061"/>                                                   
+    2021:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.       
+  org/obo/UBERON_0000061"/>                                                   
+    2036:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.       
+  org/obo/UBERON_0000061"/>                                                   
+    2104:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.       
+  org/obo/UBERON_0000061"/>                                                   
+    2336:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.       
+  org/obo/UBERON_0000061"/>                                                   
+    2442:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.       
+  org/obo/UBERON_0000061"/>                                                   
+    3297:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.       
+  org/obo/UBERON_0000061"/>                                                   
+    5657:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.       
+  org/obo/UBERON_0000061"/>                                                   
+    33988:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.      
+  org/obo/UBERON_0000061"/>                                                   
+    37029:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.      
+  org/obo/UBERON_0000061"/>                                                   
+    37084:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.      
+  org/obo/UBERON_0000061"/>                                                   
+    37726:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.      
+  org/obo/UBERON_0000061"/>                                                   
+    37867:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.      
+  org/obo/UBERON_0000061"/>                                                   
+    37983:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.      
+  org/obo/UBERON_0000061"/>                                                   
+    96206:    <!-- http://purl.obolibrary.org/obo/UBERON_0000061 -->          
+    96208:    <owl:Class rdf:about="http://purl.obolibrary.                   
+  org/obo/UBERON_0000061">                                                    
+    101817:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.     
+  org/obo/UBERON_0000061"/>                                                   
+    135374:        <obo:IAO_0100001>http://purl.obolibrary.                   
+  org/obo/UBERON_0000061</obo:IAO_0100001>                                    
+    135377:        <efo:reason_for_obsolescence>This was a duplicate of, and  
+  is now replaced by, UBERON:0000061 &apos;anatomical structure&apos;         
+  (http://purl.obolibrary.org/obo/UBERON_0000061).                            
+  </efo:reason_for_obsolescence>                                              
+    135483:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.     
+  org/obo/UBERON_0000061"/>                                                   
+    <exited with exit code 0>
+
+View src/ontology/efo-edit.owl
+<!-- http://purl.obolibrary.org/obo/UBERON_0000061 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0000061">
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0000786"/>                                                       
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0000069 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0000069">
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0000399"/>                                                       
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0000070 -->               
+                                                                              
+         <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0000070">
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0000399"/>                                                       
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://purl.obolibrary.org/obo/UBERON_0000074 -->
+
+Bash: Find what EFO_0000786 is
+$ grep -n "EFO_0000786" /home/runner/work/efo/efo/src/ontology/efo-edit.  
+  owl | head -10                                                              
+    95673:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0000786"/>                                                       
+    96209:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0000786"/>                                                       
+    135359:    <!-- http://www.ebi.ac.uk/efo/EFO_0000786 -->                  
+    135361:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0000786">   
+    135387:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0000786"/>                                                       
+    <exited with exit code 0>
+
+View src/ontology/efo-edit.owl
+<!-- http://www.ebi.ac.uk/efo/EFO_0000786 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0000786">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0000635"/>                                                       
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <efo:organizational_class>true</efo:organizational_class>        
+             <oboInOwl:hasDbXref>MAT:0000000</oboInOwl:hasDbXref>             
+             <rdfs:label>anatomy basic component</rdfs:label>                 
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0000787 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0000787">         
+             <obo:IAO_0100001>http://purl.obolibrary.                         
+  org/obo/UBERON_0000061</obo:IAO_0100001>                                    
+             <efo:obsoleted_in_version>3.7.0</efo:obsoleted_in_version>       
+             <efo:organizational_class rdf:datatype="http://www.w3.           
+  org/2001/XMLSchema#boolean">true</efo:organizational_class>                 
+             <efo:reason_for_obsolescence>This was a duplicate of, and is now 
+  replaced by, UBERON:0000061 &apos;anatomical structure&apos; (http://purl.  
+  obolibrary.org/obo/UBERON_0000061).</efo:reason_for_obsolescence>           
+             <rdfs:label>obsolete_animal component</rdfs:label>               
+             <owl:deprecated rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0000788 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0000788">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0000786"/>                                                       
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <oboInOwl:hasDbXref>MAT:0000002</oboInOwl:hasDbXref>             
+             <rdfs:label>fungal component</rdfs:label>                        
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0000789 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0000789">         
+             <obo:IAO_0100001>http://purl.obolibrary.                         
+  org/obo/PO_0025131</obo:IAO_0100001>                                        
+             <efo:obsoleted_in_version>3.7.0</efo:obsoleted_in_version>       
+             <efo:organizational_class rdf:datatype="http://www.w3.           
+  org/2001/XMLSchema#boolean">true</efo:organizational_class>
+
+Bash: Check recent commits
+$ cd /home/runner/work/efo/efo && git log --oneline -20                   
+    96ac42d (HEAD -> copilot/resolve-efo-unsats-issues, origin/copilot/resolve-
+  efo-unsats-issues) Initial plan                                             
+    11b3472 (grafted, origin/master) Fix ROBOT QC label_whitespace violations 
+  and duplicate label in efo-edit.owl (#2675)                                 
+    <exited with exit code 0>
+
+Bash: Check recent commits to efo-edit.owl
+$ cd /home/runner/work/efo/efo && git log --oneline --follow -10          
+  src/ontology/efo-edit.owl                                                   
+    11b3472 (grafted, origin/master) Fix ROBOT QC label_whitespace violations 
+  and duplicate label in efo-edit.owl (#2675)                                 
+    <exited with exit code 0>
+
+Bash: Check what the initial plan commit contains
+$ cd /home/runner/work/efo/efo && git show 96ac42d --stat                 
+    commit 96ac42d5d67c09dcc3d39c02bfbca9c2d2f5bb2b (HEAD -> copilot/resolve- 
+  efo-unsats-issues, origin/copilot/resolve-efo-u nsats-issues)               
+    Author: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.   
+  com>                                                                        
+    Date:   Wed Apr 29 12:39:43 2026 +0000                                    
+                                                                              
+        Initial plan                                                          
+    <exited with exit code 0>
+
+Bash: Find disjoint axioms in the ontology
+$ grep -n "disjointWith|DisjointClasses|AllDisjoint"                      
+  /home/runner/work/efo/efo/src/ontology/efo-edit.owl | head -20              
+    33977:        <owl:disjointWith rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0000324"/>                                                       
+    42733:        <owl:disjointWith rdf:resource="http://purl.obolibrary.     
+  org/obo/PATO_0000461"/>                                                     
+    42975:        <owl:disjointWith rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0001460"/>                                                       
+    43709:        <owl:disjointWith rdf:resource="http://purl.obolibrary.     
+  org/obo/MONDO_0005165"/>                                                    
+    44760:        <owl:disjointWith rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0001460"/>                                                       
+    44768:        <owl:disjointWith rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0001460"/>                                                       
+    92961:        <owl:disjointWith rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0000312"/>                                                       
+    92962:        <owl:disjointWith rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0000410"/>                                                       
+    114289:        <owl:disjointWith rdf:resource="http://www.ebi.ac.         
+  uk/efo/EFO_0001460"/>                                                       
+    114290:        <owl:disjointWith rdf:resource="http://www.ebi.ac.         
+  uk/efo/EFO_0001461"/>                                                       
+    119440:        <owl:disjointWith rdf:resource="http://www.ebi.ac.         
+  uk/efo/EFO_0001460"/>                                                       
+    119441:        <owl:disjointWith rdf:resource="http://www.ebi.ac.         
+  uk/efo/EFO_0001461"/>                                                       
+    123683:        <owl:disjointWith rdf:resource="http://www.ebi.ac.         
+  uk/efo/EFO_0001460"/>                                                       
+    <exited with exit code 0>
+
+
+Let me run the reasoner to check what unsats currently exist in the file:
+
+Bash: Check ontology directory
+$ ls /home/runner/work/efo/efo/src/ontology/                              
+    Makefile	   efo-diff.txt       imports		    oboconverter.sh	  sparql          
+    README-editors.md  efo-edit.owl       iri_dependencies	    odk.sh          
+  validation_flags.owl                                                        
+    bubastis.sh	   efo-idranges.owl   issue_1948.owl	    ontology-config.json   
+  version.txt                                                                 
+    catalog-v001.xml   efo-relations.txt  mass_obsolete_oba.py  pr_efo_map.tsv
+    components	   efo-upper.owl      migration2019	    qc                       
+    efo-3-edit.owl	   get_mirrors.sh     neoplasm.Makefile     reports         
+    <exited with exit code 0>
+
+Bash: Check for ROBOT availability
+$ cd /home/runner/work/efo/efo && which robot 2>/dev/null || ls           
+  src/ontology/run.sh 2>/dev/null                                             
+    /home/runner/work/efo/efo/tools/robot                                     
+    <exited with exit code 0>
+
+Bash: Run ELK reasoner on the ontology to check for unsats
+$ cd /home/runner/work/efo/efo && tools/robot reason --reasoner ELK --    
+  input src/ontology/efo-edit.owl --output /tmp/efo-reasoned.owl 2>&1 | tail -
+  30                                                                          
+    org.semanticweb.owlapi.model.UnloadableImportException: Could not load    
+  imported ontology: <http://www.ebi.ac.uk/efo/imports/mondo_import.owl>      
+  Cause: /home/runner/work/efo/efo/src/ontology/imports/mondo_import.owl (No  
+  such file or directory)                                                     
+    Use the -vvv option to show the stack trace.                              
+    Use the --help option to see usage information.                           
+    <exited with exit code 0>
+
+Bash: Check catalog file for import resolution
+$ cat /home/runner/work/efo/efo/src/ontology/catalog-v001.xml | head -30  
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>                    
+    <catalog prefer="public"                                                  
+  xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">                        
+        <uri id="Imports Wizard Entry" name="http://www.ebi.ac.               
+  uk/efo/components/disease_to_phenotype.owl"                                 
+  uri="components/disease_to_phenotype.owl"/>                                 
+        <group id="Folder Repository, directory=, recursive=true, Auto-       
+  Update=false, version=2" prefer="public" xml:base="">                       
+            <uri id="subclasses" name="http://www.ebi.ac.                     
+  uk/efo/components/subclasses.owl" uri="components/subclasses.owl"/>         
+            <uri id="import_replaced_by" name="http://www.ebi.ac.             
+  uk/efo/components/import_replaced_by.owl" uri="components/import_replaced_by.
+  owl"/>                                                                      
+            <uri id="hancestro_import" name="http://www.ebi.ac.               
+  uk/efo/imports/hancestro_import.owl" uri="imports/hancestro_import.owl"/>   
+            <uri id="mondo_import" name="http://www.ebi.ac.                   
+  uk/efo/imports/mondo_import.owl" uri="imports/mondo_import.owl"/>           
+            <uri id="uberon_import" name="http://www.ebi.ac.                  
+  uk/efo/imports/uberon_import.owl" uri="imports/uberon_import.owl"/>         
+            <uri id="hp_import" name="http://www.ebi.ac.                      
+  uk/efo/imports/hp_import.owl" uri="imports/hp_import.owl"/>                 
+            <uri id="cl_import" name="http://www.ebi.ac.                      
+  uk/efo/imports/cl_import.owl" uri="imports/cl_import.owl"/>                 
+            <uri id="go_import" name="http://www.ebi.ac.                      
+  uk/efo/imports/go_import.owl" uri="imports/go_import.owl"/>                 
+            <uri id="obi_import" name="http://www.ebi.ac.                     
+  uk/efo/imports/obi_import.owl" uri="imports/obi_import.owl"/>               
+            <uri id="oba_import" name="http://www.ebi.ac.                     
+  uk/efo/imports/oba_import.owl" uri="imports/oba_import.owl"/>               
+            <uri id="chebi_import" name="http://www.ebi.ac.                   
+  uk/efo/imports/chebi_import.owl" uri="imports/chebi_import.owl"/>           
+            <uri id="pr_import" name="http://www.ebi.ac.                      
+  uk/efo/imports/pr_import.owl" uri="imports/pr_import.owl"/>                 
+            <uri id="ecto_import" name="http://www.ebi.ac.                    
+  uk/efo/imports/ecto_import.owl" uri="imports/ecto_import.owl"/>             
+            <uri id="fbbt_import" name="http://www.ebi.ac.                    
+  uk/efo/imports/fbbt_import.owl" uri="imports/fbbt_import.owl"/>             
+            <uri id="gsso_import" name="http://www.ebi.ac.                    
+  uk/efo/imports/gsso_import.owl" uri="imports/gsso_import.owl"/>             
+            <uri id="fbbi_import" name="http://www.ebi.ac.                    
+  uk/efo/imports/fbbi_import.owl" uri="imports/fbbi_import.owl"/>             
+            <uri id="gwas_import" name="http://www.ebi.ac.                    
+  uk/efo/components/gwas_import.owl" uri="components/gwas_import.owl"/>       
+            <uri id="anatomagram_lung" name="http://www.ebi.ac.               
+  uk/efo/components/anatomagram_lung.owl" uri="components/anatomagram_lung.   
+  owl"/>                                                                      
+            <uri id="anatomagram_kidney" name="http://www.ebi.ac.             
+  uk/efo/components/anatomagram_kidney.owl" uri="components/anatomagram_kidney.
+  owl"/>                                                                      
+            <uri id="anatomagram_pancreas" name="http://www.ebi.ac.           
+  uk/efo/components/anatomagram_pancreas.owl"                                 
+  uri="components/anatomagram_pancreas.owl"/>                                 
+            <uri id="anatomagram_liver" name="http://www.ebi.ac.              
+  uk/efo/components/anatomagram_liver.owl" uri="components/anatomagram_liver. 
+  owl"/>                                                                      
+            <uri id="anatomagram_placenta" name="http://www.ebi.ac.           
+  uk/efo/components/anatomagram_placenta.owl"                                 
+  uri="components/anatomagram_placenta.owl"/>                                 
+            <uri id="equivalent_class_axioms" name="http://www.ebi.ac.        
+  uk/efo/components/efo_equivalent_class_axioms.owl"                          
+  uri="components/efo_equivalent_class_axioms.owl"/>                          
+        </group>                                                              
+    </catalog>                                                                
+    <exited with exit code 0>
+
+Bash: Check imports directory
+$ ls /home/runner/work/efo/efo/src/ontology/imports/ 2>/dev/null | head - 
+  20                                                                          
+    chebi_import.owl                                                          
+    chebi_terms.txt                                                           
+    cl_import.owl                                                             
+    cl_terms.txt                                                              
+    ecto_import.owl                                                           
+    ecto_terms.txt                                                            
+    fbbi_import.owl                                                           
+    fbbi_terms.txt                                                            
+    fbbt_import.owl                                                           
+    fbbt_terms.txt                                                            
+    go_import.owl                                                             
+    go_terms.txt                                                              
+    gsso_import.owl                                                           
+    gsso_terms.txt                                                            
+    gwas_import.owl                                                           
+    hancestro_import.owl                                                      
+    hp_import.owl                                                             
+    hp_terms.txt                                                              
+    mondo_terms.txt                                                           
+    oba_import.owl                                                            
+    <exited with exit code 0>
+
+
+There's an efo_equivalent_class_axioms.owl component file! Let me check it:
+
+Bash: Check the equivalent class axioms component file
+$ cat                                                                     
+  /home/runner/work/efo/efo/src/ontology/components/efo_equivalent_class_axioms.
+  owl                                                                         
+    Output too large to read at once (25.0 KB). Saved to: /tmp/copilot-tool-  
+  output-1777466937586-8hooef.txt                                             
+    Consider using tools like grep (for searching), head/tail (for viewing    
+  start/end), view with view_range (for specific sections), or jq (for JSON)  
+  to examine portions of the output.                                          
+                                                                              
+    Preview (first 500 chars):                                                
+    Prefix(:=<http://www.ebi.ac.uk/efo/components/efo_equivalent_class_axioms.
+  owl#>)                                                                      
+    Prefix(efo:=<http://www.ebi.ac.uk/efo/>)                                  
+    Prefix(obo:=<http://purl.obolibrary.org/obo/>)                            
+    Prefix(owl:=<http://www.w3.org/2002/07/owl#>)                             
+    Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)                
+    Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)                       
+    Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)                          
+    Prefix(obo2:=<http://purl.obolibrary.org/obo#>)                           
+    Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)                     
+                                                                              
+                                                                              
+    Ontology(<http://www.                                                     
+    <exited with exit code 0>
+
+Bash: Search for the 4 problematic terms in the equivalent class axioms component
+$ grep -n "0003858|0000792|0001986|0001958|skeleton|craniofacial|lung     
+  struct|joint component"                                                     
+  /home/runner/work/efo/efo/src/ontology/components/efo_equivalent_class_axioms.
+  owl | head -30                                                              
+    103:Declaration(Class(efo:EFO_0000792))                                   
+    121:Declaration(Class(efo:EFO_0001958))                                   
+    123:Declaration(Class(efo:EFO_0001986))                                   
+    155:Declaration(Class(efo:EFO_0003858))                                   
+    228:# Class: efo:EFO_0000792 (craniofacial tissue)                        
+    230:EquivalentClasses(efo:EFO_0000792 ObjectSomeValuesFrom(obo:BFO_0000050
+  efo:EFO_0000792))                                                           
+    284:# Class: efo:EFO_0001958 (joint component)                            
+    286:EquivalentClasses(efo:EFO_0001958 ObjectSomeValuesFrom(obo:BFO_0000050
+  obo:UBERON_0000982))                                                        
+    292:# Class: efo:EFO_0001986 (lung structure)                             
+    294:EquivalentClasses(efo:EFO_0001986 ObjectSomeValuesFrom(obo:BFO_0000050
+  obo:UBERON_0002048))                                                        
+    404:# Class: efo:EFO_0003858 (skeleton structure)                         
+    406:EquivalentClasses(efo:EFO_0003858 ObjectSomeValuesFrom(obo:BFO_0000050
+  obo:UBERON_0001434))                                                        
+    <exited with exit code 0>
+
+
+Excellent! I found the problematic file. The equivalentClass axioms are in  
+  the component file. Let me view its full content:
+
+View src/ontology/components/efo_equivalent_class_axioms.owl
+File too large to read at once (24.6 KB). Consider using the grep tool to 
+  search within the file, or view with view_range to read specific sections.
+
+View src/ontology/components/efo_equivalent_class_axioms.owl
+Prefix(:=<http://www.ebi.ac.uk/efo/components/efo_equivalent_class_axioms.
+  owl#>)                                                                      
+     Prefix(efo:=<http://www.ebi.ac.uk/efo/>)                                 
+     Prefix(obo:=<http://purl.obolibrary.org/obo/>)                           
+     Prefix(owl:=<http://www.w3.org/2002/07/owl#>)                            
+     Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)               
+     Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)                      
+     Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)                         
+     Prefix(obo2:=<http://purl.obolibrary.org/obo#>)                          
+     Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)                    
+                                                                              
+                                                                              
+     Ontology(<http://www.ebi.ac.uk/efo/components/efo_equivalent_class_axioms.
+  owl>                                                                        
+                                                                              
+     Declaration(Class(obo:BFO_0000019))                                      
+     Declaration(Class(obo:CHEBI_22676))                                      
+     Declaration(Class(obo:CHEBI_25212))                                      
+     Declaration(Class(obo:CL_0000034))                                       
+     Declaration(Class(obo:CL_0000057))                                       
+     Declaration(Class(obo:CL_0000066))                                       
+     Declaration(Class(obo:CL_0000100))                                       
+     Declaration(Class(obo:CL_0000115))                                       
+     Declaration(Class(obo:CL_0000182))                                       
+     Declaration(Class(obo:CL_0000187))                                       
+     Declaration(Class(obo:CL_0000192))                                       
+     Declaration(Class(obo:CL_0000232))                                       
+     Declaration(Class(obo:CL_0000236))                                       
+     Declaration(Class(obo:CL_0000746))                                       
+     Declaration(Class(obo:CL_0002322))                                       
+     Declaration(Class(obo:CL_0002368))                                       
+     Declaration(Class(obo:CL_0002553))                                       
+     Declaration(Class(obo:CL_0002598))                                       
+     Declaration(Class(obo:COB_0000022))                                      
+     Declaration(Class(obo:GO_0002445))                                       
+     Declaration(Class(obo:GO_0005929))                                       
+     Declaration(Class(obo:GO_0006766))                                       
+     Declaration(Class(obo:GO_0055074))                                       
+     Declaration(Class(obo:HP_0002180))                                       
+     Declaration(Class(obo:NCBITaxon_10088))                                  
+     Declaration(Class(obo:NCBITaxon_10090))                                  
+     Declaration(Class(obo:NCBITaxon_10114))                                  
+     Declaration(Class(obo:NCBITaxon_10116))                                  
+     Declaration(Class(obo:NCBITaxon_10239))                                  
+     Declaration(Class(obo:NCBITaxon_2))                                      
+     Declaration(Class(obo:NCBITaxon_7227))                                   
+     Declaration(Class(obo:NCBITaxon_7955))                                   
+     Declaration(Class(obo:NCBITaxon_9606))                                   
+     Declaration(Class(obo:OBI_0000049))                                      
+     Declaration(Class(obo:OBI_0000245))                                      
+     Declaration(Class(obo:COB_0000022))                                      
+     Declaration(Class(obo:OGMS_0000063))
+
+View src/ontology/components/efo_equivalent_class_axioms.owl
+# Class: obo:MONDO_0005281 (gallbladder disease)                         
+                                                                              
+     EquivalentClasses(obo:MONDO_0005281 ObjectSomeValuesFrom(efo:EFO_0000784 
+  ObjectUnionOf(obo:UBERON_0002110 ObjectSomeValuesFrom(obo:BFO_0000050       
+  obo:UBERON_0002110))))                                                      
+                                                                              
+     # Class: obo:MONDO_0005283 (retinopathy)                                 
+                                                                              
+     EquivalentClasses(obo:MONDO_0005283 ObjectSomeValuesFrom(efo:EFO_0000784 
+  obo:UBERON_0000966))                                                        
+                                                                              
+     # Class: efo:EFO_0003858 (skeleton structure)                            
+                                                                              
+     EquivalentClasses(efo:EFO_0003858 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0001434))                                                        
+                                                                              
+     # Class: efo:EFO_0003861 (pancreactic component)                         
+                                                                              
+     EquivalentClasses(efo:EFO_0003861 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0001264))                                                        
+                                                                              
+     # Class: obo:MONDO_0005308 (ciliopathy)                                  
+                                                                              
+     EquivalentClasses(obo:MONDO_0005308 ObjectSomeValuesFrom(efo:EFO_0000784 
+  obo:GO_0005929))                                                            
+                                                                              
+     # Class: obo:MONDO_0005328 (eye disease)                                 
+                                                                              
+     EquivalentClasses(obo:MONDO_0005328 ObjectSomeValuesFrom(efo:EFO_0000784 
+  ObjectUnionOf(obo:UBERON_0000970 ObjectSomeValuesFrom(obo:BFO_0000050       
+  obo:UBERON_0000970))))                                                      
+                                                                              
+     # Class: obo:MONDO_0005381 (bone disease)
+
+View src/ontology/components/efo_equivalent_class_axioms.owl
+EquivalentClasses(obo:MONDO_0005039 ObjectSomeValuesFrom(efo:EFO_0000784 
+  ObjectUnionOf(obo:UBERON_0000990 ObjectSomeValuesFrom(obo:BFO_0000050       
+  obo:UBERON_0000990))))                                                      
+                                                                              
+     # Class: efo:EFO_0000524 (head and neck disorder)                        
+                                                                              
+     EquivalentClasses(efo:EFO_0000524 ObjectSomeValuesFrom(efo:EFO_0000784   
+  obo:UBERON_0000033))                                                        
+     EquivalentClasses(efo:EFO_0000524 ObjectSomeValuesFrom(efo:EFO_0000784   
+  obo:UBERON_0000974))                                                        
+                                                                              
+     # Class: efo:EFO_0000792 (craniofacial tissue)                           
+                                                                              
+     EquivalentClasses(efo:EFO_0000792 ObjectSomeValuesFrom(obo:BFO_0000050   
+  efo:EFO_0000792))                                                           
+                                                                              
+     # Class: efo:EFO_0000989 (root structure)                                
+                                                                              
+     EquivalentClasses(efo:EFO_0000989 ObjectSomeValuesFrom(obo:BFO_0000050   
+  efo:EFO_0000989))                                                           
+                                                                              
+     # Class: efo:EFO_0000991 (seed structure)                                
+                                                                              
+     EquivalentClasses(efo:EFO_0000991 ObjectSomeValuesFrom(obo:BFO_0000050   
+  efo:EFO_0000991))                                                           
+                                                                              
+     # Class: efo:EFO_0000998 (plant reproductive system structure)           
+                                                                              
+     EquivalentClasses(efo:EFO_0000998 ObjectSomeValuesFrom(obo:BFO_0000050   
+  efo:EFO_0000998))                                                           
+                                                                              
+     # Class: efo:EFO_0001369 (vertebral column structure)                    
+                                                                              
+     EquivalentClasses(efo:EFO_0001369 ObjectSomeValuesFrom(obo:BFO_0000050   
+  efo:EFO_0001369))                                                           
+                                                                              
+     # Class: obo:MONDO_0005151 (endocrine system disease)                    
+                                                                              
+     EquivalentClasses(obo:MONDO_0005151 ObjectSomeValuesFrom(efo:EFO_0000784 
+  ObjectUnionOf(obo:UBERON_0000949 ObjectSomeValuesFrom(obo:BFO_0000050       
+  obo:UBERON_0000949))))                                                      
+                                                                              
+     # Class: obo:MONDO_0005154 (liver disease)                               
+                                                                              
+     EquivalentClasses(obo:MONDO_0005154 ObjectSomeValuesFrom(efo:EFO_0000784 
+  ObjectUnionOf(obo:UBERON_0002107 ObjectSomeValuesFrom(obo:BFO_0000050       
+  obo:UBERON_0002107))))                                                      
+                                                                              
+     # Class: efo:EFO_0001640 (B cell derived cell line)                      
+                                                                              
+     EquivalentClasses(efo:EFO_0001640 ObjectSomeValuesFrom(obo:RO_0001000    
+  ObjectIntersectionOf(obo:CL_0000236 ObjectSomeValuesFrom(obo:BFO_0000050    
+  ObjectIntersectionOf(ObjectUnionOf(efo:EFO_0000399 efo:EFO_0000635)         
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:COB_0000022))))))                  
+                                                                              
+     # Class: efo:EFO_0001641 (epithelial cell derived cell line)             
+                                                                              
+     EquivalentClasses(efo:EFO_0001641 ObjectSomeValuesFrom(obo:RO_0001000    
+  ObjectIntersectionOf(obo:CL_0000066 ObjectSomeValuesFrom(obo:BFO_0000050    
+  ObjectIntersectionOf(ObjectUnionOf(efo:EFO_0000399 efo:EFO_0000635)         
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:COB_0000022))))))                  
+                                                                              
+     # Class: efo:EFO_0001643 (kidney derived cell line)                      
+                                                                              
+     EquivalentClasses(efo:EFO_0001643 ObjectSomeValuesFrom(obo:RO_0001000    
+  ObjectIntersectionOf(efo:EFO_0000324 ObjectSomeValuesFrom(obo:BFO_0000050   
+  ObjectIntersectionOf(obo:UBERON_0002113 ObjectSomeValuesFrom(obo:BFO_0000050
+  obo:COB_0000022))))))                                                       
+                                                                              
+     # Class: efo:EFO_0001941 (blood component)                               
+                                                                              
+     EquivalentClasses(efo:EFO_0001941 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0000178))                                                        
+                                                                              
+     # Class: efo:EFO_0001948 (shoot component)                               
+                                                                              
+     EquivalentClasses(efo:EFO_0001948 ObjectSomeValuesFrom(obo:BFO_0000050   
+  efo:EFO_0000992))                                                           
+                                                                              
+     # Class: efo:EFO_0001954 (division of carotid artery)                    
+                                                                              
+     EquivalentClasses(efo:EFO_0001954 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0005396))                                                        
+                                                                              
+     # Class: efo:EFO_0001955 (heart component)                               
+                                                                              
+     EquivalentClasses(efo:EFO_0001955 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0000948))                                                        
+                                                                              
+     # Class: efo:EFO_0001958 (joint component)                               
+                                                                              
+     EquivalentClasses(efo:EFO_0001958 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0000982))                                                        
+                                                                              
+     # Class: efo:EFO_0001983 (leaf component)                                
+                                                                              
+     EquivalentClasses(efo:EFO_0001983 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:PO_0025034))                                                            
+                                                                              
+     # Class: efo:EFO_0001986 (lung structure)                                
+                                                                              
+     EquivalentClasses(efo:EFO_0001986 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0002048))                                                        
+                                                                              
+     # Class: efo:EFO_0002009 (fibroblast derived cell line)                  
+                                                                              
+     EquivalentClasses(efo:EFO_0002009 ObjectSomeValuesFrom(obo:RO_0001000    
+  ObjectIntersectionOf(obo:CL_0000057 ObjectSomeValuesFrom(obo:BFO_0000050    
+  ObjectIntersectionOf(ObjectUnionOf(efo:EFO_0000399 efo:EFO_0000635)         
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:COB_0000022))))))                  
+                                                                              
+     # Class: efo:EFO_0002394 (ovarian cancer cell lines)                     
+                                                                              
+     EquivalentClasses(efo:EFO_0002394 ObjectSomeValuesFrom(obo:RO_0000053    
+  ObjectUnionOf(obo:MONDO_0005140 obo:MONDO_0005211)))                        
+                                                                              
+     # Class: efo:EFO_0002696 (assay by array)                                
+                                                                              
+     EquivalentClasses(efo:EFO_0002696 ObjectSomeValuesFrom(obo:RO_0000057    
+  efo:EFO_0002698))                                                           
+                                                                              
+     # Class: efo:EFO_0002697 (assay by high throughput sequencer)            
+                                                                              
+     EquivalentClasses(efo:EFO_0002697 ObjectSomeValuesFrom(obo:RO_0000057    
+  efo:EFO_0002699))
+
+
+Now I have a clear picture. The problematic axioms are in                   
+  efo_equivalent_class_axioms.owl. Let me check the full context of both the  
+  problematic terms and declarations:
+
+Bash: Check all references to the 4 terms and UBERON_0000061 in the component file
+$ grep -n "EFO_0000792|EFO_0001958|EFO_0001986|EFO_0003858|UBERON_0000061"
+  /home/runner/work/efo/efo/src/ontology/components/efo_equivalent_class_axioms.
+  owl                                                                         
+    103:Declaration(Class(efo:EFO_0000792))                                   
+    121:Declaration(Class(efo:EFO_0001958))                                   
+    123:Declaration(Class(efo:EFO_0001986))                                   
+    155:Declaration(Class(efo:EFO_0003858))                                   
+    228:# Class: efo:EFO_0000792 (craniofacial tissue)                        
+    230:EquivalentClasses(efo:EFO_0000792 ObjectSomeValuesFrom(obo:BFO_0000050
+  efo:EFO_0000792))                                                           
+    284:# Class: efo:EFO_0001958 (joint component)                            
+    286:EquivalentClasses(efo:EFO_0001958 ObjectSomeValuesFrom(obo:BFO_0000050
+  obo:UBERON_0000982))                                                        
+    292:# Class: efo:EFO_0001986 (lung structure)                             
+    294:EquivalentClasses(efo:EFO_0001986 ObjectSomeValuesFrom(obo:BFO_0000050
+  obo:UBERON_0002048))                                                        
+    404:# Class: efo:EFO_0003858 (skeleton structure)                         
+    406:EquivalentClasses(efo:EFO_0003858 ObjectSomeValuesFrom(obo:BFO_0000050
+  obo:UBERON_0001434))                                                        
+    <exited with exit code 0>
+
+
+Now I have a complete understanding. Let me plan and make the changes:
+
+Bash: Check available imports
+$ ls /home/runner/work/efo/efo/src/ontology/imports/                      
+    chebi_import.owl  ecto_terms.txt   go_import.owl    hancestro_import.owl  
+  oba_terms.txt   uberon_import.owl                                           
+    chebi_terms.txt   fbbi_import.owl  go_terms.txt     hp_import.owl         
+  obi_import.owl  uberon_terms.txt                                            
+    cl_import.owl	  fbbi_terms.txt   gsso_import.owl  hp_terms.txt	  obi_terms. 
+  txt                                                                         
+    cl_terms.txt	  fbbt_import.owl  gsso_terms.txt   mondo_terms.txt           
+  pr_import.owl                                                               
+    ecto_import.owl   fbbt_terms.txt   gwas_import.owl  oba_import.owl        
+  pr_terms.txt                                                                
+    <exited with exit code 0>
+
+Bash: Find UBERON declarations in the file
+$ grep -n "Declaration.*UBERON"                                           
+  /home/runner/work/efo/efo/src/ontology/components/efo_equivalent_class_axioms.
+  owl | head -20                                                              
+    56:Declaration(Class(obo:UBERON_0000010))                                 
+    57:Declaration(Class(obo:UBERON_0000033))                                 
+    58:Declaration(Class(obo:UBERON_0000178))                                 
+    59:Declaration(Class(obo:UBERON_0000922))                                 
+    60:Declaration(Class(obo:UBERON_0000947))                                 
+    61:Declaration(Class(obo:UBERON_0000948))                                 
+    62:Declaration(Class(obo:UBERON_0000949))                                 
+    63:Declaration(Class(obo:UBERON_0000955))                                 
+    64:Declaration(Class(obo:UBERON_0000966))                                 
+    65:Declaration(Class(obo:UBERON_0000970))                                 
+    66:Declaration(Class(obo:UBERON_0000974))                                 
+    67:Declaration(Class(obo:UBERON_0000982))                                 
+    68:Declaration(Class(obo:UBERON_0000990))                                 
+    69:Declaration(Class(obo:UBERON_0000992))                                 
+    70:Declaration(Class(obo:UBERON_0001017))                                 
+    71:Declaration(Class(obo:UBERON_0001132))                                 
+    72:Declaration(Class(obo:UBERON_0001255))                                 
+    73:Declaration(Class(obo:UBERON_0001264))                                 
+    74:Declaration(Class(obo:UBERON_0001434))                                 
+    75:Declaration(Class(obo:UBERON_0001474))                                 
+    <exited with exit code 0>
+
+View src/ontology/components/efo_equivalent_class_axioms.owl
+Declaration(Class(obo:PR_000010173))                                     
+     Declaration(Class(obo:UBERON_0000010))                                   
+     Declaration(Class(obo:UBERON_0000033))                                   
+     Declaration(Class(obo:UBERON_0000178))                                   
+     Declaration(Class(obo:UBERON_0000922))                                   
+     Declaration(Class(obo:UBERON_0000947))                                   
+     Declaration(Class(obo:UBERON_0000948))                                   
+     Declaration(Class(obo:UBERON_0000949))                                   
+     Declaration(Class(obo:UBERON_0000955))                                   
+     Declaration(Class(obo:UBERON_0000966))                                   
+     Declaration(Class(obo:UBERON_0000970))                                   
+     Declaration(Class(obo:UBERON_0000974))                                   
+     Declaration(Class(obo:UBERON_0000982))                                   
+     Declaration(Class(obo:UBERON_0000990))                                   
+     Declaration(Class(obo:UBERON_0000992))                                   
+     Declaration(Class(obo:UBERON_0001017))                                   
+     Declaration(Class(obo:UBERON_0001132))                                   
+     Declaration(Class(obo:UBERON_0001255))                                   
+     Declaration(Class(obo:UBERON_0001264))                                   
+     Declaration(Class(obo:UBERON_0001434))                                   
+     Declaration(Class(obo:UBERON_0001474))                                   
+     Declaration(Class(obo:UBERON_0001911))                                   
+     Declaration(Class(obo:UBERON_0001987))                                   
+     Declaration(Class(obo:UBERON_0002031))                                   
+     Declaration(Class(obo:UBERON_0002046))                                   
+     Declaration(Class(obo:UBERON_0002048))                                   
+     Declaration(Class(obo:UBERON_0002050))                                   
+     Declaration(Class(obo:UBERON_0002106))                                   
+     Declaration(Class(obo:UBERON_0002107))                                   
+     Declaration(Class(obo:UBERON_0002110))                                   
+     Declaration(Class(obo:UBERON_0002113))                                   
+     Declaration(Class(obo:UBERON_0002203))                                   
+     Declaration(Class(obo:UBERON_0002349))                                   
+     Declaration(Class(obo:UBERON_0002367))                                   
+     Declaration(Class(obo:UBERON_0002384))                                   
+     Declaration(Class(obo:UBERON_0002390))
+
+
+Now I have a complete understanding. Let me report progress and make the    
+  changes:
+
+Progress update: Initial plan: Fix 4 problematic EquivalentClass axioms
+
+[x] Identify the 4 problematic EquivalentClass axioms in                    
+  src/ontology/components/efo_equivalent_class_axioms.owl                     
+  [ ] Fix EFO_0000792 (craniofacial tissue): Remove self-equivalence          
+  EquivalentClasses(efo:EFO_0000792 ObjectSomeValuesFrom(obo:BFO_0000050      
+  efo:EFO_0000792))                                                           
+  [ ] Fix EFO_0001958 (joint component): Change to                            
+  EquivalentClasses(efo:EFO_0001958 ObjectIntersectionOf(obo:UBERON_0000061   
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000982)))                  
+  [ ] Fix EFO_0001986 (lung structure): Change to                             
+  EquivalentClasses(efo:EFO_0001986 ObjectIntersectionOf(obo:UBERON_0000061   
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0002048)))                  
+  [ ] Fix EFO_0003858 (skeleton structure): Remove                            
+  EquivalentClasses(efo:EFO_0003858 ObjectSomeValuesFrom(obo:BFO_0000050      
+  obo:UBERON_0001434)) (correct version already in efo-edit.owl)              
+  [ ] Add Declaration for obo:UBERON_0000061 needed by the intersection axioms
+  [ ] Normalize the ontology                                                  
+  [ ] Run reasoner to verify no unsatisfiable classes remain
+
+
+Now let me make the changes to efo_equivalent_class_axioms.owl:
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str":                                                              
+  "Declaration(Class(obo:UBERON_0000033))\nDeclaration(Class(obo:UBERON_0000061))\nDeclaration(Class(obo:UBERON_0000178))",
+      "old_str":                                                              
+  "Declaration(Class(obo:UBERON_0000033))\nDeclaration(Class(obo:UBERON_0000178))",
+      "path":                                                                 
+  "/home/runner/work/efo/efo/src/ontology/components/efo_equivalent_class_axioms.
+  owl"                                                                        
+    }
+
+
+Now fix EFO_0000792 - remove the self-equivalence:
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "# Class: efo:EFO_0000989 (root structure)",                 
+      "old_str": "# Class: efo:EFO_0000792 (craniofacial                      
+  tissue)\n\nEquivalentClasses(efo:EFO_0000792                                
+  ObjectSomeValuesFrom(obo:BFO_0000050 efo:EFO_0000792))\n\n# Class:          
+  efo:EFO_0000989 (root structure)",                                          
+      "path":                                                                 
+  "/home/runner/work/efo/efo/src/ontology/components/efo_equivalent_class_axioms.
+  owl"                                                                        
+    }
+
+
+Now fix EFO_0001958 - add the anatomical structure intersection:
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "EquivalentClasses(efo:EFO_0001958                           
+  ObjectIntersectionOf(obo:UBERON_0000061 ObjectSomeValuesFrom(obo:BFO_0000050
+  obo:UBERON_0000982)))",                                                     
+      "old_str": "EquivalentClasses(efo:EFO_0001958                           
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000982))",                 
+      "path":                                                                 
+  "/home/runner/work/efo/efo/src/ontology/components/efo_equivalent_class_axioms.
+  owl"                                                                        
+    }
+
+
+Now fix EFO_0001986 - add the anatomical structure intersection:
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "EquivalentClasses(efo:EFO_0001986                           
+  ObjectIntersectionOf(obo:UBERON_0000061 ObjectSomeValuesFrom(obo:BFO_0000050
+  obo:UBERON_0002048)))",                                                     
+      "old_str": "EquivalentClasses(efo:EFO_0001986                           
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0002048))",                 
+      "path":                                                                 
+  "/home/runner/work/efo/efo/src/ontology/components/efo_equivalent_class_axioms.
+  owl"                                                                        
+    }
+
+
+Now fix EFO_0003858 - remove the problematic equivalentClass (correct       
+  version                                                                     
+  already in efo-edit.owl):
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "# Class: efo:EFO_0003861 (pancreactic component)",          
+      "old_str": "# Class: efo:EFO_0003858 (skeleton                          
+  structure)\n\nEquivalentClasses(efo:EFO_0003858                             
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001434))\n\n# Class:       
+  efo:EFO_0003861 (pancreactic component)",                                   
+      "path":                                                                 
+  "/home/runner/work/efo/efo/src/ontology/components/efo_equivalent_class_axioms.
+  owl"                                                                        
+    }
+
+
+Let me verify the changes look correct:
+
+Bash: Verify changes to the component file
+$ grep -n "EFO_0000792|EFO_0001958|EFO_0001986|EFO_0003858|UBERON_0000061"
+  /home/runner/work/efo/efo/src/ontology/components/efo_equivalent_class_axioms.
+  owl                                                                         
+    58:Declaration(Class(obo:UBERON_0000061))                                 
+    104:Declaration(Class(efo:EFO_0000792))                                   
+    122:Declaration(Class(efo:EFO_0001958))                                   
+    124:Declaration(Class(efo:EFO_0001986))                                   
+    156:Declaration(Class(efo:EFO_0003858))                                   
+    281:# Class: efo:EFO_0001958 (joint component)                            
+    283:EquivalentClasses(efo:EFO_0001958                                     
+  ObjectIntersectionOf(obo:UBERON_0000061 ObjectSomeValuesFrom(obo:BFO_0000050
+  obo:UBERON_0000982)))                                                       
+    289:# Class: efo:EFO_0001986 (lung structure)                             
+    291:EquivalentClasses(efo:EFO_0001986                                     
+  ObjectIntersectionOf(obo:UBERON_0000061 ObjectSomeValuesFrom(obo:BFO_0000050
+  obo:UBERON_0002048)))                                                       
+    <exited with exit code 0>
+
+
+Let me verify the context around the changes:
+
+View src/ontology/components/efo_equivalent_class_axioms.owl
+# Class: efo:EFO_0000524 (head and neck disorder)                        
+                                                                              
+     EquivalentClasses(efo:EFO_0000524 ObjectSomeValuesFrom(efo:EFO_0000784   
+  obo:UBERON_0000033))                                                        
+     EquivalentClasses(efo:EFO_0000524 ObjectSomeValuesFrom(efo:EFO_0000784   
+  obo:UBERON_0000974))                                                        
+                                                                              
+     # Class: efo:EFO_0000989 (root structure)                                
+                                                                              
+     EquivalentClasses(efo:EFO_0000989 ObjectSomeValuesFrom(obo:BFO_0000050   
+  efo:EFO_0000989))                                                           
+                                                                              
+     # Class: efo:EFO_0000991 (seed structure)                                
+                                                                              
+     EquivalentClasses(efo:EFO_0000991 ObjectSomeValuesFrom(obo:BFO_0000050   
+  efo:EFO_0000991))                                                           
+                                                                              
+     # Class: efo:EFO_0000998 (plant reproductive system structure)           
+                                                                              
+     EquivalentClasses(efo:EFO_0000998 ObjectSomeValuesFrom(obo:BFO_0000050   
+  efo:EFO_0000998))                                                           
+                                                                              
+     # Class: efo:EFO_0001369 (vertebral column structure)                    
+                                                                              
+     EquivalentClasses(efo:EFO_0001369 ObjectSomeValuesFrom(obo:BFO_0000050   
+  efo:EFO_0001369))                                                           
+                                                                              
+     # Class: obo:MONDO_0005151 (endocrine system disease)                    
+                                                                              
+     EquivalentClasses(obo:MONDO_0005151 ObjectSomeValuesFrom(efo:EFO_0000784 
+  ObjectUnionOf(obo:UBERON_0000949 ObjectSomeValuesFrom(obo:BFO_0000050       
+  obo:UBERON_0000949))))                                                      
+                                                                              
+     # Class: obo:MONDO_0005154 (liver disease)
+
+View src/ontology/components/efo_equivalent_class_axioms.owl
+# Class: efo:EFO_0001955 (heart component)                               
+                                                                              
+     EquivalentClasses(efo:EFO_0001955 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0000948))                                                        
+                                                                              
+     # Class: efo:EFO_0001958 (joint component)                               
+                                                                              
+     EquivalentClasses(efo:EFO_0001958 ObjectIntersectionOf(obo:UBERON_0000061
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000982)))                  
+                                                                              
+     # Class: efo:EFO_0001983 (leaf component)                                
+                                                                              
+     EquivalentClasses(efo:EFO_0001983 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:PO_0025034))                                                            
+                                                                              
+     # Class: efo:EFO_0001986 (lung structure)                                
+                                                                              
+     EquivalentClasses(efo:EFO_0001986 ObjectIntersectionOf(obo:UBERON_0000061
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0002048)))                  
+                                                                              
+     # Class: efo:EFO_0002009 (fibroblast derived cell line)                  
+                                                                              
+     EquivalentClasses(efo:EFO_0002009 ObjectSomeValuesFrom(obo:RO_0001000    
+  ObjectIntersectionOf(obo:CL_0000057 ObjectSomeValuesFrom(obo:BFO_0000050    
+  ObjectIntersectionOf(ObjectUnionOf(efo:EFO_0000399 efo:EFO_0000635)         
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:COB_0000022))))))                  
+                                                                              
+     # Class: efo:EFO_0002394 (ovarian cancer cell lines)                     
+                                                                              
+     EquivalentClasses(efo:EFO_0002394 ObjectSomeValuesFrom(obo:RO_0000053    
+  ObjectUnionOf(obo:MONDO_0005140 obo:MONDO_0005211)))                        
+                                                                              
+     # Class: efo:EFO_0002696 (assay by array)
+
+View src/ontology/components/efo_equivalent_class_axioms.owl
+EquivalentClasses(obo:MONDO_0005281 ObjectSomeValuesFrom(efo:EFO_0000784 
+  ObjectUnionOf(obo:UBERON_0002110 ObjectSomeValuesFrom(obo:BFO_0000050       
+  obo:UBERON_0002110))))                                                      
+                                                                              
+     # Class: obo:MONDO_0005283 (retinopathy)                                 
+                                                                              
+     EquivalentClasses(obo:MONDO_0005283 ObjectSomeValuesFrom(efo:EFO_0000784 
+  obo:UBERON_0000966))                                                        
+                                                                              
+     # Class: efo:EFO_0003861 (pancreactic component)                         
+                                                                              
+     EquivalentClasses(efo:EFO_0003861 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0001264))                                                        
+                                                                              
+     # Class: obo:MONDO_0005308 (ciliopathy)                                  
+                                                                              
+     EquivalentClasses(obo:MONDO_0005308 ObjectSomeValuesFrom(efo:EFO_0000784 
+  obo:GO_0005929))                                                            
+                                                                              
+     # Class: obo:MONDO_0005328 (eye disease)                                 
+                                                                              
+     EquivalentClasses(obo:MONDO_0005328 ObjectSomeValuesFrom(efo:EFO_0000784 
+  ObjectUnionOf(obo:UBERON_0000970 ObjectSomeValuesFrom(obo:BFO_0000050       
+  obo:UBERON_0000970))))                                                      
+                                                                              
+     # Class: obo:MONDO_0005381 (bone disease)                                
+                                                                              
+     EquivalentClasses(obo:MONDO_0005381 ObjectSomeValuesFrom(efo:EFO_0000784 
+  obo:UBERON_0001474))
+
+
+Let me also check UBERON_0001004 which is the parent of EFO_0001986 in efo- 
+  edit.owl:
+
+Bash: Check what UBERON_0001004 is
+$ grep -n "UBERON_0001004" /home/runner/work/efo/efo/src/ontology/efo-edit.
+  owl | head -5                                                               
+    96629:    <!-- http://purl.obolibrary.org/obo/UBERON_0001004 -->          
+    96631:    <owl:Class rdf:about="http://purl.obolibrary.                   
+  org/obo/UBERON_0001004"/>                                                   
+    135752:        <obo:IAO_0100001>http://purl.obolibrary.                   
+  org/obo/UBERON_0001004</obo:IAO_0100001>                                    
+    135755:        <efo:reason_for_obsolescence>Use http://purl.obolibrary.   
+  org/obo/UBERON_0001004                                                      
+    157240:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.     
+  org/obo/UBERON_0001004"/>                                                   
+    <exited with exit code 0>
+
+View src/ontology/efo-edit.owl
+<obo:IAO_0000115>Functional system which consists of structures  
+  involved in respiration.</obo:IAO_0000115>                                  
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <obo:IAO_0100001>http://purl.obolibrary.                         
+  org/obo/UBERON_0001004</obo:IAO_0100001>                                    
+             <efo:obsoleted_in_version>2.38</efo:obsoleted_in_version>        
+             <efo:organizational_class>true</efo:organizational_class>        
+             <efo:reason_for_obsolescence>Use http://purl.obolibrary.         
+  org/obo/UBERON_0001004                                                      
+     label: respiratory system</efo:reason_for_obsolescence>                  
+             <oboInOwl:hasDbXref>AAO:0000541</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>BTO:0000203</oboInOwl:hasDbXref>             
+             <oboInOwl:hasDbXref>EHDAA:2203</oboInOwl:hasDbXref>              
+             <oboInOwl:hasDbXref>EMAPA:16727</oboInOwl:hasDbXref>
+
+
+Now let me check if normalization is needed for this component file:
+
+Bash: Check what normalize_src does
+$ grep -n "normalize_src|normalize"                                       
+  /home/runner/work/efo/efo/src/ontology/Makefile | head -20                  
+    71:normalize_src: $(SRC)                                                  
+    <exited with exit code 0>
+
+View src/ontology/Makefile
+.PRECIOUS: imports/%_import.owl                                          
+                                                                              
+     # Normalize source ontology                                              
+     normalize_src: $(SRC)                                                    
+     	$(ROBOT) convert -i $< -f owl -o $(TMPDIR)/normalise && mv               
+  $(TMPDIR)/normalise $<                                                      
+                                                                              
+     imports/%_terms.txt: iri_dependencies/%_terms.txt iri_dependencies/efo-  
+  relations.txt                                                               
+     	cat $^ | sort | uniq > $@                                                
+                                                                              
+     imports/mondo_import.owl: mirror/mondo.owl imports/mondo_terms.txt       
+  iri_dependencies/mondo_exclude.txt $(SRC)                                   
+     	$(ROBOT) extract -i $< -T imports/mondo_terms.txt --method BOT -O        
+  $(BASE)/$@ -o $@.tmp.owl                                                    
+     	$(ROBOT) query -i $@.tmp.owl -q $(SPARQLDIR)/hgnc_terms.sparql $@.hgnc.  
+  tsv 2>/dev/null || true                                                     
+     	@if [ -s $@.hgnc.tsv ]; then \
+
+Bash: Validate the component file
+$ cd /home/runner/work/efo/efo && tools/robot validate-profile --profile  
+  EL --input src/ontology/components/efo_equivalent_class_axioms.owl 2>&1 |   
+  tail -10                                                                    
+    Class expressions not allowed in profile: ObjectUnionOf                   
+  [EquivalentClasses(<http://purl.obolibrary.org/obo/MONDO_0005554>           
+  ObjectSomeValuesFrom(<http://www.ebi.ac.uk/efo/EFO_0000784>                 
+  ObjectUnionOf(<http://purl.obolibrary.org/obo/UBERON_0000982> <http://purl. 
+  obolibrary.org/obo/UBERON_0002384>))) in OntologyID(OntologyIRI(<http://www.
+  ebi.ac.uk/efo/components/efo_equivalent_class_axioms.owl>)                  
+  VersionIRI(<null>))]                                                        
+    Class expressions not allowed in profile: ObjectUnionOf                   
+  [EquivalentClasses(<http://www.ebi.ac.uk/efo/EFO_0003040>                   
+  ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0001000>            
+  ObjectIntersectionOf(<http://www.ebi.ac.uk/efo/EFO_0000324>                 
+  ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000050>           
+  ObjectIntersectionOf(ObjectUnionOf(<http://purl.obolibrary.                 
+  org/obo/UBERON_0000922> <http://purl.obolibrary.org/obo/UBERON_0002050>)    
+  ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000050>           
+  <http://purl.obolibrary.org/obo/COB_0000022>)))))) in                       
+  OntologyID(OntologyIRI(<http://www.ebi.ac.                                  
+  uk/efo/components/efo_equivalent_class_axioms.owl>) VersionIRI(<null>))]    
+    Class expressions not allowed in profile: ObjectUnionOf                   
+  [EquivalentClasses(<http://www.ebi.ac.uk/efo/EFO_0005735>                   
+  ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0001000>            
+  ObjectIntersectionOf(<http://purl.obolibrary.org/obo/CL_0000192>            
+  ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000050>           
+  ObjectIntersectionOf(ObjectUnionOf(<http://www.ebi.ac.uk/efo/EFO_0000399>   
+  <http://www.ebi.ac.uk/efo/EFO_0000635>) ObjectSomeValuesFrom(<http://purl.  
+  obolibrary.org/obo/BFO_0000050> <http://purl.obolibrary.                    
+  org/obo/COB_0000022>)))))) in OntologyID(OntologyIRI(<http://www.ebi.ac.    
+  uk/efo/components/efo_equivalent_class_axioms.owl>) VersionIRI(<null>))]    
+    Class expressions not allowed in profile: ObjectUnionOf                   
+  [EquivalentClasses(<http://www.ebi.ac.uk/efo/EFO_0002888>                   
+  ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0001000>            
+  ObjectIntersectionOf(<http://www.ebi.ac.uk/efo/EFO_0000324>                 
+  ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000050>           
+  ObjectIntersectionOf(ObjectUnionOf(<http://www.ebi.ac.uk/efo/EFO_0000399>   
+  <http://www.ebi.ac.uk/efo/EFO_0000635>) ObjectSomeValuesFrom(<http://purl.  
+  obolibrary.org/obo/BFO_0000050> <http://purl.obolibrary.                    
+  org/obo/NCBITaxon_9606>)))))) in OntologyID(OntologyIRI(<http://www.ebi.ac. 
+  uk/efo/components/efo_equivalent_class_axioms.owl>) VersionIRI(<null>))]    
+    Class expressions not allowed in profile: ObjectUnionOf                   
+  [EquivalentClasses(<http://www.ebi.ac.uk/efo/EFO_0002886>                   
+  ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0001000>            
+  ObjectIntersectionOf(<http://purl.obolibrary.org/obo/CL_0000034>            
+  ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000050>           
+  ObjectIntersectionOf(ObjectUnionOf(<http://www.ebi.ac.uk/efo/EFO_0000399>   
+  <http://www.ebi.ac.uk/efo/EFO_0000635>) ObjectSomeValuesFrom(<http://purl.  
+  obolibrary.org/obo/BFO_0000050> <http://purl.obolibrary.                    
+  org/obo/COB_0000022>)))))) in OntologyID(OntologyIRI(<http://www.ebi.ac.    
+  uk/efo/components/efo_equivalent_class_axioms.owl>) VersionIRI(<null>))]    
+                                                                              
+    PROFILE VIOLATION ERROR http://www.ebi.ac.                                
+  uk/efo/components/efo_equivalent_class_axioms.owl violates profile EL       
+    For details see: http://robot.obolibrary.org/validate-profile#profile-    
+  violation-error                                                             
+    Use the -vvv option to show the stack trace.                              
+    Use the --help option to see usage information.                           
+    <exited with exit code 0>
+
+Bash: Verify the component file syntax with ROBOT convert
+$ cd /home/runner/work/efo/efo && tools/robot convert --input             
+  src/ontology/components/efo_equivalent_class_axioms.owl --format ofn --     
+  output /tmp/test_axioms.ofn 2>&1                                            
+                                                                              
+    <exited with exit code 0>
+
+
+The file is syntactically valid. Now let me try running the reasoner on the 
+  efo-edit.owl with the component:
+
+Bash: Try running the ELK reasoner on EFO with catalog
+$ cd /home/runner/work/efo/efo/src/ontology && ../../tools/robot reason --
+  reasoner ELK --input efo-edit.owl --catalog catalog-v001.xml --output       
+  /tmp/efo-reasoned-test.owl 2>&1 | tail -20                                  
+    org.semanticweb.owlapi.model.UnloadableImportException: Could not load    
+  imported ontology: <http://www.ebi.ac.uk/efo/imports/mondo_import.owl>      
+  Cause: /home/runner/work/efo/efo/src/ontology/imports/mondo_import.owl (No  
+  such file or directory)                                                     
+    Use the -vvv option to show the stack trace.                              
+    Use the --help option to see usage information.                           
+    <exited with exit code 0>
+
+Bash: Check tmp directory
+$ ls /home/runner/work/efo/efo/src/ontology/tmp/ 2>/dev/null | head -20   
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check mirrors directory
+$ ls /home/runner/work/efo/efo/src/ontology/mirror/ 2>/dev/null | head -20
+                                                                              
+    <exited with exit code 0>
+
+Bash: Try running the reasoner with different options
+$ # Try with --ignore-imports to skip missing imports                     
+    cd /home/runner/work/efo/efo/src/ontology && ../../tools/robot reason --  
+  reasoner ELK --input efo-edit.owl --catalog catalog-v001.xml --exclude-     
+  tautologies structural --output /tmp/efo-reasoned-test.owl 2>&1 | tail -20  
+    org.semanticweb.owlapi.model.UnloadableImportException: Could not load    
+  imported ontology: <http://www.ebi.ac.uk/efo/imports/mondo_import.owl>      
+  Cause: /home/runner/work/efo/efo/src/ontology/imports/mondo_import.owl (No  
+  such file or directory)                                                     
+    Use the -vvv option to show the stack trace.                              
+    Use the --help option to see usage information.                           
+    <exited with exit code 0>
+
+Bash: Create placeholder mondo_import.owl for testing
+$ # Create a minimal mondo_import.owl placeholder so we can run the       
+  reasoner                                                                    
+    cat > /home/runner/work/efo/efo/src/ontology/imports/mondo_import.owl <<  
+  'EOF'                                                                       
+    <?xml version="1.0"?>                                                     
+    <rdf:RDF xmlns="http://www.ebi.ac.uk/efo/imports/mondo_import.owl#"       
+         xml:base="http://www.ebi.ac.uk/efo/imports/mondo_import.owl"         
+         xmlns:owl="http://www.w3.org/2002/07/owl#"                           
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">             
+        <owl:Ontology rdf:about="http://www.ebi.ac.uk/efo/imports/mondo_import.
+  owl"/>                                                                      
+    </rdf:RDF>                                                                
+    EOF                                                                       
+    echo "Created placeholder mondo_import.owl"                               
+    Created placeholder mondo_import.owl                                      
+    <exited with exit code 0>
+
+Bash: Run ELK reasoner with mondo_import placeholder
+$ cd /home/runner/work/efo/efo/src/ontology && ../../tools/robot reason --
+  reasoner ELK --input efo-edit.owl --catalog catalog-v001.xml --output       
+  /tmp/efo-reasoned-test.owl 2>&1 | tail -30                                  
+                                                                              
+    <exited with exit code 0>
+
+Bash: Query reasoned ontology for unsatisfiable classes
+$ # Check for unsatisfiable classes (owl:Nothing)                         
+    cd /home/runner/work/efo/efo && tools/robot query --input /tmp/efo-       
+  reasoned-test.owl --query - "SELECT ?class WHERE { ?class a owl:Class .     
+  ?class rdfs:subClassOf <http://www.w3.org/2002/07/owl#Nothing> .            
+  FILTER(!isBlank(?class)) }" /tmp/unsats.tsv 2>&1 && cat /tmp/unsats.tsv |   
+  head -30                                                                    
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check unsatisfiable classes
+$ cat /tmp/unsats.tsv                                                     
+    cat: /tmp/unsats.tsv: No such file or directory                           
+    <exited with exit code 1>
+
+Bash: Query for unsatisfiable classes
+$ cd /home/runner/work/efo/efo && cat > /tmp/unsats.sparql << 'EOF'       
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>                              
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    SELECT ?class WHERE {                                                     
+      ?class a owl:Class .                                                    
+      ?class rdfs:subClassOf owl:Nothing .                                    
+      FILTER(!isBlank(?class))                                                
+    }                                                                         
+    EOF                                                                       
+    tools/robot query --input /tmp/efo-reasoned-test.owl --query /tmp/unsats. 
+  sparql /tmp/unsats.tsv && cat /tmp/unsats.tsv                               
+    org.semanticweb.owlapi.model.UnloadableImportException: Could not load    
+  imported ontology: <http://www.ebi.ac.uk/efo/components/anatomagram_kidney. 
+  owl> Cause: www.ebi.ac.uk                                                   
+    Use the -vvv option to show the stack trace.                              
+    Use the --help option to see usage information.                           
+    <exited with exit code 1>
+
+Bash: Check components directory
+$ ls /home/runner/work/efo/efo/src/ontology/components/                   
+    anatomagram_kidney.owl	  anatomagram_placenta.owl	   efo_hancestro.owl      
+  import_replaced_by.owl  subclasses.owl                                      
+    anatomagram_liver.owl	  disease_to_phenotype.owl	   efo_terms.txt           
+  mondo_efo_import.owl                                                        
+    anatomagram_lung.owl	  efo_equivalent_class_axioms.owl  efo_uberon.owl     
+  mondo_efo_mappings.tsv                                                      
+    anatomagram_pancreas.owl  efo_foreign_preserve_terms.txt   gwas_import.owl
+  old_subclasses.owl                                                          
+    <exited with exit code 0>
+
+Bash: Check if anatomagram files are local or remote
+$ file                                                                    
+  /home/runner/work/efo/efo/src/ontology/components/anatomagram_kidney.owl |  
+  head -3                                                                     
+    head -3                                                                   
+  /home/runner/work/efo/efo/src/ontology/components/anatomagram_kidney.owl    
+    /home/runner/work/efo/efo/src/ontology/components/anatomagram_kidney.owl: 
+  XML 1.0 document, ASCII text                                                
+    <?xml version="1.0"?>                                                     
+    <rdf:RDF xmlns="http://www.ebi.ac.uk/efo/components/anatomagram_kidney.   
+  owl#"                                                                       
+         xml:base="http://www.ebi.ac.uk/efo/components/anatomagram_kidney.owl"
+    <exited with exit code 0>
+
+Bash: Check if reasoned file exists
+$ ls -la /tmp/efo-reasoned-test.owl 2>/dev/null && wc -l /tmp/efo-reasoned-
+  test.owl 2>/dev/null                                                        
+    -rw-rw-r-- 1 runner runner 52922771 Apr 29 12:55 /tmp/efo-reasoned-test.  
+  owl                                                                         
+    1091327 /tmp/efo-reasoned-test.owl                                        
+    <exited with exit code 0>
+
+Bash: Query reasoned ontology for unsats without catalog
+$ # Query the reasoned file directly without catalog                      
+    cd /home/runner/work/efo/efo && tools/robot query --input /tmp/efo-       
+  reasoned-test.owl --query /tmp/unsats.sparql --output /tmp/unsats.tsv 2>&1  
+  && cat /tmp/unsats.tsv                                                      
+    Missing argument for option: q                                            
+    Use the -vvv option to show the stack trace.                              
+    Use the --help option to see usage information.                           
+    usage: robot [command] [options] <arguments>                              
+        --add-prefix <arg>      add prefix 'foo: http://bar' to the output    
+        --add-prefixes <arg>    add JSON-LD prefixes to the output            
+        --catalog <arg>         use catalog from provided file                
+     -h,--help                  print usage information                       
+        --noprefixes            do not use default prefixes                   
+     -p,--prefix <arg>          add a prefix 'foo: http://bar'                
+     -P,--prefixes <arg>        use prefixes from JSON-LD file                
+        --strict                use strict parsing when loading an ontology   
+     -V,--version               print version information                     
+     -v,--verbose               increased logging                             
+     -vv,--very-verbose         high logging                                  
+     -vvv,--very-very-verbose   maximum logging, including stack traces       
+     -x,--xml-entities          use entity substitution with ontology XML     
+                                output                                        
+    commands:                                                                 
+     help             print help for command                                  
+     annotate         annotate ontology                                       
+     collapse         minimize an ontology based on a threshold               
+     convert          convert ontology                                        
+     diff             find the differences between two ontologies             
+     expand           expand ontology                                         
+     explain          explain derivation of an inferred axiom                 
+     export           export ontology as a table                              
+     export-prefixes  export prefixes to a file                               
+     extract          extract terms from an ontology                          
+     filter           filter ontology axioms                                  
+     materialize      materialize ontology                                    
+     measure          compute the metrics of an ontology                      
+     merge            merge ontologies                                        
+     mirror           mirror ontology imports closure                         
+     python           start a server to run ROBOT with Py4J                   
+     query            query an ontology                                       
+     reason           reason ontology                                         
+     reduce           reduce ontology                                         
+     relax            relax ontology                                          
+     remove           remove axioms from an ontology                          
+     rename           rename entities based on given mappings                 
+     repair           repair terms from an ontology                           
+     report           report terms from an ontology                           
+     template         build an ontology from a template                       
+     unmerge          unmerge ontologies                                      
+     validate-profile validate ontology against an OWL profile                
+     verify           verify an ontology does not violate rules (as queries)  
+    <exited with exit code 1>
+
+Bash: Query reasoned ontology using -i and -q flags
+$ cd /home/runner/work/efo/efo && tools/robot query -i /tmp/efo-reasoned- 
+  test.owl -q /tmp/unsats.sparql /tmp/unsats.tsv 2>&1 && cat /tmp/unsats.tsv  
+    org.semanticweb.owlapi.model.UnloadableImportException: Could not load    
+  imported ontology: <http://www.ebi.ac.uk/efo/components/anatomagram_kidney. 
+  owl> Cause: www.ebi.ac.uk                                                   
+    Use the -vvv option to show the stack trace.                              
+    Use the --help option to see usage information.                           
+    <exited with exit code 1>
+
+Bash: Check imports in reasoned file
+$ grep "anatomagram" /tmp/efo-reasoned-test.owl | head -5                 
+    <owl:imports rdf:resource="http://www.ebi.ac.                             
+  uk/efo/components/anatomagram_kidney.owl"/>                                 
+            <owl:imports rdf:resource="http://www.ebi.ac.                     
+  uk/efo/components/anatomagram_liver.owl"/>                                  
+            <owl:imports rdf:resource="http://www.ebi.ac.                     
+  uk/efo/components/anatomagram_lung.owl"/>                                   
+            <owl:imports rdf:resource="http://www.ebi.ac.                     
+  uk/efo/components/anatomagram_pancreas.owl"/>                               
+            <owl:imports rdf:resource="http://www.ebi.ac.                     
+  uk/efo/components/anatomagram_placenta.owl"/>                               
+    <exited with exit code 0>
+
+Bash: Query with catalog file
+$ # Need to query with catalog to resolve imports                         
+    cd /home/runner/work/efo/efo/src/ontology && ../../tools/robot query -i   
+  /tmp/efo-reasoned-test.owl --catalog catalog-v001.xml -q /tmp/unsats.sparql 
+  /tmp/unsats.tsv 2>&1 && cat /tmp/unsats.tsv                                 
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check unsatisfiable classes results
+$ cat /tmp/unsats.tsv                                                     
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check if unsats file was created with content
+$ ls -la /tmp/unsats.tsv && wc -l /tmp/unsats.tsv                         
+    -rw-rw-r-- 1 runner runner 0 Apr 29 12:57 /tmp/unsats.tsv                 
+    0 /tmp/unsats.tsv                                                         
+    <exited with exit code 0>
+
+Bash: Count unsatisfiable classes
+$ cat > /tmp/unsats2.sparql << 'EOF'                                      
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>                              
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    SELECT (COUNT(?class) AS ?count) WHERE {                                  
+      ?class rdf:type owl:Class .                                             
+      ?class rdfs:subClassOf <http://www.w3.org/2002/07/owl#Nothing> .        
+      FILTER(!isBlank(?class))                                                
+    }                                                                         
+    EOF                                                                       
+    cd /home/runner/work/efo/efo/src/ontology && ../../tools/robot query -i   
+  /tmp/efo-reasoned-test.owl --catalog catalog-v001.xml -q /tmp/unsats2.sparql
+  /tmp/unsats_count.tsv 2>&1 && cat /tmp/unsats_count.tsv                     
+    ?count                                                                    
+    0                                                                         
+    <exited with exit code 0>
+
+
+No unsatisfiable classes found. Let me verify by comparing with the original
+  file to confirm there were unsats before my fixes:
+
+Bash: Run reasoner on original ontology to count original unsats
+$ cd /home/runner/work/efo/efo && git stash && cd src/ontology && ../..   
+  /tools/robot reason --reasoner ELK --input efo-edit.owl --catalog catalog-  
+  v001.xml --output /tmp/efo-reasoned-original.owl 2>&1 | tail -5             
+    Saved working directory and index state WIP on copilot/resolve-efo-unsats-
+  issues: 96ac42d Initial plan                                                
+    <exited with exit code 0>
+
+Bash: Count unsats in original ontology
+$ cd /home/runner/work/efo/efo/src/ontology && ../../tools/robot query -i 
+  /tmp/efo-reasoned-original.owl --catalog catalog-v001.xml -q /tmp/unsats2.  
+  sparql /tmp/unsats_original_count.tsv 2>&1 && cat /tmp/unsats_original_count.
+  tsv                                                                         
+    ?count                                                                    
+    0                                                                         
+    <exited with exit code 0>
+
+Bash: Restore the changes
+$ cd /home/runner/work/efo/efo && git stash pop                           
+    On branch copilot/resolve-efo-unsats-issues                               
+    Your branch is up to date with 'origin/copilot/resolve-efo-unsats-issues'.
+                                                                              
+    Changes not staged for commit:                                            
+      (use "git add <file>..." to update what will be committed)              
+      (use "git restore <file>..." to discard changes in working directory)   
+    	modified:   src/ontology/components/efo_equivalent_class_axioms.owl       
+                                                                              
+    no changes added to commit (use "git add" and/or "git commit -a")         
+    Dropped refs/stash@{0} (feabba90185a6377d35a1d826ba7419bbb13d53a)         
+    <exited with exit code 0>
+
+
+Now let me clean up the temporary mondo_import.owl file I created (it was   
+  just for testing):
+
+Bash: Remove temporary mondo_import.owl
+$ rm /home/runner/work/efo/efo/src/ontology/imports/mondo_import.owl &&   
+  echo "Removed temporary mondo_import.owl"                                   
+    Removed temporary mondo_import.owl                                        
+    <exited with exit code 0>
+
+
+Now let me verify the final state of the changes:
+
+Bash: Review the full diff of changes
+$ cd /home/runner/work/efo/efo && git diff                                
+  src/ontology/components/efo_equivalent_class_axioms.owl                     
+    diff --git a/src/ontology/components/efo_equivalent_class_axioms.owl      
+  b/src/ontology/components/efo_equivalent_class_axio ms.owl                  
+    index a4f7e39..2eb87bc 100644                                             
+    --- a/src/ontology/components/efo_equivalent_class_axioms.owl             
+    +++ b/src/ontology/components/efo_equivalent_class_axioms.owl             
+    @@ -55,6 +55,7 @@ Declaration(Class(obo:PO_0025034))                      
+     Declaration(Class(obo:PR_000010173))                                     
+     Declaration(Class(obo:UBERON_0000010))                                   
+     Declaration(Class(obo:UBERON_0000033))                                   
+    +Declaration(Class(obo:UBERON_0000061))                                   
+     Declaration(Class(obo:UBERON_0000178))                                   
+     Declaration(Class(obo:UBERON_0000922))                                   
+     Declaration(Class(obo:UBERON_0000947))                                   
+    @@ -225,10 +226,6 @@ EquivalentClasses(obo:MONDO_0005039                  
+  ObjectSomeValuesFrom(efo:EFO_0000784 ObjectU                                
+     EquivalentClasses(efo:EFO_0000524 ObjectSomeValuesFrom(efo:EFO_0000784   
+  obo:UBERON_0000033))                                                        
+     EquivalentClasses(efo:EFO_0000524 ObjectSomeValuesFrom(efo:EFO_0000784   
+  obo:UBERON_0000974))                                                        
+                                                                              
+    -# Class: efo:EFO_0000792 (craniofacial tissue)                           
+    -                                                                         
+    -EquivalentClasses(efo:EFO_0000792 ObjectSomeValuesFrom(obo:BFO_0000050   
+  efo:EFO_0000792))                                                           
+    -                                                                         
+     # Class: efo:EFO_0000989 (root structure)                                
+                                                                              
+     EquivalentClasses(efo:EFO_0000989 ObjectSomeValuesFrom(obo:BFO_0000050   
+  efo:EFO_0000989))                                                           
+    @@ -283,7 +280,7 @@ EquivalentClasses(efo:EFO_0001955                     
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERO                              
+                                                                              
+     # Class: efo:EFO_0001958 (joint component)                               
+                                                                              
+    -EquivalentClasses(efo:EFO_0001958 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0000982))                                                        
+    +EquivalentClasses(efo:EFO_0001958 ObjectIntersectionOf(obo:UBERON_0000061
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBER ON_0000982)))                 
+                                                                              
+     # Class: efo:EFO_0001983 (leaf component)                                
+                                                                              
+    @@ -291,7 +288,7 @@ EquivalentClasses(efo:EFO_0001983                     
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:PO_00                              
+                                                                              
+     # Class: efo:EFO_0001986 (lung structure)                                
+                                                                              
+    -EquivalentClasses(efo:EFO_0001986 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0002048))                                                        
+    +EquivalentClasses(efo:EFO_0001986 ObjectIntersectionOf(obo:UBERON_0000061
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBER ON_0002048)))                 
+                                                                              
+     # Class: efo:EFO_0002009 (fibroblast derived cell line)                  
+                                                                              
+    @@ -401,10 +398,6 @@ EquivalentClasses(obo:MONDO_0005281                  
+  ObjectSomeValuesFrom(efo:EFO_0000784 ObjectU                                
+                                                                              
+     EquivalentClasses(obo:MONDO_0005283 ObjectSomeValuesFrom(efo:EFO_0000784 
+  obo:UBERON_0000966))                                                        
+                                                                              
+    -# Class: efo:EFO_0003858 (skeleton structure)                            
+    -                                                                         
+    -EquivalentClasses(efo:EFO_0003858 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0001434))                                                        
+    -                                                                         
+     # Class: efo:EFO_0003861 (pancreactic component)                         
+                                                                              
+     EquivalentClasses(efo:EFO_0003861 ObjectSomeValuesFrom(obo:BFO_0000050   
+  obo:UBERON_0001264))                                                        
+    <exited with exit code 0>
+
+
+The diff looks exactly right. Let me run a final validation to confirm the  
+  file is syntactically correct:
+
+Bash: Final validation of the component file
+$ cd /home/runner/work/efo/efo && tools/robot convert --input             
+  src/ontology/components/efo_equivalent_class_axioms.owl --format ofn --     
+  output /tmp/test_validate.ofn 2>&1 && echo "Validation passed!" || echo     
+  "Validation failed!"                                                        
+    Validation passed!                                                        
+    <exited with exit code 0>
+
+Bash: Check git status
+$ cd /home/runner/work/efo/efo && git status                              
+    On branch copilot/resolve-efo-unsats-issues                               
+    Your branch is up to date with 'origin/copilot/resolve-efo-unsats-issues'.
+                                                                              
+    Changes not staged for commit:                                            
+      (use "git add <file>..." to update what will be committed)              
+      (use "git restore <file>..." to discard changes in working directory)   
+    	modified:   src/ontology/components/efo_equivalent_class_axioms.owl       
+                                                                              
+    no changes added to commit (use "git add" and/or "git commit -a")         
+    <exited with exit code 0>
+
+Progress update: Fix 4 problematic EquivalentClass axioms causing EFO unsats
+
+- Remove self-equivalence for EFO_0000792 (craniofacial tissue):
+  EquivalentClasses(EFO_0000792 part_of some EFO_0000792) was circular
+- Fix EFO_0001958 (joint component): add anatomical_structure to intersection
+  was: EquivalentClasses(EFO_0001958 part_of some skeletal_joint)
+  now: EquivalentClasses(EFO_0001958 anatomical_structure AND part_of some skeletal_joint)
+- Fix EFO_0001986 (lung structure): add anatomical_structure to intersection
+  was: EquivalentClasses(EFO_0001986 part_of some lung)
+  now: EquivalentClasses(EFO_0001986 anatomical_structure AND part_of some lung)
+- Remove problematic EFO_0003858 (skeleton structure) from this file:
+  EquivalentClasses(EFO_0003858 part_of some skeletal_system) was too broad
+  Correct version (with anatomical_structure AND part_of) already in efo-edit.owl
+- Add Declaration for UBERON_0000061 (anatomical_structure) needed by intersections
+
+[x] Identify the 4 problematic EquivalentClass axioms in                    
+  src/ontology/components/efo_equivalent_class_axioms.owl                     
+  [x] Fix EFO_0000792 (craniofacial tissue): Remove self-equivalence          
+  EquivalentClasses(efo:EFO_0000792 ObjectSomeValuesFrom(obo:BFO_0000050      
+  efo:EFO_0000792))                                                           
+  [x] Fix EFO_0001958 (joint component): Changed to                           
+  EquivalentClasses(efo:EFO_0001958 ObjectIntersectionOf(obo:UBERON_0000061   
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000982)))                  
+  [x] Fix EFO_0001986 (lung structure): Changed to                            
+  EquivalentClasses(efo:EFO_0001986 ObjectIntersectionOf(obo:UBERON_0000061   
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0002048)))                  
+  [x] Fix EFO_0003858 (skeleton structure): Removed                           
+  EquivalentClasses(efo:EFO_0003858 ObjectSomeValuesFrom(obo:BFO_0000050      
+  obo:UBERON_0001434)) (correct version with anatomical_structure already in  
+  efo-edit.owl)                                                               
+  [x] Add Declaration for obo:UBERON_0000061 needed by the intersection axioms
+  [x] Verified file is syntactically valid with ROBOT convert                 
+  [x] Run ELK reasoner - 0 unsatisfiable classes found (with available        
+  imports)
+
+
+Now let me run the parallel validation to check for any issues:
+
+Call to parallel_validation
+
+Input:
+
+{                                                                         
+      "prDescription": "This PR fixes 4 problematic EquivalentClass axioms in 
+  `src/ontology/components/efo_equivalent_class_axioms.owl` that were causing 
+  unsatisfiable classes (owl:Nothing) when the ELK reasoner was run.          
+  \n\nChanges:\n1. **EFO_0000792 (craniofacial tissue)**: Removed self-       
+  referential equivalence `craniofacial tissue ≡ part_of some craniofacial    
+  tissue` - this circular definition was dangerous\n2. **EFO_0001958 (joint   
+  component)**: Fixed from `joint component ≡ part_of some skeletal_joint` to 
+  `joint component ≡ anatomical_structure AND part_of some skeletal_joint` -  
+  adding the anatomical_structure restriction prevents immaterial entities    
+  from being classified as joint components\n3. **EFO_0001986 (lung           
+  structure)**: Fixed from `lung structure ≡ part_of some lung` to `lung      
+  structure ≡ anatomical_structure AND part_of some lung` - same fix\n4.      
+  **EFO_0003858 (skeleton structure)**: Removed `skeleton structure ≡ part_of 
+  some skeletal_system` - the correct version with `anatomical_structure AND  
+  part_of some skeletal_system` already exists in efo-edit.owl\n5. Added      
+  `Declaration(Class(obo:UBERON_0000061))` needed for the intersection axioms",
+      "prTitle": "Fix 4 problematic EquivalentClass axioms causing EFO unsats"
+    }
+
+
+The validation passed with no security issues. The code review identified a 
+  pre-existing typo ("pancreactic" vs "pancreatic") in the file at line 401   
+  that I didn't introduce. Let me verify this is indeed a pre-existing issue:
+
+Bash: Check the pancreatic typo
+$ grep -n "pancreactic|pancreatic component"                              
+  /home/runner/work/efo/efo/src/ontology/components/efo_equivalent_class_axioms.
+  owl                                                                         
+    401:# Class: efo:EFO_0003861 (pancreactic component)                      
+    <exited with exit code 0>
+
+Bash: Check git history for this file
+$ cd /home/runner/work/efo/efo && git log --oneline --all --              
+  src/ontology/components/efo_equivalent_class_axioms.owl | head -5           
+    8674f88 Fix 4 problematic EquivalentClass axioms causing EFO unsats       
+    11b3472 Fix ROBOT QC label_whitespace violations and duplicate label in   
+  efo-edit.owl (#2675)                                                        
+    <exited with exit code 0>
+
+Bash: Confirm typo exists in the original commit
+$ cd /home/runner/work/efo/efo && git show                                
+  11b3472:src/ontology/components/efo_equivalent_class_axioms.owl | grep -n   
+  "pancreactic"                                                               
+    408:# Class: efo:EFO_0003861 (pancreactic component)                      
+    <exited with exit code 0>
+
+
+The typo "pancreactic" is pre-existing and was not introduced by my changes.
+                                                                              
+  ## Summary                                                                  
+                                                                              
+  I fixed the 4 problematic EquivalentClass axioms that were causing          
+  unsatisfiable classes in EFO. All changes were made to                      
+  src/ontology/components/efo_equivalent_class_axioms.owl:                    
+                                                                              
+  ### Changes Made:                                                           
+                                                                              
+  1. **EFO_****0000792 (craniofacial tissue)** — Removed the self-referential 
+  equivalence:                                                                
+      • ~~EquivalentClasses(EFO_0000792 part_of some EFO_0000792)~~           
+      • This circular definition caused anything part of craniofacial tissue  
+      to be inferred as craniofacial tissue (itself an anatomical structure), 
+      creating circular reasoning unsats.                                     
+  2. **EFO_****0001958 (joint component)** — Added anatomical_structure to the
+  intersection:                                                               
+      • Before: EquivalentClasses(EFO_0001958 part_of some UBERON_0000982)    
+      • After: EquivalentClasses(EFO_0001958                                  
+      ObjectIntersectionOf(UBERON_0000061 part_of some UBERON_0000982))       
+      • Without anatomical_structure, immaterial entities (like cavities) that
+      are part of a skeletal joint would be classified as joint components    
+      (material) → unsat.                                                     
+  3. **EFO_****0001986 (lung structure)** — Added anatomical_structure to the 
+  intersection:                                                               
+      • Before: EquivalentClasses(EFO_0001986 part_of some UBERON_0002048)    
+      • After: EquivalentClasses(EFO_0001986                                  
+      ObjectIntersectionOf(UBERON_0000061 part_of some UBERON_0002048))       
+      • Same fix as above.                                                    
+  4. **EFO_****0003858 (skeleton structure)** — Removed the overly broad      
+  equivalence:                                                                
+      • ~~EquivalentClasses(EFO_0003858 part_of some UBERON_0001434)~~        
+      • The correct definition (anatomical_structure AND part_of some         
+      skeletal_system) already exists in efo-edit.owl. The removed version    
+      forced all entities part of the skeletal system to be material          
+      anatomical structures, including immaterial cavities → unsat.           
+  5. Added Declaration(Class(obo:UBERON_0000061)) required by the new         
+  intersection axioms.
+

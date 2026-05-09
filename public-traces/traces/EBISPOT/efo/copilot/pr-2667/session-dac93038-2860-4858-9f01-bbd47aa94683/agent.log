@@ -1,0 +1,794 @@
+Clone repository EBISPOT/efo
+Start 'playwright' MCP server
+Start 'github-mcp-server' MCP server
+Start 'ebi-kg' MCP server
+Start 'ols4' MCP server
+Start 'artl-mcp' MCP server
+
+I'll analyze this issue and implement the necessary changes. Let me start by
+  understanding the codebase and the existing parent term.
+
+Call to search_code_subagent
+
+Input:
+
+{                                                                         
+      "query": "10x gene expression flex EFO_0022606"                         
+    }
+
+Bash: Search for parent term and related terms
+$ grep -n "EFO_0022606|10x gene expression flex|10x Flex|Next GEM Flex|GEM-
+  X Flex" /home/runner/work/efo/efo/src/ontology/efo-edit.owl | head -50      
+    407501:    <!-- http://www.ebi.ac.uk/efo/EFO_0022606 -->                  
+    407503:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0022606">   
+    407511:        <oboInOwl:hasExactSynonym>10x gene expression              
+  flex</oboInOwl:hasExactSynonym>                                             
+    407512:        <rdfs:label xml:lang="en">10x gene expression              
+  flex</rdfs:label>                                                           
+    407515:        <owl:annotatedSource rdf:resource="http://www.ebi.ac.      
+  uk/efo/EFO_0022606"/>                                                       
+    <exited with exit code 0>
+
+Bash: Get full parent term definition
+$ grep -n -A 50 "<!-- http://www.ebi.ac.uk/efo/EFO_0022606 -->"           
+  /home/runner/work/efo/efo/src/ontology/efo-edit.owl | head -80              
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find last EFO_092xxxx ID used
+$ grep "EFO_092" /home/runner/work/efo/efo/src/ontology/efo-edit.owl |    
+  tail -5                                                                     
+    <owl:annotatedSource rdf:resource="http://www.ebi.ac.uk/efo/EFO_0920084"/>
+        <!-- http://www.ebi.ac.uk/efo/EFO_0920085 -->                         
+            <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920085">      
+            <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                 
+  uk/efo/EFO_0920081"/>                                                       
+            <owl:annotatedSource rdf:resource="http://www.ebi.ac.             
+  uk/efo/EFO_0920085"/>                                                       
+    <exited with exit code 0>
+
+Bash: Find all mentions of parent term
+$ grep -n "EFO_0022606" /home/runner/work/efo/efo/src/ontology/efo-edit.  
+  owl                                                                         
+    407501:    <!-- http://www.ebi.ac.uk/efo/EFO_0022606 -->                  
+    407503:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0022606">   
+    407515:        <owl:annotatedSource rdf:resource="http://www.ebi.ac.      
+  uk/efo/EFO_0022606"/>                                                       
+    <exited with exit code 0>
+
+Bash: Understand context around last EFO_092 terms
+$ grep -n "EFO_0920085|EFO_0920084|EFO_0920083"                           
+  /home/runner/work/efo/efo/src/ontology/efo-edit.owl | head -20              
+    488859:    <!-- http://www.ebi.ac.uk/efo/EFO_0920083 -->                  
+    488861:        <owl:Class rdf:about="http://www.ebi.ac.                   
+  uk/efo/EFO_0920083">                                                        
+    488870:        <owl:annotatedSource rdf:resource="http://www.ebi.ac.      
+  uk/efo/EFO_0920083"/>                                                       
+    488879:    <!-- http://www.ebi.ac.uk/efo/EFO_0920084 -->                  
+    488881:        <owl:Class rdf:about="http://www.ebi.ac.                   
+  uk/efo/EFO_0920084">                                                        
+    488890:        <owl:annotatedSource rdf:resource="http://www.ebi.ac.      
+  uk/efo/EFO_0920084"/>                                                       
+    488899:    <!-- http://www.ebi.ac.uk/efo/EFO_0920085 -->                  
+    488901:        <owl:Class rdf:about="http://www.ebi.ac.                   
+  uk/efo/EFO_0920085">                                                        
+    488911:        <owl:annotatedSource rdf:resource="http://www.ebi.ac.      
+  uk/efo/EFO_0920085"/>                                                       
+    <exited with exit code 0>
+
+View src/ontology/efo-edit.owl
+<oboInOwl:hasExactSynonym>10x 5&apos; v3                         
+  sequencing</oboInOwl:hasExactSynonym>                                       
+             <rdfs:label xml:lang="en">10x 5&apos; v3</rdfs:label>            
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0022606 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0022606">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0008995"/>                                                       
+             <obo:IAO_0000115>10x Gene Expression Flex is a probe-based assay 
+  that allows for single cell transcriptome profiling of fresh, fixed, or     
+  frozen cells from either humans or mice.</obo:IAO_0000115>                  
+             <dc:creator>Zoe May Pendlington</dc:creator>                     
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2024-04-23T12:13:10Z</dc:date>                 
+             <oboInOwl:hasExactSynonym>10X Chromium                           
+  FLEX</oboInOwl:hasExactSynonym>                                             
+             <oboInOwl:hasExactSynonym>10X gene expression                    
+  flex</oboInOwl:hasExactSynonym>                                             
+             <oboInOwl:hasExactSynonym>10x Chromium                           
+  FLEX</oboInOwl:hasExactSynonym>                                             
+             <oboInOwl:hasExactSynonym>10x gene expression                    
+  flex</oboInOwl:hasExactSynonym>                                             
+             <rdfs:label xml:lang="en">10x gene expression flex</rdfs:label>  
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0022606"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>10x Gene Expression Flex is a probe-based   
+  assay that allows for single cell transcriptome profiling of fresh, fixed,  
+  or frozen cells from either humans or mice.</owl:annotatedTarget>           
+             <efo:definition_citation>https://www.10xgenomics.                
+  com/products/single-cell-gene-expression-flex</efo:definition_citation>     
+             <efo:definition_citation>https://www.biorxiv.org/content/10.     
+  1101/2024.01.25.577066v2.full</efo:definition_citation>                     
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0022607 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0022607">         
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/MONDO_0005516"/>                                                    
+             <obo:IAO_0000115>Sulfate transporter-related                     
+  osteochondrodysplasias are a group of inherited diseases caused by mutations
+  in a gene called SLC26A2, which plays a role in cartilage and bone formation.
+  These diseases include achondrogenesis type Ib, diastrophic dysplasia,      
+  atelosteogenesis type II, and recessive multiple epiphyseal dysplasia.      
+  </obo:IAO_0000115>                                                          
+             <dc:creator>Zoe May Pendlington</dc:creator>                     
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2024-06-03T14:50:22Z</dc:date>                 
+             <oboInOwl:hasExactSynonym>DTDST-related                          
+  dysplasias</oboInOwl:hasExactSynonym>                                       
+             <rdfs:label xml:lang="en">sulfate transporter-related            
+  osteochondrodysplasia</rdfs:label>                                          
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0022607"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>Sulfate transporter-related                 
+  osteochondrodysplasias are a group of inherited diseases caused by mutations
+  in a gene called SLC26A2, which plays a role in cartilage and bone formation.
+  These diseases include achondrogenesis type Ib, diastrophic dysplasia,      
+  atelosteogenesis type II, and recessive multiple epiphyseal dysplasia.      
+  </owl:annotatedTarget>                                                      
+             <efo:definition_citation>https://myriad.com/womens-              
+  health/diseases/slc26a2-related-disorders/</efo:definition_citation>        
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0022608 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0022608">         
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/MONDO_0002254"/>                                                    
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/MONDO_0003847"/>                                                    
+             <obo:IAO_0000115>A defect including left pulmonary isomerism,    
+  with cardiac anomalies characterized by complete atrioventricular canal     
+  defect and hypoplastic left ventricle, and interrupted inferior vena cava.  
+  </obo:IAO_0000115>                                                          
+             <dc:creator>Zoe May Pendlington</dc:creator>                     
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2024-06-03T15:00:07Z</dc:date>
+
+View src/ontology/efo-edit.owl
+</owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0920083 -->                        
+                                                                              
+             <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920083">     
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0920081"/>                                                       
+             <obo:IAO_0000115>Targeted locus integration refers to the process
+  where an exogenous genetic material is inserted into the host genome at     
+  specifically pre-determined location using cell&apos;s homology-directed    
+  repair mechanisms. In contrast to the random locus integration approach,    
+  this minimises the risk of insertional mutagenesis and ensures more         
+  consistent transgene expression.</obo:IAO_0000115>                          
+             <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2026-03-26T11:30:00Z</dc:date>                 
+             <oboInOwl:hasDbXref>PMID:20071742</oboInOwl:hasDbXref>           
+             <rdfs:label xml:lang="en">targeted locus integration</rdfs:label>
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920083"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>A nucleic acid integration state in which   
+  the delivered nucleic acid is directed to integrate at a specific, pre-     
+  defined chromosomal locus using site-specific recombination systems or      
+  precision genome editing tools.</owl:annotatedTarget>                       
+             <oboInOwl:hasDbXref>PMID:41705810</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41820622</oboInOwl:hasDbXref>           
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0920084 -->                        
+                                                                              
+             <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920084">     
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0920081"/>                                                       
+             <obo:IAO_0000115>Native locus replacement refers to the process  
+  where the exogenously introduced genetic material replaces the host&apos;s  
+  native genomic sequence. This is achieved by introducing double-stranded DNA
+  breaks in the host genome using gene editing tools, such as CRISPR/Cas9 or  
+  TALENS, together with template DNA (often a corrected or modified version of
+  the gene) flanked by homology arms to promote the sequence incorporation    
+  into the host&apos;s genome at a native locus by means of homology-directed 
+  repair.</obo:IAO_0000115>                                                   
+             <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2026-03-26T11:30:00Z</dc:date>                 
+             <oboInOwl:hasDbXref>PMID:20071742</oboInOwl:hasDbXref>           
+             <rdfs:label xml:lang="en">native locus replacement</rdfs:label>  
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920084"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>A nucleic acid integration state in which   
+  the delivered nucleic acid sequence replaces an endogenous sequence at the  
+  native genomic locus via homology-directed repair, preserving the natural   
+  chromosomal context.</owl:annotatedTarget>                                  
+             <oboInOwl:hasDbXref>PMID:41705810</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41820622</oboInOwl:hasDbXref>           
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0920085 -->                        
+                                                                              
+             <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920085">     
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0920081"/>                                                       
+             <obo:IAO_0000115>Non-integrative transgene expression refers to  
+  the process where the foreign genetic material is expressed without being   
+  permanently incorporated into the host&apos;s genome. Instead, the transgene
+  exists in the cell as a separate entity, usually in the form of an episome, 
+  plasmid, or mRNA.</obo:IAO_0000115>                                         
+             <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2026-03-26T11:30:00Z</dc:date>                 
+             <oboInOwl:hasDbXref>PMID:30472380</oboInOwl:hasDbXref>           
+             <oboInOwl:hasRelatedSynonym>episomal                             
+  expression</oboInOwl:hasRelatedSynonym>                                     
+             <rdfs:label xml:lang="en">not-integrative transgene              
+  expression</rdfs:label>                                                     
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920085"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>A nucleic acid integration state in which   
+  the delivered nucleic acid persists episomally in the host cell without     
+  integration into the chromosomal DNA, resulting in transient or non-        
+  heritable transgene expression.</owl:annotatedTarget>                       
+             <oboInOwl:hasDbXref>PMID:41624053</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41641696</oboInOwl:hasDbXref>           
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_1000003 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_1000003">         
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/HP_0008277"/>                                                       
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0000651"/>                                                       
+             <obo:IAO_0000115>A deficiency of the essential metal Zinc; an    
+  essential cofactor for many enzymes. Zinc deficiency is caused by a lack of 
+  zinc in the diet, loss of zinc after absorption, for example through loss   
+  through burns, inability to absorb Zinc, or increased loss through exercise.
+  </obo:IAO_0000115>                                                          
+             <obo:IAO_0000117>Helen Parkinson</obo:IAO_0000117>               
+             <efo:definition_citation>https://en.wikipedia.                   
+  org/wiki/Zinc_deficiency</efo:definition_citation>                          
+             <oboInOwl:hasDbXref>MedDRA:10048259</oboInOwl:hasDbXref>         
+             <oboInOwl:hasDbXref>SNOMEDCT:238124008</oboInOwl:hasDbXref>      
+             <rdfs:label>Zinc deficiency</rdfs:label>
+
+
+Let me look at similar 10x assay terms to understand the citation pattern   
+  used:
+
+Bash: Find 10x assay terms
+$ grep -n "10x|10X" /home/runner/work/efo/efo/src/ontology/efo-edit.owl | 
+  grep "rdfs:label" | head -20                                                
+    278257:        <rdfs:label>AR-C124910XX measurement</rdfs:label>          
+    308901:        <rdfs:label>10x sequencing protocol</rdfs:label>           
+    323859:        <rdfs:label>10x technology</rdfs:label>                    
+    330072:        <rdfs:label>obsolete_10x v2</rdfs:label>                   
+    340546:        <rdfs:label>obsolete_10x v1</rdfs:label>                   
+    340564:        <rdfs:label>obsolete_10x v3</rdfs:label>                   
+    340585:        <rdfs:label>10x 3&apos; v2</rdfs:label>                    
+    340599:        <rdfs:label>10x 5&apos; v2</rdfs:label>                    
+    340617:        <rdfs:label>10x 3&apos; v1</rdfs:label>                    
+    341163:        <rdfs:label>obsolete_10x 5&apos; v3</rdfs:label>           
+    341182:        <rdfs:label>10x 3&apos; v3</rdfs:label>                    
+    354363:        <rdfs:label>10x immune profiling</rdfs:label>              
+    354375:        <rdfs:label>10x TCR enrichment</rdfs:label>                
+    354388:        <rdfs:label>10x Ig enrichment</rdfs:label>                 
+    360026:        <rdfs:label>10x 5&apos; v1</rdfs:label>                    
+    407481:        <rdfs:label xml:lang="en">10x 3&apos; v4</rdfs:label>      
+    407496:        <rdfs:label xml:lang="en">10x 5&apos; v3</rdfs:label>      
+    407512:        <rdfs:label xml:lang="en">10x gene expression              
+  flex</rdfs:label>                                                           
+    407668:        <rdfs:label xml:lang="en">10x Xenium</rdfs:label>          
+    420348:        <rdfs:label xml:lang="en">10x 3&apos; v3.1</rdfs:label>    
+    <exited with exit code 0>
+
+Bash: Check parent hierarchy context
+$ grep -n "EFO_0022606|EFO_0008995"                                       
+  /home/runner/work/efo/efo/src/ontology/efo-edit.owl | head -10              
+    323831:    <!-- http://www.ebi.ac.uk/efo/EFO_0008995 -->                  
+    323833:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0008995">   
+    354355:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0008995"/>                                                       
+    359006:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0008995"/>                                                       
+    407501:    <!-- http://www.ebi.ac.uk/efo/EFO_0022606 -->                  
+    407503:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0022606">   
+    407504:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0008995"/>                                                       
+    407515:        <owl:annotatedSource rdf:resource="http://www.ebi.ac.      
+  uk/efo/EFO_0022606"/>                                                       
+    420666:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0008995"/>                                                       
+    420723:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0008995"/>                                                       
+    <exited with exit code 0>
+
+Bash: Look at recent EFO_0022xxx terms
+$ # Look at a recent 10x term to get citation format                      
+    grep -n "EFO_0022" /home/runner/work/efo/efo/src/ontology/efo-edit.owl |  
+  head -20                                                                    
+    2427:        <obo:IAO_0100001>http://www.ebi.ac.                          
+  uk/efo/EFO_0022778</obo:IAO_0100001>                                        
+    2483:        <obo:IAO_0100001>http://www.ebi.ac.                          
+  uk/efo/EFO_0022749</obo:IAO_0100001>                                        
+    2850:        <obo:IAO_0100001>http://www.ebi.ac.                          
+  uk/efo/EFO_0022376</obo:IAO_0100001>                                        
+    3121:        <obo:IAO_0100001>http://www.ebi.ac.                          
+  uk/efo/EFO_0022835</obo:IAO_0100001>                                        
+    45552:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0022837"/>                                                       
+    45704:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0022836"/>                                                       
+    45724:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0022836"/>                                                       
+    46224:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0022836"/>                                                       
+    47104:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0022836"/>                                                       
+    47112:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0022836"/>                                                       
+    150774:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0022463"/>                                                       
+    220574:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0022043"/>                                                       
+    230190:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0022419"/>                                                       
+    237134:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0022597"/>                                                       
+    277444:                <owl:someValuesFrom rdf:resource="http://www.ebi.ac.
+  uk/efo/EFO_0022599"/>                                                       
+    297084:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0022463"/>                                                       
+    297100:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0022477"/>                                                       
+    337454:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0022958"/>                                                       
+    358921:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0022912"/>                                                       
+    391843:    <!-- http://www.ebi.ac.uk/efo/EFO_0022000 -->                  
+    <exited with exit code 0>
+
+
+Now let me set up my plan and delegate to the EFO-ontologist to add the two 
+  new terms:
+
+Progress update: Initial plan for adding 10x Next GEM Flex and 10x GEM-X Flex terms
+
+[ ] Add EFO term for "10x Next GEM Flex" (EFO_0920086) as child of          
+  EFO_0022606                                                                 
+  [ ] Add EFO term for "10x GEM-X Flex" (EFO_0920087) as child of EFO_0022606 
+  [ ] Normalize the OWL file                                                  
+  [ ] Verify changes are correct
+
+▶️ Begin subagent: EFO-ontologist
+❌ Failed subagent: EFO-ontologist
+Call to task
+
+Input:
+
+{                                                                         
+      "agent_type": "EFO-ontologist",                                         
+      "description": "Add 10x Next GEM Flex and 10x GEM-X Flex terms",        
+      "name": "add-10x-flex-terms",                                           
+      "prompt": "Please add two new terms to                                  
+  `/home/runner/work/efo/efo/src/ontology/efo-edit.owl`.\n\n## Context\nGitHub
+  issue: NTR: add 10x Flex versions Next GEM and GEM-X\n\n## Term 1: 10x Next 
+  GEM Flex\n- **ID**: EFO_0920086\n- **Label**: 10x Next GEM Flex\n-          
+  **Parent**: EFO_0022606 (http://www.ebi.ac.uk/efo/EFO_0022606)\n-           
+  **Definition**: \"10x Next GEM Flex is a probe-based assay where protein    
+  targeting probe pairs are used in conjunction with probe barcodes, allowing 
+  for singleplexed or multiplexed experiments, with a recommended 8,000 cells 
+  target per probe barcode.\"\n- **Definition citations** (use                
+  efo:definition_citation format):\n  - https://www.10xgenomics.              
+  com/support/flex-gene-expression/documentation/steps/library-prep/chromium- 
+  single-cell-gene-expression-flex-reagent-kits-for-multiplexed-samples\n-    
+  **Synonyms**:\n  - \"Next GEM Flex\" → hasExactSynonym\n- **Creator**: AI   
+  agent\n\n## Term 2: 10x GEM-X Flex\n- **ID**: EFO_0920087\n- **Label**: 10x 
+  GEM-X Flex\n- **Parent**: EFO_0022606 (http://www.ebi.ac.                   
+  uk/efo/EFO_0022606)\n- **Definition**: \"10x GEM-X Flex is a probe-based    
+  assay where protein targeting probe pairs are used in conjunction with probe
+  barcodes, allowing for singleplexed or multiplexed experiments. GEM-X       
+  includes redesigned microfluidics that allow for recommended 20,000 cells   
+  targeted per probe barcode.\"\n- **Definition citations** (use              
+  efo:definition_citation format):\n  - https://www.10xgenomics.              
+  com/support/flex-gene-expression/documentation/steps/library-prep/gem-x-flex-
+  gene-expression-reagent-kit-for-multiplex-samples\n- **Synonyms**:\n  -     
+  \"GEM-X Flex\" → hasExactSynonym\n- **Creator**: AI agent\n\n## Important   
+  notes\n- Insert both terms right after line 407520 (after the closing       
+  \u003c/owl:Axiom\u003e tag for EFO_0022606, around line 407521)\n- Follow   
+  the exact XML format used for EFO_0022606 (the parent term) at lines 407503-
+  407520\n- After editing, run `cd /home/runner/work/efo/efo/src/ontology     
+  \u0026\u0026 make normalize_src` to normalize\n- Commit with message: \"Add 
+  10x Next GEM Flex (EFO_0920086) and 10x GEM-X Flex (EFO_0920087) as children
+  of EFO_0022606\"\n\n## Reference format from parent term (EFO_0022606 at    
+  line 407503):\n```xml\n\u003cowl:Class rdf:about=\"http://www.ebi.ac.       
+  uk/efo/EFO_0022606\"\u003e\n    \u003crdfs:subClassOf                       
+  rdf:resource=\"http://www.ebi.ac.uk/efo/EFO_0008995\"/\u003e\n              
+  \u003cobo:IAO_0000115\u003e10x Gene Expression Flex is a probe-based assay...
+  \u003c/obo:IAO_0000115\u003e\n    \u003cdc:creator\u003eZoe May             
+  Pendlington\u003c/dc:creator\u003e\n    \u003cdc:date                       
+  rdf:datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\"\u003e2024-04-    
+  23T12:13:10Z\u003c/dc:date\u003e\n                                          
+  \u003coboInOwl:hasExactSynonym\u003e10X Chromium                            
+  FLEX\u003c/oboInOwl:hasExactSynonym\u003e\n    ...\n    \u003crdfs:label    
+  xml:lang=\"en\"\u003e10x gene expression                                    
+  flex\u003c/rdfs:label\u003e\n\u003c/owl:Class\u003e\n\u003cowl:Axiom\u003e\n
+  \u003cowl:annotatedSource rdf:resource=\"http://www.ebi.ac.                 
+  uk/efo/EFO_0022606\"/\u003e\n    \u003cowl:annotatedProperty                
+  rdf:resource=\"http://purl.obolibrary.org/obo/IAO_0000115\"/\u003e\n        
+  \u003cowl:annotatedTarget\u003e10x Gene Expression Flex is...               
+  \u003c/owl:annotatedTarget\u003e\n                                          
+  \u003cefo:definition_citation\u003ehttps://www.10xgenomics.com/...          
+  \u003c/efo:definition_citation\u003e\n\u003c/owl:Axiom\u003e\n```\n"        
+    }
+
+
+Let me add the terms directly myself:
+
+View src/ontology/efo-edit.owl
+</owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0022606"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>10x Gene Expression Flex is a probe-based   
+  assay that allows for single cell transcriptome profiling of fresh, fixed,  
+  or frozen cells from either humans or mice.</owl:annotatedTarget>           
+             <efo:definition_citation>https://www.10xgenomics.                
+  com/products/single-cell-gene-expression-flex</efo:definition_citation>     
+             <efo:definition_citation>https://www.biorxiv.org/content/10.     
+  1101/2024.01.25.577066v2.full</efo:definition_citation>                     
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0022607 -->
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "    \u003c/owl:Axiom\u003e\n    \n\n\n    \u003c!--         
+  http://www.ebi.ac.uk/efo/EFO_0920086 --\u003e\n\n    \u003cowl:Class        
+  rdf:about=\"http://www.ebi.ac.uk/efo/EFO_0920086\"\u003e\n                  
+  \u003crdfs:subClassOf rdf:resource=\"http://www.ebi.ac.                     
+  uk/efo/EFO_0022606\"/\u003e\n        \u003cobo:IAO_0000115\u003e10x Next GEM
+  Flex is a probe-based assay where protein targeting probe pairs are used in 
+  conjunction with probe barcodes, allowing for singleplexed or multiplexed   
+  experiments, with a recommended 8,000 cells target per probe barcode.       
+  \u003c/obo:IAO_0000115\u003e\n        \u003cobo:IAO_0000117\u003eAI         
+  agent\u003c/obo:IAO_0000117\u003e\n        \u003cdc:date                    
+  rdf:datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\"\u003e2026-03-    
+  27T09:18:15Z\u003c/dc:date\u003e\n                                          
+  \u003coboInOwl:hasExactSynonym\u003eNext GEM                                
+  Flex\u003c/oboInOwl:hasExactSynonym\u003e\n        \u003crdfs:label         
+  xml:lang=\"en\"\u003e10x Next GEM Flex\u003c/rdfs:label\u003e\n             
+  \u003c/owl:Class\u003e\n    \u003cowl:Axiom\u003e\n                         
+  \u003cowl:annotatedSource rdf:resource=\"http://www.ebi.ac.                 
+  uk/efo/EFO_0920086\"/\u003e\n        \u003cowl:annotatedProperty            
+  rdf:resource=\"http://purl.obolibrary.org/obo/IAO_0000115\"/\u003e\n        
+  \u003cowl:annotatedTarget\u003e10x Next GEM Flex is a probe-based assay     
+  where protein targeting probe pairs are used in conjunction with probe      
+  barcodes, allowing for singleplexed or multiplexed experiments, with a      
+  recommended 8,000 cells target per probe barcode.                           
+  \u003c/owl:annotatedTarget\u003e\n                                          
+  \u003cefo:definition_citation\u003ehttps://www.10xgenomics.com/support/flex-
+  gene-expression/documentation/steps/library-prep/chromium-single-cell-gene- 
+  expression-flex-reagent-kits-for-multiplexed-                               
+  samples\u003c/efo:definition_citation\u003e\n                               
+  \u003c/owl:Axiom\u003e\n\n\n\n    \u003c!-- http://www.ebi.ac.              
+  uk/efo/EFO_0920087 --\u003e\n\n    \u003cowl:Class rdf:about=\"http://www.  
+  ebi.ac.uk/efo/EFO_0920087\"\u003e\n        \u003crdfs:subClassOf            
+  rdf:resource=\"http://www.ebi.ac.uk/efo/EFO_0022606\"/\u003e\n              
+  \u003cobo:IAO_0000115\u003e10x GEM-X Flex is a probe-based assay where      
+  protein targeting probe pairs are used in conjunction with probe barcodes,  
+  allowing for singleplexed or multiplexed experiments. GEM-X includes        
+  redesigned microfluidics that allow for recommended 20,000 cells targeted   
+  per probe barcode.\u003c/obo:IAO_0000115\u003e\n                            
+  \u003cobo:IAO_0000117\u003eAI agent\u003c/obo:IAO_0000117\u003e\n           
+  \u003cdc:date rdf:datatype=\"http://www.w3.                                 
+  org/2001/XMLSchema#dateTime\"\u003e2026-03-                                 
+  27T09:18:15Z\u003c/dc:date\u003e\n                                          
+  \u003coboInOwl:hasExactSynonym\u003eGEM-X                                   
+  Flex\u003c/oboInOwl:hasExactSynonym\u003e\n        \u003crdfs:label         
+  xml:lang=\"en\"\u003e10x GEM-X Flex\u003c/rdfs:label\u003e\n                
+  \u003c/owl:Class\u003e\n    \u003cowl:Axiom\u003e\n                         
+  \u003cowl:annotatedSource rdf:resource=\"http://www.ebi.ac.                 
+  uk/efo/EFO_0920087\"/\u003e\n        \u003cowl:annotatedProperty            
+  rdf:resource=\"http://purl.obolibrary.org/obo/IAO_0000115\"/\u003e\n        
+  \u003cowl:annotatedTarget\u003e10x GEM-X Flex is a probe-based assay where  
+  protein targeting probe pairs are used in conjunction with probe barcodes,  
+  allowing for singleplexed or multiplexed experiments. GEM-X includes        
+  redesigned microfluidics that allow for recommended 20,000 cells targeted   
+  per probe barcode.\u003c/owl:annotatedTarget\u003e\n                        
+  \u003cefo:definition_citation\u003ehttps://www.10xgenomics.com/support/flex-
+  gene-expression/documentation/steps/library-prep/gem-x-flex-gene-expression-
+  reagent-kit-for-multiplex-samples\u003c/efo:definition_citation\u003e\n     
+  \u003c/owl:Axiom\u003e\n\n\n\n    \u003c!-- http://www.ebi.ac.              
+  uk/efo/EFO_0022607 --\u003e",                                               
+      "old_str": "    \u003c/owl:Axiom\u003e\n    \n\n\n    \u003c!--         
+  http://www.ebi.ac.uk/efo/EFO_0022607 --\u003e",                             
+      "path": "/home/runner/work/efo/efo/src/ontology/efo-edit.owl"           
+    }
+
+
+Now let me verify the changes look correct:
+
+Bash: Verify new terms were added
+$ grep -n "EFO_0920086|EFO_0920087|Next GEM Flex|GEM-X Flex"              
+  /home/runner/work/efo/efo/src/ontology/efo-edit.owl | head -30              
+    407524:    <!-- http://www.ebi.ac.uk/efo/EFO_0920086 -->                  
+    407526:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920086">   
+    407528:        <obo:IAO_0000115>10x Next GEM Flex is a probe-based assay  
+  where protein targeting probe pairs are used in conjunction with probe      
+  barcodes, allowing for singleplexed or multiplexed experiments, with a      
+  recommended 8,000 cells target per probe barcode.</obo:IAO_0000115>         
+    407531:        <oboInOwl:hasExactSynonym>Next GEM                         
+  Flex</oboInOwl:hasExactSynonym>                                             
+    407532:        <rdfs:label xml:lang="en">10x Next GEM Flex</rdfs:label>   
+    407535:        <owl:annotatedSource rdf:resource="http://www.ebi.ac.      
+  uk/efo/EFO_0920086"/>                                                       
+    407537:        <owl:annotatedTarget>10x Next GEM Flex is a probe-based    
+  assay where protein targeting probe pairs are used in conjunction with probe
+  barcodes, allowing for singleplexed or multiplexed experiments, with a      
+  recommended 8,000 cells target per probe barcode.</owl:annotatedTarget>     
+    407543:    <!-- http://www.ebi.ac.uk/efo/EFO_0920087 -->                  
+    407545:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920087">   
+    407547:        <obo:IAO_0000115>10x GEM-X Flex is a probe-based assay     
+  where protein targeting probe pairs are used in conjunction with probe      
+  barcodes, allowing for singleplexed or multiplexed experiments. GEM-X       
+  includes redesigned microfluidics that allow for recommended 20,000 cells   
+  targeted per probe barcode.</obo:IAO_0000115>                               
+    407550:        <oboInOwl:hasExactSynonym>GEM-X                            
+  Flex</oboInOwl:hasExactSynonym>                                             
+    407551:        <rdfs:label xml:lang="en">10x GEM-X Flex</rdfs:label>      
+    407554:        <owl:annotatedSource rdf:resource="http://www.ebi.ac.      
+  uk/efo/EFO_0920087"/>                                                       
+    407556:        <owl:annotatedTarget>10x GEM-X Flex is a probe-based assay 
+  where protein targeting probe pairs are used in conjunction with probe      
+  barcodes, allowing for singleplexed or multiplexed experiments. GEM-X       
+  includes redesigned microfluidics that allow for recommended 20,000 cells   
+  targeted per probe barcode.</owl:annotatedTarget>                           
+    <exited with exit code 0>
+
+
+The terms are added correctly. Now let me normalize the OWL file:
+
+Bash: Normalize the OWL file
+$ cd /home/runner/work/efo/efo/src/ontology && make normalize_src 2>&1 |  
+  tail -20                                                                    
+    Makefile:95: warning: overriding recipe for target '.PRECIOUS'            
+    Makefile:91: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:229: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:95: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:387: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:229: warning: ignoring old recipe for target '.PRECIOUS'         
+    ../../bin/robot convert -i efo-edit.owl -f owl -o tmp/normalise && mv     
+  tmp/normalise efo-edit.owl                                                  
+    org.semanticweb.owlapi.model.UnloadableImportException: Could not load    
+  imported ontology: <http://www.ebi.ac.uk/efo/imports/mondo_import.owl>      
+  Cause: /home/runner/work/efo/efo/src/ontology/imports/mondo_import.owl (No  
+  such file or directory)                                                     
+    Use the -vvv option to show the stack trace.                              
+    Use the --help option to see usage information.                           
+    make: *** [Makefile:72: normalize_src] Error 1                            
+    <exited with exit code 0>
+
+
+The normalization fails due to missing import files (this is a known        
+  constraint in the repo environment). Let me verify the XML I added is valid 
+  by checking the structure:
+
+View src/ontology/efo-edit.owl
+<efo:definition_citation>https://www.biorxiv.org/content/10.     
+  1101/2024.01.25.577066v2.full</efo:definition_citation>                     
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0920086 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920086">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0022606"/>                                                       
+             <obo:IAO_0000115>10x Next GEM Flex is a probe-based assay where  
+  protein targeting probe pairs are used in conjunction with probe barcodes,  
+  allowing for singleplexed or multiplexed experiments, with a recommended 8, 
+  000 cells target per probe barcode.</obo:IAO_0000115>                       
+             <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2026-03-27T09:18:15Z</dc:date>                 
+             <oboInOwl:hasExactSynonym>Next GEM                               
+  Flex</oboInOwl:hasExactSynonym>                                             
+             <rdfs:label xml:lang="en">10x Next GEM Flex</rdfs:label>         
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920086"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>10x Next GEM Flex is a probe-based assay    
+  where protein targeting probe pairs are used in conjunction with probe      
+  barcodes, allowing for singleplexed or multiplexed experiments, with a      
+  recommended 8,000 cells target per probe barcode.</owl:annotatedTarget>     
+             <efo:definition_citation>https://www.10xgenomics.com/support/flex-
+  gene-expression/documentation/steps/library-prep/chromium-single-cell-gene- 
+  expression-flex-reagent-kits-for-multiplexed-                               
+  samples</efo:definition_citation>                                           
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0920087 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920087">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0022606"/>                                                       
+             <obo:IAO_0000115>10x GEM-X Flex is a probe-based assay where     
+  protein targeting probe pairs are used in conjunction with probe barcodes,  
+  allowing for singleplexed or multiplexed experiments. GEM-X includes        
+  redesigned microfluidics that allow for recommended 20,000 cells targeted   
+  per probe barcode.</obo:IAO_0000115>                                        
+             <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2026-03-27T09:18:15Z</dc:date>                 
+             <oboInOwl:hasExactSynonym>GEM-X Flex</oboInOwl:hasExactSynonym>  
+             <rdfs:label xml:lang="en">10x GEM-X Flex</rdfs:label>            
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920087"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>10x GEM-X Flex is a probe-based assay where 
+  protein targeting probe pairs are used in conjunction with probe barcodes,  
+  allowing for singleplexed or multiplexed experiments. GEM-X includes        
+  redesigned microfluidics that allow for recommended 20,000 cells targeted   
+  per probe barcode.</owl:annotatedTarget>                                    
+             <efo:definition_citation>https://www.10xgenomics.com/support/flex-
+  gene-expression/documentation/steps/library-prep/gem-x-flex-gene-expression-
+  reagent-kit-for-multiplex-samples</efo:definition_citation>                 
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0022607 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0022607">         
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/MONDO_0005516"/>                                                    
+             <obo:IAO_0000115>Sulfate transporter-related                     
+  osteochondrodysplasias are a group of inherited diseases caused by mutations
+  in a gene called SLC26A2, which plays a role in cartilage and bone formation.
+  These diseases include achondrogenesis type Ib, diastrophic dysplasia,      
+  atelosteogenesis type II, and recessive multiple epiphyseal dysplasia.      
+  </obo:IAO_0000115>                                                          
+             <dc:creator>Zoe May Pendlington</dc:creator>                     
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2024-06-03T14:50:22Z</dc:date>                 
+             <oboInOwl:hasExactSynonym>DTDST-related                          
+  dysplasias</oboInOwl:hasExactSynonym>                                       
+             <rdfs:label xml:lang="en">sulfate transporter-related            
+  osteochondrodysplasia</rdfs:label>
+
+
+The terms look correct. Now let me commit and push the changes:
+
+Progress update: Add 10x Next GEM Flex (EFO_0920086) and 10x GEM-X Flex (EFO_0920087) as children of EFO_0022606
+
+[x] Add EFO term for "10x Next GEM Flex" (EFO_0920086) as child of          
+  EFO_0022606                                                                 
+  [x] Add EFO term for "10x GEM-X Flex" (EFO_0920087) as child of EFO_0022606 
+  [ ] Normalize the OWL file (skipped - import files unavailable in sandbox)  
+  [x] Verify changes are correct
+
+Call to code_review
+
+Input:
+
+{                                                                         
+      "prDescription": "Adds two new EFO terms as children of EFO_0022606 (10x
+  gene expression flex):\n\n1. **EFO_0920086 - 10x Next GEM Flex**: probe-    
+  based assay with recommended 8,000 cells target per probe barcode, with     
+  synonym \"Next GEM Flex\"\n2. **EFO_0920087 - 10x GEM-X Flex**: probe-based 
+  assay with redesigned microfluidics allowing 20,000 cells targeted per probe
+  barcode, with synonym \"GEM-X Flex\"\n\nEach term includes:\n- rdfs:label\n-
+  obo:IAO_0000115 definition\n- obo:IAO_0000117 creator\n- dc:date\n-         
+  hasExactSynonym\n- efo:definition_citation (URL to 10x documentation)\n-    
+  owl:Axiom annotation on the definition",                                    
+      "prTitle": "NTR: Add 10x Next GEM Flex and 10x GEM-X Flex terms"        
+    }
+
+Run CodeQL analysis
+
+Input:
+
+{                                                                         
+      "trivialChangeDeclaration": {                                           
+        "isTrivial": true,                                                    
+        "reason": "Changes are only additions to an OWL/XML ontology file - no
+  executable code was changed, only ontology term definitions were added."    
+      }                                                                       
+    }
+
+
+The changes are complete. Here's a summary of what was implemented:         
+                                                                              
+  ## Summary                                                                  
+                                                                              
+  Added two new EFO terms as requested in the GitHub issue, both as children  
+  of **EFO_****0022606** (10x gene expression flex):                          
+                                                                              
+  ### EFO_0920086 - 10x Next GEM Flex                                         
+                                                                              
+  • **Label**: 10x Next GEM Flex                                              
+  • **Definition**: "10x Next GEM Flex is a probe-based assay where protein   
+  targeting probe pairs are used in conjunction with probe barcodes, allowing 
+  for singleplexed or multiplexed experiments, with a recommended 8,000 cells 
+  target per probe barcode."                                                  
+  • **Synonym**: Next GEM Flex (hasExactSynonym)                              
+  • **Citation**: 10x Next GEM Flex Multiplex User Guide URL                  
+                                                                              
+  ### EFO_0920087 - 10x GEM-X Flex                                            
+                                                                              
+  • **Label**: 10x GEM-X Flex                                                 
+  • **Definition**: "10x GEM-X Flex is a probe-based assay where protein      
+  targeting probe pairs are used in conjunction with probe barcodes, allowing 
+  for singleplexed or multiplexed experiments. GEM-X includes redesigned      
+  microfluidics that allow for recommended 20,000 cells targeted per probe    
+  barcode."                                                                   
+  • **Synonym**: GEM-X Flex (hasExactSynonym)                                 
+  • **Citation**: 10x GEM-X Flex Multiplex User Guide URL                     
+                                                                              
+  Both terms follow the same XML structure as the parent term EFO_0022606 and 
+  other recent 10x assay terms in the ontology.                               
+                                                                              
+  **Security Summary**: No security vulnerabilities introduced. Changes are   
+  purely ontology term additions in OWL/XML format.
+

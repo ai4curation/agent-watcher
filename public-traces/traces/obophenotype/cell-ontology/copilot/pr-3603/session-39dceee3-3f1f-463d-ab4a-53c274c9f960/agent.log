@@ -1,0 +1,1472 @@
+Clone repository obophenotype/cell-ontology
+Start 'playwright' MCP server
+Start 'github-mcp-server' MCP server
+Start 'ols4' MCP server
+Start 'artl-mcp' MCP server
+Call to search_code_subagent
+
+Input:
+
+{                                                                         
+      "query": "hippocampal interneuron GABAergic neuron CA1 stratum oriens"  
+    }
+
+Bash: List recent issues
+$ cd /home/runner/work/cell-ontology/cell-ontology && gh issue list --    
+  limit 10 2>/dev/null | head -20                                             
+    3602	OPEN	[NTR]	new term request	2026-04-10T10:47:24Z                         
+    3601	OPEN	Shouldn't Beam B cell be a subclass of Beam cell?		2026-04-         
+  01T20:36:36Z                                                                
+    3596	OPEN	Add 'added_by_HRA' subset to approrpriate CL terms		2026-04-        
+  10T01:46:25Z                                                                
+    3595	OPEN	[Typo/Bug] Neurectodermal cell	bug, typo	2026-03-20T20:04:21Z       
+    3581	OPEN	[NTR] proliferating tumor cell	new term request	2026-03-            
+  02T13:40:20Z                                                                
+    3577	OPEN	Preferred design pattern for including marker genes in novel      
+  cell type names	pattern	2026-03-19T14:36:09Z                                  
+    3573	OPEN	[Class hierarchy] Revise CD161 expression relation in CL_0020002  
+  (mucosal-associated invariant T	CL-classhierarchy	2026-02-20T00:07:49Z        
+    3567	OPEN	Revise plasmacytoid dendritic cell name and synonyms		2026-02-      
+  13T15:35:48Z                                                                
+    3566	OPEN	Review Basal Ganglion taxonomy Subclasses for addition to CL      
+  Priority-High	2026-03-26T15:58:15Z                                           
+    3565	OPEN	[Design pattern] Adding a new cell type for every anatomical      
+  structure in Uberon	pattern	2026-02-05T13:35:57Z                              
+    <exited with exit code 0>
+
+Bash: Find hippocampal interneuron term
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "CL_1001569|
+  hippocampal interneuron" src/ontology/cl-edit.owl | head -30                
+    2696:Declaration(Class(obo:CL_1001569))                                   
+    29236:# Class: obo:CL_1001569 (hippocampal interneuron)                   
+    29238:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:pr")         
+  obo:IAO_0000115 obo:CL_1001569 "An interneuron with a soma found in the     
+  hippocampus.")                                                              
+    29239:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_1001569 "FMA:84777")  
+    29240:AnnotationAssertion(rdfs:label obo:CL_1001569 "hippocampal          
+  interneuron")                                                               
+    29241:EquivalentClasses(obo:CL_1001569 ObjectIntersectionOf(obo:CL_0000099
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0002421)))                   
+    <exited with exit code 0>
+
+Bash: Find ID range for new terms
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "CL_990"    
+  src/ontology/cl-idranges.owl | tail -20                                     
+                                                                              
+    <exited with exit code 0>
+
+Bash: View ID ranges
+$ cd /home/runner/work/cell-ontology/cell-ontology && cat src/ontology/cl-
+  idranges.owl                                                                
+    Prefix: idrange: <http://purl.obolibrary.org/obo/cl/idrange/>             
+    Prefix: allocatedto: <http://purl.obolibrary.org/obo/IAO_0000597>         
+    Prefix: iddigits: <http://purl.obolibrary.org/obo/IAO_0000596>            
+    Prefix: idprefix: <http://purl.obolibrary.org/obo/IAO_0000599>            
+    Prefix: idsfor: <http://purl.obolibrary.org/obo/IAO_0000598>              
+    Prefix: comment: <http://www.w3.org/2000/01/rdf-schema#comment>           
+                                                                              
+    Ontology: <http://purl.obolibrary.org/obo/cl/cl-idranges.owl>             
+                                                                              
+    Annotations:                                                              
+        idprefix: "http://purl.obolibrary.org/obo/CL_",                       
+        iddigits: 7,                                                          
+        idsfor: "CL"                                                          
+                                                                              
+    AnnotationProperty: allocatedto:                                          
+                                                                              
+    AnnotationProperty: idprefix:                                             
+                                                                              
+    AnnotationProperty: iddigits:                                             
+                                                                              
+    AnnotationProperty: idsfor:                                               
+                                                                              
+    AnnotationProperty: comment:                                              
+                                                                              
+    Datatype: idrange:1                                                       
+        Annotations:                                                          
+            allocatedto: "Alexander Diehl"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 1, < 2000]                                         
+                                                                              
+    Datatype: idrange:2                                                       
+        Annotations:                                                          
+            allocatedto: "Terrence Meehan"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 2001, < 4000]                                      
+                                                                              
+    Datatype: idrange:3                                                       
+        Annotations:                                                          
+            allocatedto: "Wade Valleau and Alexander Diehl, nervous system    
+  cell types"                                                                 
+        EquivalentTo:                                                         
+            xsd:integer[>= 4001, < 5000]                                      
+                                                                              
+    Datatype: idrange:4                                                       
+        Annotations:                                                          
+            allocatedto: "Ceri Van Slyke"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 5001, < 6000]                                      
+                                                                              
+    Datatype: idrange:5                                                       
+        Annotations:                                                          
+            allocatedto: "Alan Ruttenberg"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 6001, < 7000]                                      
+                                                                              
+    Datatype: idrange:6                                                       
+        Annotations:                                                          
+            allocatedto: "Melissa Haendel"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 7001, < 8000]                                      
+                                                                              
+    Datatype: idrange:7                                                       
+        Annotations:                                                          
+            allocatedto: "David Osumi-Sutherland"                             
+        EquivalentTo:                                                         
+            xsd:integer[>= 8001, < 9000]                                      
+                                                                              
+    Datatype: idrange:8                                                       
+        Annotations:                                                          
+            allocatedto: "Paola Roncaglia"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 9001, < 10000]                                     
+                                                                              
+    Datatype: idrange:9                                                       
+        Annotations:                                                          
+            allocatedto: "Chris Mungall"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 10001, < 11000]                                    
+                                                                              
+    Datatype: idrange:10                                                      
+        Annotations:                                                          
+            allocatedto: "Nicole Vasilevsky"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 11001, < 12000]                                    
+                                                                              
+    Datatype: idrange:11                                                      
+        Annotations:                                                          
+            allocatedto: "Tanya Berardini"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 12001, < 13000]                                    
+                                                                              
+    Datatype: idrange:12                                                      
+        Annotations:                                                          
+            allocatedto: "David Hill"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 13001, < 14000]                                    
+                                                                              
+    Datatype: idrange:13                                                      
+        Annotations:                                                          
+            allocatedto: "Jane Lomax"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 14001, < 15000]                                    
+                                                                              
+    Datatype: idrange:14                                                      
+        Annotations:                                                          
+            allocatedto: "Yvonne Bradford"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 15001, < 16000]                                    
+                                                                              
+    Datatype: idrange:15                                                      
+        Annotations:                                                          
+            allocatedto: "Matt Brush"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 16001, < 17000]                                    
+                                                                              
+    Datatype: idrange:16                                                      
+        Annotations:                                                          
+            allocatedto: "Tiago Lubiana Alves"                                
+        EquivalentTo:                                                         
+            xsd:integer[>= 17001, < 17500]                                    
+                                                                              
+    Datatype: idrange:17                                                      
+        Annotations:                                                          
+            allocatedto: "Nicolas Matentzoglu"                                
+        EquivalentTo:                                                         
+            xsd:integer[>= 17501, < 18000]                                    
+                                                                              
+    Datatype: idrange:18                                                      
+        Annotations:                                                          
+            allocatedto: "Zoe Pendlington"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 18001, < 19000]                                    
+                                                                              
+    Datatype: idrange:19                                                      
+        Annotations:                                                          
+            allocatedto: "Maria Keays"                                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 19001, < 20000]                                    
+                                                                              
+    Datatype: idrange:20                                                      
+        Annotations:                                                          
+            allocatedto: "Chris Mungall, automatic generation"                
+        EquivalentTo:                                                         
+            xsd:integer[>= 1000001, < 2000000]                                
+                                                                              
+    Datatype: idrange:21                                                      
+        Annotations:                                                          
+            allocatedto: "TermGenie, automatic generation"                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 2000001, < 3000000]                                
+                                                                              
+    Datatype: idrange:22                                                      
+        Annotations:                                                          
+            allocatedto: "Cell BLAST, automatic generation"                   
+        EquivalentTo:                                                         
+            xsd:integer[>= 3000001, < 4000000]                                
+                                                                              
+    Datatype: idrange:23                                                      
+        Annotations:                                                          
+            allocatedto: "Leigh Carmody"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4000001, < 4000500]                                
+                                                                              
+    Datatype: idrange:24                                                      
+        Annotations:                                                          
+            allocatedto: "Lauren Chan"                                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 4000501, < 4001000]                                
+                                                                              
+    Datatype: idrange:25                                                      
+        Annotations:                                                          
+            allocatedto: "Meghan Balk"                                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 4001001, < 4001500]                                
+                                                                              
+    Datatype: idrange:26                                                      
+        Annotations:                                                          
+            allocatedto: "Jennifer Chien"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 4001501, < 4002000]                                
+                                                                              
+    Datatype: idrange:27                                                      
+        Annotations:                                                          
+            allocatedto: "Keith Curtis"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4002001, < 4002500]                                
+                                                                              
+    Datatype: idrange:28                                                      
+        Annotations:                                                          
+            allocatedto: "Brian Aevermann"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4002501, < 4003000]                                
+                                                                              
+    Datatype: idrange:29                                                      
+        Annotations:                                                          
+            allocatedto: "Joanna Argasinska"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4003001, < 4003500]                                
+                                                                              
+    Datatype: idrange:30                                                      
+        Annotations:                                                          
+            allocatedto: "Laura Barisoni"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 4003501, < 4004000]                                
+                                                                              
+    Datatype: idrange:31                                                      
+        Annotations:                                                          
+            allocatedto: "Eric Brunskill"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 4004001, < 4004500]                                
+                                                                              
+    Datatype: idrange:32                                                      
+        Annotations:                                                          
+            allocatedto: "Ami Day"                                            
+        EquivalentTo:                                                         
+            xsd:integer[>= 4004501, < 4005000]                                
+                                                                              
+    Datatype: idrange:33                                                      
+        Annotations:                                                          
+            allocatedto: "Deborah Hoshizaki"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4005001, < 4005500]                                
+                                                                              
+    Datatype: idrange:34                                                      
+        Annotations:                                                          
+            allocatedto: "HOGUNE IM"                                          
+        EquivalentTo:                                                         
+            xsd:integer[>= 4005501, < 4006000]                                
+                                                                              
+    Datatype: idrange:35                                                      
+        Annotations:                                                          
+            allocatedto: "Bonita Lam"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 4006001, < 4006500]                                
+                                                                              
+    Datatype: idrange:36                                                      
+        Annotations:                                                          
+            allocatedto: "Teresa Marquez"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 4006501, < 4007000]                                
+                                                                              
+    Datatype: idrange:37                                                      
+        Annotations:                                                          
+            allocatedto: "Parisa Nejad"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4007001, < 4007500]                                
+                                                                              
+    Datatype: idrange:38                                                      
+        Annotations:                                                          
+            allocatedto: "Shawn O'Neil"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4007501, < 4008000]                                
+                                                                              
+    Datatype: idrange:39                                                      
+        Annotations:                                                          
+            allocatedto: "Ellen Quardokus"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4008001, < 4008500]                                
+                                                                              
+    Datatype: idrange:40                                                      
+        Annotations:                                                          
+            allocatedto: "Kathy Reinold"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4008501, < 4009000]                                
+                                                                              
+    Datatype: idrange:41                                                      
+        Annotations:                                                          
+            allocatedto: "Heba Sailem"                                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 4009001, < 4009500]                                
+                                                                              
+    Datatype: idrange:42                                                      
+        Annotations:                                                          
+            allocatedto: "Enrique Sapena Ventura"                             
+        EquivalentTo:                                                         
+            xsd:integer[>= 4009501, < 4010000]                                
+                                                                              
+    Datatype: idrange:43                                                      
+        Annotations:                                                          
+            allocatedto: "Marion Shadbolt"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4010001, < 4010500]                                
+                                                                              
+    Datatype: idrange:44                                                      
+        Annotations:                                                          
+            allocatedto: "Ray Stefancsik"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 4010501, < 4011000]                                
+                                                                              
+    Datatype: idrange:45                                                      
+        Annotations:                                                          
+            allocatedto: "M. Todd Valerius"                                   
+        EquivalentTo:                                                         
+            xsd:integer[>= 4011001, < 4011500]                                
+                                                                              
+    Datatype: idrange:46                                                      
+        Annotations:                                                          
+            allocatedto: "Jennifer Zamanian"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4011501, < 4012000]                                
+                                                                              
+    Datatype: idrange:47                                                      
+        Annotations:                                                          
+            allocatedto: "Aleks Michalewicz"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4012001, < 4012500]                                
+                                                                              
+    Datatype: idrange:48                                                      
+        Annotations:                                                          
+            allocatedto: "Victoria Alonso"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4013001, < 4013500]                                
+                                                                              
+    Datatype: idrange:49                                                      
+        Annotations:                                                          
+            allocatedto: "ALICE AUGUSTINE"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4013501, < 4014000]                                
+                                                                              
+    Datatype: idrange:50                                                      
+        Annotations:                                                          
+            allocatedto: "Aisha Blfgeh"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4014001, < 4014500]                                
+                                                                              
+    Datatype: idrange:51                                                      
+        Annotations:                                                          
+            allocatedto: "Reham Alharbi"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4014501, < 4015000]                                
+                                                                              
+    Datatype: idrange:52                                                      
+        Annotations:                                                          
+            allocatedto: "Jason Hilton"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4015001, < 4015500]                                
+                                                                              
+    Datatype: idrange:53                                                      
+        Annotations:                                                          
+            allocatedto: "FADHL ALAKWAA"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4015501, < 4016000]                                
+                                                                              
+    Datatype: idrange:54                                                      
+        Annotations:                                                          
+            allocatedto: "Chris Briggs"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4016001, < 4016500]                                
+                                                                              
+    Datatype: idrange:55                                                      
+        Annotations:                                                          
+            allocatedto: "Whitney Leach"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4018501, < 4019000]                                
+                                                                              
+    Datatype: idrange:56                                                      
+        Annotations:                                                          
+            allocatedto: "Sofia Robb"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 4019001, < 4019500]                                
+                                                                              
+    Datatype: idrange:57                                                      
+        Annotations:                                                          
+            allocatedto: "Helen Miller"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4019501, < 4020000]                                
+                                                                              
+    Datatype: idrange:58                                                      
+        Annotations:                                                          
+            allocatedto: "Mary Mays"                                          
+        EquivalentTo:                                                         
+            xsd:integer[>= 4020001, < 4020500]                                
+                                                                              
+    Datatype: idrange:59                                                      
+        Annotations:                                                          
+            allocatedto: "David Rowe"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 4020501, < 4021000]                                
+                                                                              
+    Datatype: idrange:60                                                      
+        Annotations:                                                          
+            allocatedto: "Shawn Tan"                                          
+        EquivalentTo:                                                         
+            xsd:integer[>= 4023001, < 4025000]                                
+                                                                              
+    Datatype: idrange:61                                                      
+        Annotations:                                                          
+            allocatedto: "Kallia Panoutsopoulou"                              
+        EquivalentTo:                                                         
+            xsd:integer[>= 4025001, < 4026000]                                
+                                                                              
+    Datatype: idrange:62                                                      
+        Annotations:                                                          
+            allocatedto: "Karthik Soman"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4027001, < 4028000]                                
+                                                                              
+    Datatype: idrange:63                                                      
+        Annotations:                                                          
+            allocatedto: "Joshua Fortriede"                                   
+        EquivalentTo:                                                         
+            xsd:integer[>= 4028001, < 4029000]                                
+                                                                              
+    Datatype: idrange:64                                                      
+        Annotations:                                                          
+            allocatedto: "Damien Goutte-Gattat"                               
+        EquivalentTo:                                                         
+            xsd:integer[>= 4029001, < 4030000]                                
+                                                                              
+    Datatype: idrange:65                                                      
+        Annotations:                                                          
+            allocatedto: "ad hoc EBI editor"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4030001, < 4032000]                                
+                                                                              
+    Datatype: idrange:66                                                      
+        Annotations:                                                          
+            allocatedto: "Arwa Ibrahim"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4032001, < 4033000]                                
+                                                                              
+    Datatype: idrange:67                                                      
+        Annotations:                                                          
+            allocatedto: "Aleix Puig"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 4033001, < 4040000]                                
+                                                                              
+    Datatype: idrange:68                                                      
+        Annotations:                                                          
+            allocatedto: "Paula Duek Roggli"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4040001, < 4042000]                                
+                                                                              
+    Datatype: idrange:69                                                      
+        Annotations:                                                          
+            allocatedto: "Alida Avola"                                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 4042001, < 4047000]                                
+                                                                              
+    Datatype: idrange:70                                                      
+        Annotations:                                                          
+            allocatedto: "Jasmine Belfiore"                                   
+        EquivalentTo:                                                         
+            xsd:integer[>= 4047001, < 4052000]                                
+                                                                              
+    Datatype: idrange:71                                                      
+        Annotations:                                                          
+            allocatedto: "Caroline Eastwood"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4052001, < 4060000]                                
+                                                                              
+    Datatype: idrange:72                                                      
+        Annotations:                                                          
+            allocatedto: "KGCL"                                               
+        EquivalentTo:                                                         
+            xsd:integer[>= 4060001, < 4070000]                                
+                                                                              
+    Datatype: idrange:73                                                      
+        Annotations:                                                          
+            allocatedto: "NDI Cloud"                                          
+        EquivalentTo:                                                         
+            xsd:integer[>= 4070001, < 4072000]                                
+                                                                              
+    Datatype: idrange:74                                                      
+        Annotations:                                                          
+            allocatedto: "Andrea D Rivera"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4072001, < 4080000]                                
+                                                                              
+    Datatype: idrange:75                                                      
+        Annotations:                                                          
+            allocatedto: "Meena Kharatmal"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4012501, < 4013000]                                
+                                                                              
+    Datatype: idrange:76                                                      
+        Annotations:                                                          
+            allocatedto: "Phillip McCown"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 4017001, < 4017500]                                
+                                                                              
+    Datatype: idrange:77                                                      
+        Annotations:                                                          
+            allocatedto: "Laurel Cooper"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4017501, < 4018000]                                
+                                                                              
+    Datatype: idrange:78                                                      
+        Annotations:                                                          
+            allocatedto: "Lacey Ellington"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4018001, < 4018500]                                
+                                                                              
+    Datatype: idrange:79                                                      
+        Annotations:                                                          
+            allocatedto: "Josef Hardi"                                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 4026001, < 4027000]                                
+                                                                              
+    Datatype: idrange:80                                                      
+        Annotations:                                                          
+            allocatedto: "BICAN, automatic generation"                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 4300001, < 4800000]                                
+                                                                              
+    Datatype: idrange:81                                                      
+        Annotations:                                                          
+            allocatedto: "Temporary IDs"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 9900000, < 10000000]                               
+                                                                              
+    Datatype: idrange:82                                                      
+        Annotations:                                                          
+            allocatedto: "Automation"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 20000, < 120000]                                   
+                                                                              
+    Datatype: idrange:83                                                      
+        Annotations:                                                          
+            allocatedto: "Jie Zheng"                                          
+        EquivalentTo:                                                         
+            xsd:integer[>= 4080001, < 4082000]                                
+    <exited with exit code 0>
+
+Bash: Find the highest CL_99 ID
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "CL_990|    
+  CL_991|CL_992|CL_993|CL_994|CL_995|CL_996|CL_997|CL_998|CL_999"             
+  src/ontology/cl-edit.owl | tail -30                                         
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find highest CL_99 IDs
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -o "CL_99[0-   
+  9]*" src/ontology/cl-edit.owl | sort -t_ -k2 -n | tail -10                  
+                                                                              
+    <exited with exit code 0>
+
+Bash: Look at recent terms like CL_4072xxx for pattern examples
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "CL_4072"   
+  src/ontology/cl-edit.owl | tail -20                                         
+    35971:AnnotationAssertion(terms:contributor obo:CL_4072103 <https://orcid.
+  org/0009-0000-8480-9277>)                                                   
+    35972:AnnotationAssertion(oboInOwl:creation_date obo:CL_4072103 "2025-11- 
+  05T11:49:53Z"^^xsd:dateTime)                                                
+    35973:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:38016881")  
+  oboInOwl:hasNarrowSynonym obo:CL_4072103 "dermal sheath cup cell")          
+    35974:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25465495")  
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072103 "hfDSC")                          
+    35975:AnnotationAssertion(rdfs:label obo:CL_4072103 "hair follicle dermal 
+  stem cell")                                                                 
+    35976:EquivalentClasses(obo:CL_4072103 ObjectIntersectionOf(obo:CL_0000134
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0002073)))                  
+    35977:SubClassOf(obo:CL_4072103 ObjectSomeValuesFrom(obo:RO_0002215       
+  obo:GO_0042634))                                                            
+    35979:# Class: obo:CL_4072104 (fibrochondrocyte)                          
+    35981:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:28939894")  
+  Annotation(oboInOwl:hasDbXref "PMID:31871141") Annotation(oboInOwl:hasDbXref
+  "PMID:34608249") obo:IAO_0000115 obo:CL_4072104 "A chondrocyte with hybrid  
+  fibroblastic-chondrogenic characteristics found in fibrocartilage,          
+  particularly in the avascular inner zone and transitional middle zone of the
+  meniscus. In humans, fibrochondrocytes are marked by predominant expression 
+  of type I collagen (COL1A1) and fibril-associated collagens (COL3A1, COL6A1),
+  while retaining type II collagen (COL2A1) expression and exhibiting lower   
+  SOX9 than hyaline chondrocytes. This molecular profile underlies the        
+  synthesis of abundant type I collagen essential for fibrocartilage matrix   
+  and reflects an intermediate phenotype between fibroblast and chondrocyte.")
+    35982:AnnotationAssertion(terms:contributor obo:CL_4072104 <https://orcid.
+  org/0009-0000-8480-9277>)                                                   
+    35983:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:34608249")  
+  oboInOwl:hasExactSynonym obo:CL_4072104 "fibrocartilage chondrocyte")       
+    35984:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:28939894")  
+  oboInOwl:hasNarrowSynonym obo:CL_4072104 "meniscus fibrochondrocyte")       
+    35985:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:31871141")  
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072104 "FC")                             
+    35986:AnnotationAssertion(rdfs:label obo:CL_4072104 "fibrochondrocyte")   
+    35987:EquivalentClasses(obo:CL_4072104 ObjectIntersectionOf(obo:CL_0000138
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001995)))                  
+    35988:SubClassOf(obo:CL_4072104 obo:CL_0002320)                           
+    35989:SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002202       
+  obo:CL_0020021))                                                            
+    35990:SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292       
+  obo:PR_000003264))                                                          
+    35991:SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292       
+  obo:PR_000003328))                                                          
+    35992:SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292       
+  obo:PR_000003353))                                                          
+    <exited with exit code 0>
+
+Bash: Find existing CL_990 temporary IDs
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -o             
+  "obo:CL_990[0-9]*" src/ontology/cl-edit.owl | sort -u | tail -10            
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find any existing terms using stratum oriens
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "stratum    
+  oriens|UBERON_0014552" src/ontology/cl-edit.owl | head -20                  
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find a recent term for pattern
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "# Class:   
+  obo:CL_4072" src/ontology/cl-edit.owl | tail -5                             
+    35927:# Class: obo:CL_4072045 (L6b glutamatergic cortical neuron (Homo    
+  sapiens))                                                                   
+    35941:# Class: obo:CL_4072046 (pvalb chandelier GABAergic interneuron     
+  (Homo sapiens))                                                             
+    35959:# Class: obo:CL_4072102 (Purkinje layer interneuron)                
+    35968:# Class: obo:CL_4072103 (hair follicle dermal stem cell)            
+    35979:# Class: obo:CL_4072104 (fibrochondrocyte)                          
+    <exited with exit code 0>
+
+Bash: View the issue
+$ cd /home/runner/work/cell-ontology/cell-ontology && gh issue view 3602  
+    ⣾⣽⣻⢿⡿[NTR] obophenotype/cell-ontology#3602                                
+    Open • dosumis (David Osumi-Sutherland) opened about 50 minutes ago • 0   
+  comments                                                                    
+    1 👀                                                                      
+    Assignees: Copilot (AI), RiveraAndrea83                                   
+    Labels: new term request                                                  
+    Projects: CL_wtgc_ticket_tracker (To Do)                                  
+                                                                              
+                                                                              
+      Please check that the term does not already exist by using the ontology 
+  search tool OLS:                                                            
+      https://www.ebi.ac.uk/ols4/ontologies/cl                                
+                                                                              
+      Preferred term label                                                    
+      Oriens-Lacunosum Moleculare neuron                                      
+                                                                              
+      Synonyms (add reference(s), please)                                     
+      OLM neuron                                                              
+      OLM                                                                     
+                                                                              
+  m                                                                           
+      Definition (free text, with reference(s), please. PubMed ID format is   
+  PMID:XXXXXX)                                                                
+      "A GABAergic interneuron of the hippocampal CA1 region whose            
+  horizontally oriented soma is located in the stratum                        
+      oriens at the stratum oriens–alveus border, with spiny dendrites        
+  confined to stratum oriens; the axon ascends                                
+      vertically to arborize exclusively in stratum lacunosum-moleculare,     
+  innervating the apical tufts of pyramidal                                   
+      neurons                                                                 
+      (Zemankovics et al. 2010; Nichol et al. 2018; Tecuatl et al. 2020).     
+  Electrophysiologically, these cells display                                 
+      regular-to-adapting spiking with a prominent hyperpolarization-activated
+  cation current (Ih) and theta-frequency                                     
+      resonance (Zemankovics et al. 2010). In   rodents, canonical markers    
+  include somatostatin (Sst) and metabotropic                                 
+      glutamate receptor 1 (Grm1/mGluR1) (Hooft et al. 2000; Winterer et al.  
+  2019); the alpha-2 nicotinic acetylcholine                                  
+      receptor  subunit (Chrna2) is a highly specific marker in mouse (Leão et
+  al. 2012; Nichol et al. 2018)."                                             
+                                                                              
+      [PMID:20421280, PMID:29487503, PMID:33361464, PMID:10804195,            
+  PMID:31420995, PMID:23042082]                                               
+                                                                              
+      Parent cell type term (check the hierarchy here https://www.ebi.ac.     
+  uk/ols4/ontologies/cl)                                                      
+      hippocampal interneuron http://purl.obolibrary.org/obo/CL_1001569       
+                                                                              
+  8;5;252m                                                                    
+      Anatomical structure where the cell type is found (check Uberon for     
+  anatomical structures:                                                      
+      https://www.ebi.ac.uk/ols4/ontologies/uberon)                           
+                                                                              
+      soma location: CA1 stratum oriens http://purl.obolibrary.               
+  org/obo/UBERON_0014552                                                      
+                                                                              
+      Your ORCID                                                              
+                                                                              
+      Additional notes or concerns                                            
+                                                                              
+                                                                              
+    View this issue on GitHub: https://github.com/obophenotype/cell-          
+  ontology/issues/3602                                                        
+    <exited with exit code 0>
+
+
+Now let me look at relevant patterns for the new term. Let me check the     
+  relations guide and find similar term patterns:
+
+Bash: Check has_soma_location relation usage
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "RO_0002100|
+  has soma location" src/ontology/cl-edit.owl | head -20                      
+    4849:SubClassOf(obo:CL_0000104 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    4871:EquivalentClasses(obo:CL_0000107 ObjectIntersectionOf(obo:CL_0000540 
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0002410)))                   
+    4915:SubClassOf(obo:CL_0000112 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    4981:SubClassOf(obo:CL_0000119 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0002956))                                                        
+    4991:SubClassOf(obo:CL_0000120 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    5008:SubClassOf(obo:CL_0000121 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0002979))                                                        
+    5018:SubClassOf(obo:CL_0000122 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    7132:SubClassOf(obo:CL_0000379 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    7255:EquivalentClasses(obo:CL_0000397 ObjectIntersectionOf(obo:CL_0000099 
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0000045)))                   
+    8288:SubClassOf(obo:CL_0000530 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0002240))                                                        
+    8325:SubClassOf(obo:CL_0000535 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0002240))                                                        
+    8989:SubClassOf(obo:CL_0000598 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    9232:EquivalentClasses(obo:CL_0000626 ObjectIntersectionOf(obo:CL_0000120 
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0005378)))                   
+    9719:SubClassOf(obo:CL_0000678 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    9861:SubClassOf(obo:CL_0000695 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001890))                                                        
+    10211:SubClassOf(obo:CL_0000740 ObjectSomeValuesFrom(obo:RO_0002100       
+  obo:UBERON_0000966))                                                        
+    10251:SubClassOf(obo:CL_0000745 ObjectSomeValuesFrom(obo:RO_0002100       
+  obo:UBERON_0003902))                                                        
+    10286:EquivalentClasses(obo:CL_0000748 ObjectIntersectionOf(obo:CL_0000540
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0001791)))                   
+    13398:EquivalentClasses(obo:CL_0001031 ObjectIntersectionOf(obo:CL_0000120
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0002037)))                   
+    13406:EquivalentClasses(obo:CL_0001032 ObjectIntersectionOf(obo:CL_0000120
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0000956)))                   
+    <exited with exit code 0>
+
+Bash: Check term_tracker_item usage
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "IAO_0000232|
+  term_tracker_item|github.*issue" src/ontology/cl-edit.owl | head -10        
+    3754:AnnotationAssertion(obo:IAO_0000233                                  
+  cl:has_high_plasma_membrane_amount <https://github.com/obophenotype/cell-   
+  ontology/issues/1481>)                                                      
+    3762:AnnotationAssertion(obo:IAO_0000233 cl:has_low_plasma_membrane_amount
+  <https://github.com/obophenotype/cell-ontology/issues/1481>)                
+    3816:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000003 <https://github.  
+  com/obophenotype/cell-ontology/issues/2124>)                                
+    3916:AnnotationAssertion(rdfs:seeAlso obo:CL_0000015 "https://github.     
+  com/obophenotype/cell-ontology/issues/574")                                 
+    4339:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000054 <https://github.  
+  com/obophenotype/cell-ontology/issues/2698>)                                
+    4348:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000055 "https://github.  
+  com/obophenotype/cell-ontology/issues/2922")                                
+    4537:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000073 <https://github.  
+  com/obophenotype/cell-ontology/issues/1149>)                                
+    4641:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000085 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4649:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000086 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4657:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000087 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    <exited with exit code 0>
+
+Bash: Check metadata patterns
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "terms:date|
+  dc:creator|terms:creator|terms:contributor" src/ontology/cl-edit.owl | head -
+  10                                                                          
+    42:Annotation(terms:contributor <https://orcid.org/0000-0001-5208-3432>)  
+    43:Annotation(terms:contributor <https://orcid.org/0000-0001-9114-8737>)  
+    44:Annotation(terms:contributor <https://orcid.org/0000-0001-9990-8331>)  
+    45:Annotation(terms:contributor <https://orcid.org/0000-0002-2244-7917>)  
+    46:Annotation(terms:contributor <https://orcid.org/0000-0002-6601-2165>)  
+    47:Annotation(terms:contributor <https://orcid.org/0000-0002-7073-9172>)  
+    48:Annotation(terms:contributor <https://orcid.org/0000-0002-8688-6599>)  
+    49:Annotation(terms:contributor <https://orcid.org/0000-0002-9900-7880>)  
+    50:Annotation(terms:contributor <https://orcid.org/0000-0003-1980-3228>)  
+    3613:Declaration(AnnotationProperty(dc:creator))                          
+    <exited with exit code 0>
+
+Bash: View Purkinje layer interneuron as example
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '35959,      
+  35993p' src/ontology/cl-edit.owl                                            
+    # Class: obo:CL_4072102 (Purkinje layer interneuron)                      
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:35803588")        
+  obo:IAO_0000115 obo:CL_4072102 "A type of GABAergic interneuron residing in 
+  the Purkinje cell layer of the cerebellar cortex.")                         
+    AnnotationAssertion(terms:date obo:CL_4072102 "2025-04-                   
+  29T13:06:36Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:35803588")        
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072102 "PLI")                            
+    AnnotationAssertion(rdfs:label obo:CL_4072102 "Purkinje layer             
+  interneuron")                                                               
+    EquivalentClasses(obo:CL_4072102 ObjectIntersectionOf(obo:CL_0000099      
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0002979)))                   
+    SubClassOf(obo:CL_4072102 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0061534))                                                            
+                                                                              
+    # Class: obo:CL_4072103 (hair follicle dermal stem cell)                  
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25465495")        
+  Annotation(oboInOwl:hasDbXref "PMID:29691589") Annotation(oboInOwl:hasDbXref
+  "PMID:35036581") Annotation(oboInOwl:hasDbXref "PMID:35069694")             
+  obo:IAO_0000115 obo:CL_4072103 "A bipotent mesenchymal stem cell that       
+  resides in the dermal sheath, specifically within the dermal sheath cup at  
+  the base of the hair follicle, characterized by its capacity for self-      
+  renewal and differentiation into both dermal sheath and dermal papilla cells
+  throughout hair cycling. In humans, this cell is marked by enriched         
+  expression of gremlin-2 (GREM2) and dipeptidase-1 (DPEP1), and acts as a    
+  progenitor reservoir sustaining and regenerating the follicle's mesenchymal 
+  compartments.")                                                             
+    AnnotationAssertion(terms:contributor obo:CL_4072103 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(oboInOwl:creation_date obo:CL_4072103 "2025-11-       
+  05T11:49:53Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:38016881")        
+  oboInOwl:hasNarrowSynonym obo:CL_4072103 "dermal sheath cup cell")          
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25465495")        
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072103 "hfDSC")                          
+    AnnotationAssertion(rdfs:label obo:CL_4072103 "hair follicle dermal stem  
+  cell")                                                                      
+    EquivalentClasses(obo:CL_4072103 ObjectIntersectionOf(obo:CL_0000134      
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0002073)))                  
+    SubClassOf(obo:CL_4072103 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0042634))                                                            
+                                                                              
+    # Class: obo:CL_4072104 (fibrochondrocyte)                                
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:28939894")        
+  Annotation(oboInOwl:hasDbXref "PMID:31871141") Annotation(oboInOwl:hasDbXref
+  "PMID:34608249") obo:IAO_0000115 obo:CL_4072104 "A chondrocyte with hybrid  
+  fibroblastic-chondrogenic characteristics found in fibrocartilage,          
+  particularly in the avascular inner zone and transitional middle zone of the
+  meniscus. In humans, fibrochondrocytes are marked by predominant expression 
+  of type I collagen (COL1A1) and fibril-associated collagens (COL3A1, COL6A1),
+  while retaining type II collagen (COL2A1) expression and exhibiting lower   
+  SOX9 than hyaline chondrocytes. This molecular profile underlies the        
+  synthesis of abundant type I collagen essential for fibrocartilage matrix   
+  and reflects an intermediate phenotype between fibroblast and chondrocyte.")
+    AnnotationAssertion(terms:contributor obo:CL_4072104 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:34608249")        
+  oboInOwl:hasExactSynonym obo:CL_4072104 "fibrocartilage chondrocyte")       
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:28939894")        
+  oboInOwl:hasNarrowSynonym obo:CL_4072104 "meniscus fibrochondrocyte")       
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:31871141")        
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072104 "FC")                             
+    AnnotationAssertion(rdfs:label obo:CL_4072104 "fibrochondrocyte")         
+    EquivalentClasses(obo:CL_4072104 ObjectIntersectionOf(obo:CL_0000138      
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001995)))                  
+    SubClassOf(obo:CL_4072104 obo:CL_0002320)                                 
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002202             
+  obo:CL_0020021))                                                            
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_000003264))                                                          
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_000003328))                                                          
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_000003353))                                                          
+    <exited with exit code 0>
+
+
+Now let me check the file header for prefix declarations and the Declaration
+  sections:
+
+Bash: View file header for prefixes
+$ cd /home/runner/work/cell-ontology/cell-ontology && head -60            
+  src/ontology/cl-edit.owl                                                    
+    Prefix(:=<http://purl.obolibrary.org/obo/cl.owl#>)                        
+    Prefix(cl:=<http://purl.obolibrary.org/obo/cl#>)                          
+    Prefix(dc:=<http://purl.org/dc/elements/1.1/>)                            
+    Prefix(go:=<http://purl.obolibrary.org/obo/go#>)                          
+    Prefix(pr:=<http://purl.obolibrary.org/obo/pr#>)                          
+    Prefix(obo:=<http://purl.obolibrary.org/obo/>)                            
+    Prefix(owl:=<http://www.w3.org/2002/07/owl#>)                             
+    Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)                
+    Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)                       
+    Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)                          
+    Prefix(core:=<http://purl.obolibrary.org/obo/uberon/core#>)               
+    Prefix(foaf:=<http://xmlns.com/foaf/0.1/>)                                
+    Prefix(pato:=<http://purl.obolibrary.org/obo/pato#>)                      
+    Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)                     
+    Prefix(sssom:=<https://w3id.org/sssom/>)                                  
+    Prefix(terms:=<http://purl.org/dc/terms/>)                                
+    Prefix(uberon:=<http://purl.obolibrary.org/obo/uberon#>)                  
+    Prefix(ubprop:=<http://purl.obolibrary.org/obo/ubprop#>)                  
+    Prefix(subsets:=<http://purl.obolibrary.org/obo/ro/subsets#>)             
+    Prefix(oboInOwl:=<http://www.geneontology.org/formats/oboInOwl#>)         
+    Prefix(ncbitaxon:=<http://purl.obolibrary.org/obo/ncbitaxon#>)            
+                                                                              
+                                                                              
+    Ontology(<http://purl.obolibrary.org/obo/cl.owl>                          
+    Import(<http://purl.obolibrary.org/obo/cl/components/PNS_neurons.owl>)    
+    Import(<http://purl.obolibrary.org/obo/cl/components/bgo-cl-comp.owl>)    
+    Import(<http://purl.obolibrary.                                           
+  org/obo/cl/components/blood_and_immune_upper_slim.owl>)                     
+    Import(<http://purl.obolibrary.org/obo/cl/components/cellxgene_subset.    
+  owl>)                                                                       
+    Import(<http://purl.obolibrary.org/obo/cl/components/clm-cl.owl>)         
+    Import(<http://purl.obolibrary.org/obo/cl/components/eye_upper_slim.owl>) 
+    Import(<http://purl.obolibrary.                                           
+  org/obo/cl/components/general_cell_types_upper_slim.owl>)                   
+    Import(<http://purl.obolibrary.org/obo/cl/components/hra_subset.owl>)     
+    Import(<http://purl.obolibrary.org/obo/cl/components/kidney_upper_slim.   
+  owl>)                                                                       
+    Import(<http://purl.obolibrary.org/obo/cl/components/mappings.owl>)       
+    Import(<http://purl.obolibrary.org/obo/cl/components/wmbo-cl-comp.owl>)   
+    Import(<http://purl.obolibrary.                                           
+  org/obo/cl/components/2DFTU_HRA_illustrations.owl>)                         
+    Import(<http://purl.obolibrary.org/obo/cl/imports/merged_import.owl>)     
+    Import(<http://purl.obolibrary.org/obo/cl/patterns/definitions.owl>)      
+    Annotation(obo:IAO_0000700 obo:CL_0000000)                                
+    Annotation(dc:description "An ontology of cell types.")                   
+    Annotation(dc:title "Cell Ontology")                                      
+    Annotation(terms:contributor <https://orcid.org/0000-0001-5208-3432>)     
+    Annotation(terms:contributor <https://orcid.org/0000-0001-9114-8737>)     
+    Annotation(terms:contributor <https://orcid.org/0000-0001-9990-8331>)     
+    Annotation(terms:contributor <https://orcid.org/0000-0002-2244-7917>)     
+    Annotation(terms:contributor <https://orcid.org/0000-0002-6601-2165>)     
+    Annotation(terms:contributor <https://orcid.org/0000-0002-7073-9172>)     
+    Annotation(terms:contributor <https://orcid.org/0000-0002-8688-6599>)     
+    Annotation(terms:contributor <https://orcid.org/0000-0002-9900-7880>)     
+    Annotation(terms:contributor <https://orcid.org/0000-0003-1980-3228>)     
+    Annotation(terms:license <http://creativecommons.org/licenses/by/4.0/>)   
+    Annotation(rdfs:comment "See PMID:15693950, PMID:12799354, PMID:20123131, 
+  PMID:21208450; Contact Alexander Diehl, addiehl[at]buffalo.edu, university  
+  at buffalo.")                                                               
+                                                                              
+    Declaration(Class(obo:CL_0000000))                                        
+    Declaration(Class(obo:CL_0000001))                                        
+    Declaration(Class(obo:CL_0000002))                                        
+    Declaration(Class(obo:CL_0000003))                                        
+    Declaration(Class(obo:CL_0000004))                                        
+    Declaration(Class(obo:CL_0000005))                                        
+    Declaration(Class(obo:CL_0000006))                                        
+    <exited with exit code 0>
+
+Bash: Find declaration section end
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  "Declaration(Class(obo:CL_407210" src/ontology/cl-edit.owl | tail -10       
+    3326:Declaration(Class(obo:CL_4072102))                                   
+    3327:Declaration(Class(obo:CL_4072103))                                   
+    3328:Declaration(Class(obo:CL_4072104))                                   
+    <exited with exit code 0>
+
+Bash: View end of file
+$ cd /home/runner/work/cell-ontology/cell-ontology && tail -30            
+  src/ontology/cl-edit.owl                                                    
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000040 obo:CL_0017507)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000040 "ID was moved to the CL   
+  namespace. Use CL:0017507.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000040 "obsolete CP:0000040")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000040 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:CP_0000043 (obsolete CP:0000043)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000043 obo:CL_0017508)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000043 "ID was moved to the CL   
+  namespace. Use CL:0017508.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000043 "obsolete CP:0000043")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000043 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:D96882F1-8709-49AB-BCA9-772A67EA6C33 (obsolete D96882F1-8709-
+  49AB-BCA9-772A67EA6C33)                                                     
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:D96882F1-8709-49AB-BCA9-          
+  772A67EA6C33 obo:CL_0017509)                                                
+    AnnotationAssertion(rdfs:comment obo:D96882F1-8709-49AB-BCA9-772A67EA6C33 
+  "ID was moved to the CL namespace. Use CL:0017509.")                        
+    AnnotationAssertion(rdfs:label obo:D96882F1-8709-49AB-BCA9-772A67EA6C33   
+  "obsolete D96882F1-8709-49AB-BCA9-772A67EA6C33")                            
+    AnnotationAssertion(owl:deprecated obo:D96882F1-8709-49AB-BCA9-           
+  772A67EA6C33 "true"^^xsd:boolean)                                           
+                                                                              
+    # Class: obo:GO_0051932 (synaptic transmission, GABAergic)                
+                                                                              
+    EquivalentClasses(obo:GO_0051932 ObjectIntersectionOf(obo:GO_0007268      
+  ObjectSomeValuesFrom(obo:RO_0000057 obo:CHEBI_59888)                        
+  ObjectSomeValuesFrom(obo:RO_0000057 obo:CL_0000617)))                       
+                                                                              
+                                                                              
+    SubClassOf(ObjectIntersectionOf(obo:CL_0000163                            
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000160)) obo:CL_0000164)   
+    SubClassOf(ObjectIntersectionOf(obo:CL_0000163                            
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000945)) obo:CL_0000164)   
+    SubClassOf(ObjectIntersectionOf(obo:CL_0000163                            
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001264)) obo:CL_0000164)   
+    SubClassOf(Annotation(oboInOwl:hasDbXref <https://github.                 
+  com/obophenotype/cell-ontology/issues/757>)                                 
+  ObjectIntersectionOf(obo:CL_0000540 ObjectSomeValuesFrom(obo:RO_0002162     
+  obo:NCBITaxon_7742)) ObjectSomeValuesFrom(obo:RO_0002202 obo:CL_0000031))   
+    )                                                                         
+    <exited with exit code 0>
+
+Bash: Get line count
+$ cd /home/runner/work/cell-ontology/cell-ontology && wc -l               
+  src/ontology/cl-edit.owl                                                    
+    36123 src/ontology/cl-edit.owl                                            
+    <exited with exit code 0>
+
+Bash: View what comes after CL_4072104
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '35990,      
+  36010p' src/ontology/cl-edit.owl                                            
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_000003264))                                                          
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_000003328))                                                          
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_000003353))                                                          
+                                                                              
+    # Class: obo:CL_7770002 (juxtacanalicular tissue cell)                    
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25356439")        
+  Annotation(oboInOwl:hasDbXref "PMID:32341164") Annotation(oboInOwl:hasDbXref
+  "PMID:39829808") obo:IAO_0000115 obo:CL_7770002 "A trabecular meshwork cell 
+  of the juxtacanalicular tissue (JCT), characterized by a spindle-shaped,    
+  fibroblast-like morphology within a loose extracellular matrix immediately  
+  adjacent to Schlemm's canal. It expresses CHI3L1 (human and mouse) and      
+  ANGPTL7 (human), as well as smooth muscle actin for contractility. Unlike   
+  other trabecular meshwork cells, it does not form monolayers but exists in a
+  loose network, regulating aqueous humor outflow resistance through          
+  continuous ECM remodelling, mechanotransduction, and formation of           
+  intracellular pores historically called giant vacuoles.")                   
+    AnnotationAssertion(obo:IAO_0000233 obo:CL_7770002 "https://github.       
+  com/obophenotype/cell-ontology/issues/3275")                                
+    AnnotationAssertion(terms:contributor obo:CL_7770002 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(oboInOwl:creation_date obo:CL_7770002 "2025-01-       
+  29T08:52:00Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:32341164")        
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_7770002 "JCT cell")                       
+    AnnotationAssertion(rdfs:label obo:CL_7770002 "juxtacanalicular tissue    
+  cell")                                                                      
+    SubClassOf(obo:CL_7770002 obo:CL_0000327)                                 
+    SubClassOf(obo:CL_7770002 obo:CL_0002367)                                 
+    SubClassOf(obo:CL_7770002 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0070278))                                                            
+                                                                              
+    # Class: obo:CL_7770003 (beam A cell)                                     
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:27443500")        
+  Annotation(oboInOwl:hasDbXref "PMID:32341164") Annotation(oboInOwl:hasDbXref
+  "PMID:39829808") obo:IAO_0000115 obo:CL_7770003 "A beam cell within the     
+  eye's trabecular meshwork, molecularly distinguished by FABP4 expression in 
+  humans and spatially intermingled with Beam B cells throughout the uveal and
+  corneoscleral meshwork regions. In mice, a transcriptionally analogous Beam 
+  A–like cluster (mC14) exists, sharing core TM markers (Myoc, Mgp, Pdpn,     
+  Chil1) and functional attributes.")                                         
+    AnnotationAssertion(terms:contributor obo:CL_7770003 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(oboInOwl:creation_date obo:CL_7770003 "2025-08-       
+  29T08:53:47Z"^^xsd:dateTime)                                                
+    <exited with exit code 0>
+
+Bash: Find GABA secretion GO term reference
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "GO_0061534|
+  GABA secretion" src/ontology/cl-edit.owl | head -5                          
+    4967:EquivalentClasses(obo:CL_0000118 ObjectIntersectionOf(obo:CL_0000099 
+  ObjectSomeValuesFrom(obo:RO_0000053 obo:PATO_0070002)                       
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0061534)))                       
+    5009:SubClassOf(obo:CL_0000121 ObjectSomeValuesFrom(obo:RO_0002215        
+  obo:GO_0061534))                                                            
+    9150:EquivalentClasses(obo:CL_0000617 ObjectIntersectionOf(obo:CL_0000540 
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0061534)))                       
+    23098:SubClassOf(obo:CL_0008032 ObjectSomeValuesFrom(obo:RO_0002215       
+  obo:GO_0061534))                                                            
+    23289:EquivalentClasses(obo:CL_0008059 ObjectIntersectionOf(obo:CL_0000540
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0061534)                         
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0061537)))                       
+    <exited with exit code 0>
+
+Bash: Find the last CL class
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "^# Class:  
+  obo:CL_" src/ontology/cl-edit.owl | tail -10                                
+    35927:# Class: obo:CL_4072045 (L6b glutamatergic cortical neuron (Homo    
+  sapiens))                                                                   
+    35941:# Class: obo:CL_4072046 (pvalb chandelier GABAergic interneuron     
+  (Homo sapiens))                                                             
+    35959:# Class: obo:CL_4072102 (Purkinje layer interneuron)                
+    35968:# Class: obo:CL_4072103 (hair follicle dermal stem cell)            
+    35979:# Class: obo:CL_4072104 (fibrochondrocyte)                          
+    35994:# Class: obo:CL_7770002 (juxtacanalicular tissue cell)              
+    36006:# Class: obo:CL_7770003 (beam A cell)                               
+    36015:# Class: obo:CL_7770004 (suprabasal cell)                           
+    36023:# Class: obo:CL_7770005 (beam cell)                                 
+    36034:# Class: obo:CL_7770006 (beam B cell, human)                        
+    <exited with exit code 0>
+
+Bash: Find the last Declaration for CL classes
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  "^Declaration(Class(obo:CL_" src/ontology/cl-edit.owl | tail -10            
+    3324:Declaration(Class(obo:CL_4072045))                                   
+    3325:Declaration(Class(obo:CL_4072046))                                   
+    3326:Declaration(Class(obo:CL_4072102))                                   
+    3327:Declaration(Class(obo:CL_4072103))                                   
+    3328:Declaration(Class(obo:CL_4072104))                                   
+    3329:Declaration(Class(obo:CL_7770002))                                   
+    3330:Declaration(Class(obo:CL_7770003))                                   
+    3331:Declaration(Class(obo:CL_7770004))                                   
+    3332:Declaration(Class(obo:CL_7770005))                                   
+    3333:Declaration(Class(obo:CL_7770006))                                   
+    <exited with exit code 0>
+
+Bash: Check what comes after the last CL Declaration
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '3333,3340p' 
+  src/ontology/cl-edit.owl                                                    
+    Declaration(Class(obo:CL_7770006))                                        
+    Declaration(Class(obo:CP_0000000))                                        
+    Declaration(Class(obo:CP_0000025))                                        
+    Declaration(Class(obo:CP_0000027))                                        
+    Declaration(Class(obo:CP_0000028))                                        
+    Declaration(Class(obo:CP_0000035))                                        
+    Declaration(Class(obo:CP_0000037))                                        
+    Declaration(Class(obo:CP_0000039))                                        
+    <exited with exit code 0>
+
+Bash: Find last Declaration
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  "^Declaration(Class(obo:CL_" src/ontology/cl-edit.owl | grep -v "CL_[0-     
+  9]*[)]" | head -5; grep -n "^Declaration(Class(obo:CL_[0-9]*[)]"            
+  src/ontology/cl-edit.owl | tail -10                                         
+    3324:Declaration(Class(obo:CL_4072045))                                   
+    3325:Declaration(Class(obo:CL_4072046))                                   
+    3326:Declaration(Class(obo:CL_4072102))                                   
+    3327:Declaration(Class(obo:CL_4072103))                                   
+    3328:Declaration(Class(obo:CL_4072104))                                   
+    3329:Declaration(Class(obo:CL_7770002))                                   
+    3330:Declaration(Class(obo:CL_7770003))                                   
+    3331:Declaration(Class(obo:CL_7770004))                                   
+    3332:Declaration(Class(obo:CL_7770005))                                   
+    3333:Declaration(Class(obo:CL_7770006))                                   
+    <exited with exit code 0>
+
+Bash: Find CL_7770006 class definition
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "CL_7770006"
+  src/ontology/cl-edit.owl                                                    
+    3333:Declaration(Class(obo:CL_7770006))                                   
+    36034:# Class: obo:CL_7770006 (beam B cell, human)                        
+    36036:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25356439")  
+  Annotation(oboInOwl:hasDbXref "PMID:32341164") Annotation(oboInOwl:hasDbXref
+  "PMID:39829808") obo:IAO_0000115 obo:CL_7770006 "A trabecular meshwork cell 
+  within the eye's trabecular meshwork. This cell is molecularly distinguished
+  by TMEFF2 expression in humans. A beam B cell is spatially intermingled with
+  beam A cells throughout the uveal and corneoscleral meshwork regions, but   
+  demonstrates a tendency to localise closer to the juxtacanalicular tissue.")
+    36037:AnnotationAssertion(terms:contributor obo:CL_7770006 <https://orcid.
+  org/0009-0000-8480-9277>)                                                   
+    36038:AnnotationAssertion(terms:date obo:CL_7770006 "2025-09-             
+  15T08:48:01Z"^^xsd:dateTime)                                                
+    36039:AnnotationAssertion(rdfs:label obo:CL_7770006 "beam B cell, human") 
+    36040:AnnotationAssertion(Annotation(dc:license <http://creativecommons.  
+  org/licenses/by/4.0/>) Annotation(oboInOwl:hasDbXref "PMID:35836364")       
+  Annotation(rdfs:comment "Trabecular meshwork (TM) structure. The TM consists
+  of uveal (blue), corneoscleral (red), and juxtacanalicular (green) regions. 
+  TM beam cells (blue/red) line the uveal and corneoscleral regions, while JCT
+  cells (green) occupy the juxtacanalicular region.") foaf:depiction          
+  obo:CL_7770006 "http://purl.obolibrary.                                     
+  org/obo/cl/images/Trabecular_meshowk_cells_PMID35836364.jpg")               
+    36041:SubClassOf(obo:CL_7770006 obo:CL_0002367)                           
+    36042:SubClassOf(obo:CL_7770006 ObjectSomeValuesFrom(obo:RO_0002162       
+  obo:NCBITaxon_9606))                                                        
+    36043:SubClassOf(obo:CL_7770006 ObjectSomeValuesFrom(obo:RO_0002292       
+  obo:PR_Q9UIK5))                                                             
+    <exited with exit code 0>
+
+
+Now let me start creating the new term. First, let me report progress and   
+  establish the plan:
+
+Bash: Check term_tracker_item format in recent terms
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  "IAO_0000233" src/ontology/cl-edit.owl | grep "CL_7770|CL_4072" | head -5   
+    35997:AnnotationAssertion(obo:IAO_0000233 obo:CL_7770002 "https://github. 
+  com/obophenotype/cell-ontology/issues/3275")                                
+    <exited with exit code 0>
+
+Bash: Check git status
+$ cd /home/runner/work/cell-ontology/cell-ontology && git status && git   
+  branch                                                                      
+    On branch copilot/ntr-adding-oriens-lacunosum-moleculare-neuron           
+    Your branch is up to date with 'origin/copilot/ntr-adding-oriens-lacunosum-
+  moleculare-neuron'.                                                         
+                                                                              
+    nothing to commit, working tree clean                                     
+    * copilot/ntr-adding-oriens-lacunosum-moleculare-neuron                   
+    <exited with exit code 0>
+
+Progress update: Initial plan for adding Oriens-Lacunosum Moleculare neuron (CL_9900001)
+
+[ ] Add Declaration for new term CL_9900001                                 
+  [ ] Add class axioms for Oriens-Lacunosum Moleculare neuron (CL_9900001)    
+      [ ] Label: "Oriens-Lacunosum Moleculare neuron"                         
+      [ ] Definition with 6 PMID references                                   
+      [ ] Exact synonym: "OLM neuron"                                         
+      [ ] Related synonym (abbreviation): "OLM"                               
+      [ ] term_tracker_item linking to issue #3602                            
+      [ ] creator annotation                                                  
+      [ ] date annotation                                                     
+      [ ] SubClassOf hippocampal interneuron (CL_1001569)                     
+      [ ] SubClassOf has_soma_location CA1 stratum oriens (UBERON_0014552)    
+      [ ] SubClassOf capable_of GABA secretion (GO_0061534)
+
+
+Now I'll add the new term to the ontology file. First, the Declaration, then
+  the class definition:
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str":                                                              
+  "Declaration(Class(obo:CL_7770006))\nDeclaration(Class(obo:CL_9900001))\nDeclaration(Class(obo:CP_0000000))",
+      "old_str":                                                              
+  "Declaration(Class(obo:CL_7770006))\nDeclaration(Class(obo:CP_0000000))",   
+      "path": "/home/runner/work/cell-ontology/cell-ontology/src/ontology/cl- 
+  edit.owl"                                                                   
+    }
+
+
+Now add the class definition after CL_7770006:
+
+Bash: Find the end of CL_7770006
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  "SubClassOf(obo:CL_7770006" src/ontology/cl-edit.owl | tail -3              
+    36042:SubClassOf(obo:CL_7770006 obo:CL_0002367)                           
+    36043:SubClassOf(obo:CL_7770006 ObjectSomeValuesFrom(obo:RO_0002162       
+  obo:NCBITaxon_9606))                                                        
+    36044:SubClassOf(obo:CL_7770006 ObjectSomeValuesFrom(obo:RO_0002292       
+  obo:PR_Q9UIK5))                                                             
+    <exited with exit code 0>
+
+Bash: View what comes after CL_7770006
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '36044,      
+  36050p' src/ontology/cl-edit.owl                                            
+    SubClassOf(obo:CL_7770006 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_Q9UIK5))                                                             
+                                                                              
+    # Class: obo:CP_0000000 (obsolete CP:0000000)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000000 obo:CL_0017500)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000000 "ID was moved to the CL   
+  namespace. Use CL:0017500.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000000 "obsolete CP:0000000")      
+    <exited with exit code 0>
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "SubClassOf(obo:CL_7770006                                   
+  ObjectSomeValuesFrom(obo:RO_0002292 obo:PR_Q9UIK5))\n\n# Class:             
+  obo:CL_9900001 (Oriens-Lacunosum Moleculare                                 
+  neuron)\n\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                
+  \"PMID:20421280\") Annotation(oboInOwl:hasDbXref \"PMID:29487503\")         
+  Annotation(oboInOwl:hasDbXref \"PMID:33361464\")                            
+  Annotation(oboInOwl:hasDbXref \"PMID:10804195\")                            
+  Annotation(oboInOwl:hasDbXref \"PMID:31420995\")                            
+  Annotation(oboInOwl:hasDbXref \"PMID:23042082\") obo:IAO_0000115            
+  obo:CL_9900001 \"A GABAergic interneuron of the hippocampal CA1 region whose
+  horizontally oriented soma is located in the stratum oriens at the stratum  
+  oriens–alveus border, with spiny dendrites confined to stratum oriens; the  
+  axon ascends vertically to arborize exclusively in stratum lacunosum-       
+  moleculare, innervating the apical tufts of pyramidal neurons.              
+  Electrophysiologically, these cells display regular-to-adapting spiking with
+  a prominent hyperpolarization-activated cation current (Ih) and theta-      
+  frequency resonance. In rodents, canonical markers include somatostatin     
+  (Sst) and metabotropic glutamate receptor 1 (Grm1/mGluR1); the alpha-2      
+  nicotinic acetylcholine receptor subunit (Chrna2) is a highly specific      
+  marker in mouse.\")\nAnnotationAssertion(obo:IAO_0000233 obo:CL_9900001     
+  \"https://github.com/obophenotype/cell-                                     
+  ontology/issues/3602\")\nAnnotationAssertion(dc:creator obo:CL_9900001      
+  \"GitHub Copilot\")\nAnnotationAssertion(terms:date obo:CL_9900001 \"2026-04-
+  10T10:48:46Z\"^^xsd:dateTime)\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref
+  \"PMID:20421280\") oboInOwl:hasExactSynonym obo:CL_9900001 \"OLM            
+  neuron\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                
+  \"PMID:20421280\") Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)      
+  oboInOwl:hasRelatedSynonym obo:CL_9900001                                   
+  \"OLM\")\nAnnotationAssertion(rdfs:label obo:CL_9900001 \"Oriens-Lacunosum  
+  Moleculare neuron\")\nSubClassOf(obo:CL_9900001                             
+  obo:CL_1001569)\nSubClassOf(obo:CL_9900001                                  
+  ObjectSomeValuesFrom(obo:RO_0002100                                         
+  obo:UBERON_0014552))\nSubClassOf(obo:CL_9900001                             
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0061534))\n\n# Class:            
+  obo:CP_0000000 (obsolete CP:0000000)",                                      
+      "old_str": "SubClassOf(obo:CL_7770006                                   
+  ObjectSomeValuesFrom(obo:RO_0002292 obo:PR_Q9UIK5))\n\n# Class:             
+  obo:CP_0000000 (obsolete CP:0000000)",                                      
+      "path": "/home/runner/work/cell-ontology/cell-ontology/src/ontology/cl- 
+  edit.owl"                                                                   
+    }
+
+
+Now let me verify the changes look correct:
+
+Bash: Verify new term was added correctly
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "CL_9900001"
+  src/ontology/cl-edit.owl                                                    
+    3334:Declaration(Class(obo:CL_9900001))                                   
+    36046:# Class: obo:CL_9900001 (Oriens-Lacunosum Moleculare neuron)        
+    36048:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:20421280")  
+  Annotation(oboInOwl:hasDbXref "PMID:29487503") Annotation(oboInOwl:hasDbXref
+  "PMID:33361464") Annotation(oboInOwl:hasDbXref "PMID:10804195")             
+  Annotation(oboInOwl:hasDbXref "PMID:31420995") Annotation(oboInOwl:hasDbXref
+  "PMID:23042082") obo:IAO_0000115 obo:CL_9900001 "A GABAergic interneuron of 
+  the hippocampal CA1 region whose horizontally oriented soma is located in   
+  the stratum oriens at the stratum oriens–alveus border, with spiny dendrites
+  confined to stratum oriens; the axon ascends vertically to arborize         
+  exclusively in stratum lacunosum-moleculare, innervating the apical tufts of
+  pyramidal neurons. Electrophysiologically, these cells display regular-to-  
+  adapting spiking with a prominent hyperpolarization-activated cation current
+  (Ih) and theta-frequency resonance. In rodents, canonical markers include   
+  somatostatin (Sst) and metabotropic glutamate receptor 1 (Grm1/mGluR1); the 
+  alpha-2 nicotinic acetylcholine receptor subunit (Chrna2) is a highly       
+  specific marker in mouse.")                                                 
+    36049:AnnotationAssertion(obo:IAO_0000233 obo:CL_9900001 "https://github. 
+  com/obophenotype/cell-ontology/issues/3602")                                
+    36050:AnnotationAssertion(dc:creator obo:CL_9900001 "GitHub Copilot")     
+    36051:AnnotationAssertion(terms:date obo:CL_9900001 "2026-04-             
+  10T10:48:46Z"^^xsd:dateTime)                                                
+    36052:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:20421280")  
+  oboInOwl:hasExactSynonym obo:CL_9900001 "OLM neuron")                       
+    36053:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:20421280")  
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_9900001 "OLM")                            
+    36054:AnnotationAssertion(rdfs:label obo:CL_9900001 "Oriens-Lacunosum     
+  Moleculare neuron")                                                         
+    36055:SubClassOf(obo:CL_9900001 obo:CL_1001569)                           
+    36056:SubClassOf(obo:CL_9900001 ObjectSomeValuesFrom(obo:RO_0002100       
+  obo:UBERON_0014552))                                                        
+    36057:SubClassOf(obo:CL_9900001 ObjectSomeValuesFrom(obo:RO_0002215       
+  obo:GO_0061534))                                                            
+    <exited with exit code 0>
+
+
+The term looks good. Now let me run a quick syntax check using ROBOT to     
+  validate:
+
+Bash: Check if robot is available
+$ cd /home/runner/work/cell-ontology/cell-ontology && which robot && robot --
+  version 2>/dev/null || echo "robot not found directly"                      
+    /home/runner/work/cell-ontology/cell-ontology/tools/robot                 
+    ROBOT version 1.9.7                                                       
+    <exited with exit code 0>
+
+Bash: Validate syntax with robot convert
+$ cd /home/runner/work/cell-ontology/cell-ontology && tools/robot convert -
+  i src/ontology/cl-edit.owl -o /tmp/cl-edit-check.owl 2>&1 | head -30        
+                                                                              
+    <exited with exit code 0>
+
+
+The syntax check passed. Now let me commit the changes:
+
+Progress update: Add new term CL_9900001: Oriens-Lacunosum Moleculare neuron
+
+Adds new term request from issue #3602:
+- Term ID: CL_9900001 (temporary ID, idrange:81)
+- Label: Oriens-Lacunosum Moleculare neuron
+- Synonyms: OLM neuron (exact), OLM (related/abbreviation)
+- Definition with 6 PMID references
+- Parent: hippocampal interneuron (CL_1001569)
+- has_soma_location CA1 stratum oriens (UBERON_0014552)
+- capable_of GABA secretion (GO_0061534)
+- term_tracker_item: issue #3602
+
+Signed-off-by: GitHub Copilot
+
+[x] Add Declaration for new term CL_9900001                                 
+  [x] Add class axioms for Oriens-Lacunosum Moleculare neuron (CL_9900001)    
+      [x] Label: "Oriens-Lacunosum Moleculare neuron"                         
+      [x] Definition with 6 PMID references (PMID:20421280, PMID:29487503,    
+      PMID:33361464, PMID:10804195, PMID:31420995, PMID:23042082)             
+      [x] Exact synonym: "OLM neuron"                                         
+      [x] Related synonym (abbreviation): "OLM"                               
+      [x] term_tracker_item linking to issue #3602                            
+      [x] creator annotation (GitHub Copilot)                                 
+      [x] date annotation                                                     
+      [x] SubClassOf hippocampal interneuron (CL_1001569)                     
+      [x] SubClassOf has_soma_location CA1 stratum oriens (UBERON_0014552)    
+      [x] SubClassOf capable_of GABA secretion (GO_0061534)                   
+  [x] Syntax validated with ROBOT
+
+
+The new term has been successfully added to the Cell Ontology. Here's a     
+  summary of what was done:                                                   
+                                                                              
+  ## Summary                                                                  
+                                                                              
+  Added a new term **CL_****9900001: Oriens-Lacunosum Moleculare neuron** to  
+  src/ontology/cl-edit.owl to address issue #3602                             
+  https://github.com/obophenotype/cell-ontology/issues/3602.                  
+                                                                              
+  ### New Term Details:                                                       
+                                                                              
+  • **ID**: CL_9900001 (temporary ID, from idrange:81)                        
+  • **Label**: Oriens-Lacunosum Moleculare neuron                             
+  • **Synonyms**:                                                             
+      • Exact: OLM neuron (PMID:20421280)                                     
+      • Related/abbreviation: OLM (PMID:20421280)                             
+  • **Definition**: A GABAergic interneuron of the hippocampal CA1 region     
+  whose horizontally oriented soma is located in the stratum oriens at the    
+  stratum oriens–alveus border, with spiny dendrites confined to stratum      
+  oriens...                                                                   
+  • **References**: PMID:20421280, PMID:29487503, PMID:33361464, PMID:10804195,
+  PMID:31420995, PMID:23042082                                                
+  • **Parent**: hippocampal interneuron (CL_1001569)                          
+  • **Soma location**: CA1 stratum oriens (UBERON_0014552) via RO_0002100 (has
+  soma location)                                                              
+  • **Capability**: capable of GABA secretion (GO_0061534) via RO_0002215     
+  • **Term tracker**: links to GitHub issue #3602                             
+  • **Creator**: GitHub Copilot                                               
+  • **Date**: 2026-04-10T10:48:46Z
+

@@ -1,0 +1,2658 @@
+Clone repository obophenotype/cell-ontology
+Start 'playwright' MCP server
+Start 'github-mcp-server' MCP server
+Start 'ols4' MCP server
+Start 'artl-mcp' MCP server
+
+I'll start by understanding the issue and the repository structure, then    
+  implement the required changes.
+
+Bash: Check git status and ontology directory
+$ cd /home/runner/work/cell-ontology/cell-ontology && git log --oneline -5
+  && ls src/ontology/                                                         
+    3e94203 (HEAD -> copilot/ntr-add-mouth-terms-hubmap, origin/copilot/ntr-  
+  add-mouth-terms-hubmap) Initial plan                                        
+    ebe6d80 (grafted, origin/master) A new cycle of Cellguide definitions +   
+  documentation (#3558)                                                       
+    Dockerfile		 cl-edit.owl	      cl-plus-zfa.owl	    extsubset		    patterns.     
+  sh		test                                                                      
+    Makefile		 cl-edit_neg_exp.owl  cl-refactored.owl     get-new-classes.sh    
+  prepare_release.sh	test.sh                                                   
+    README-editors.md	 cl-idranges.owl      cl-relations.obo	    imports        
+  reports		tmp                                                                  
+    allowed_annotations.txt  cl-odk.yaml	      cl-removedaxioms.owl            
+  keeprelations.txt	    rss			util                                                
+    bridge			 cl-plus-fbbt.owl     cl.Makefile	    multispecies.owl	    run.       
+  bat                                                                         
+    build.sh		 cl-plus-nif.owl      components	    non_native_classes.txt  run.  
+  sh                                                                          
+    catalog-v001.xml	 cl-plus-xao.owl      diffs		    object_properties.txt      
+  subsets                                                                     
+    <exited with exit code 0>
+
+Call to search_code_subagent
+
+Input:
+
+{                                                                         
+      "query": "salivary gland cell type CL ontology tuft cell ionocyte       
+  myoepithelial"                                                              
+    }
+
+Bash: Find parent terms
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n 'CL_0000313|
+  CL_0000646|CL_0000057|CL_0002077|CL_0002204|CL_0005006|CL_0000185|          
+  CL_0002251' src/ontology/cl-edit.owl | head -40                             
+    111:Declaration(Class(obo:CL_0000057))                                    
+    239:Declaration(Class(obo:CL_0000185))                                    
+    367:Declaration(Class(obo:CL_0000313))                                    
+    700:Declaration(Class(obo:CL_0000646))                                    
+    1218:Declaration(Class(obo:CL_0002077))                                   
+    1345:Declaration(Class(obo:CL_0002204))                                   
+    1392:Declaration(Class(obo:CL_0002251))                                   
+    1934:Declaration(Class(obo:CL_0005006))                                   
+    3831:EquivalentClasses(obo:CL_0000005 ObjectIntersectionOf(obo:CL_0000057 
+  ObjectSomeValuesFrom(obo:RO_0002202 obo:CL_0000333)))                       
+    3832:SubClassOf(obo:CL_0000005 obo:CL_0000057)                            
+    4360:# Class: obo:CL_0000057 (fibroblast)                                 
+    4362:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "ISBN:0517223651") 
+  Annotation(oboInOwl:hasDbXref "MESH:D005347") Annotation(oboInOwl:hasDbXref 
+  "http://en.wikipedia.org/wiki/Fibroblast") obo:IAO_0000115 obo:CL_0000057 "A
+  connective tissue cell which secretes an extracellular matrix rich in       
+  collagen and other macromolecules. Flattened and irregular in outline with  
+  branching processes; appear fusiform or spindle-shaped.")                   
+    4363:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000057 "BTO:0000452") 
+    4364:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000057 "CALOHA:TS-    
+  0362")                                                                      
+    4365:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000057 "FMA:63877")   
+    4366:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000057 "NCIT:C12482") 
+    4367:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000057 "VHOG:0001482")
+    4368:AnnotationAssertion(rdfs:comment obo:CL_0000057 "These cells may be  
+  vimentin-positive, fibronectin-positive, fsp1-positive, MMP-1-positive,     
+  collagen I-positive, collagen III-positive, and alpha-SMA-negative.")       
+    4369:AnnotationAssertion(rdfs:label obo:CL_0000057 "fibroblast")          
+    4370:SubClassOf(obo:CL_0000057 obo:CL_0000499)                            
+    4371:SubClassOf(obo:CL_0000057 obo:CL_0002320)                            
+    4372:SubClassOf(obo:CL_0000057 ObjectSomeValuesFrom(obo:RO_0002202        
+  obo:CL_0000134))                                                            
+    5630:# Class: obo:CL_0000185 (myoepithelial cell)                         
+    5632:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")         
+  Annotation(oboInOwl:hasDbXref "ISBN:0721662544") obo:IAO_0000115            
+  obo:CL_0000185 "Contractile cells resembling smooth muscle cells that are   
+  present in glands, notably the mammary gland, and aid in secretion. This    
+  cell has long weaving dendritic processes containing myofilament.")         
+    5633:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000185 "BTO:0002309") 
+    5634:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000185 "CALOHA:TS-    
+  2379")                                                                      
+    5635:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000185 "FMA:67799")   
+    5636:AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0000185 "basket  
+  epithelial cell")                                                           
+    5637:AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0000185          
+  "myoepitheliocyte")                                                         
+    5638:AnnotationAssertion(rdfs:label obo:CL_0000185 "myoepithelial cell")  
+    5639:SubClassOf(obo:CL_0000185 obo:CL_0000075)                            
+    5640:SubClassOf(obo:CL_0000185 obo:CL_0000183)                            
+    6624:# Class: obo:CL_0000313 (serous secreting cell)                      
+    6626:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")         
+  Annotation(oboInOwl:hasDbXref "ISBN:0517223651")                            
+  Annotation(oboInOwl:hasDbXref "ISBN:0721662544") obo:IAO_0000115            
+  obo:CL_0000313 "Columnar glandular cell with irregular nucleus, copious     
+  granular endoplasmic reticulum and supranuclear granules. Secretes a watery 
+  fluid containing proteins known as serous fluid.")                          
+    6627:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000313 "BTO:0003687") 
+    6628:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000313 "FMA:62511")   
+    6629:AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0000313 "serous  
+  cell")                                                                      
+    6630:AnnotationAssertion(rdfs:label obo:CL_0000313 "serous secreting      
+  cell")                                                                      
+    6631:SubClassOf(obo:CL_0000313 obo:CL_0000159)                            
+    6882:EquivalentClasses(obo:CL_0000346 ObjectIntersectionOf(obo:CL_0000057 
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000412)))                  
+    <exited with exit code 0>
+
+Bash: Find existing salivary gland related terms
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n 'salivary|  
+  demilune|parotid|sublingual|submandibular|ionocyte|myoepithelial|periductal|
+  junctional epithelial' src/ontology/cl-edit.owl | head -80                  
+    5630:# Class: obo:CL_0000185 (myoepithelial cell)                         
+    5638:AnnotationAssertion(rdfs:label obo:CL_0000185 "myoepithelial cell")  
+    16161:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  Annotation(oboInOwl:hasDbXref "ISBN:0721662544")                            
+  Annotation(oboInOwl:hasDbXref "PMID:20013317") obo:IAO_0000115              
+  obo:CL_0002198 "A large epithelial cell with an extremely acidophilic and   
+  granular cytoplasm, containing vast numbers of mitochondria; such cells may 
+  undergo neoplastic transformation. From the Greek word onkos meaning        
+  swelling, this cell type is found in parathyroid, salivary and thyroid      
+  glands.")                                                                   
+    17573:# Class: obo:CL_0002324 (basal-myoepithelial cell of mammary gland) 
+    17575:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  Annotation(oboInOwl:hasDbXref "PMID:11250738") Annotation(oboInOwl:hasDbXref
+  "PMID:19022771") Annotation(oboInOwl:hasDbXref "PMID:38059556")             
+  obo:IAO_0000115 obo:CL_0002324 "A myoepithelial cell that is part of a      
+  mammary gland and is located in the basal layer. During lactation, a basal- 
+  myoepithelial cell of mammary gland contracts under the stimulation of      
+  oxytocin. In humans, a basal-myoepithelial cell of mammary gland can be     
+  identified by high levels of CD49f and low levels of EpCAM.")               
+    17580:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:37694522")  
+  oboInOwl:hasBroadSynonym obo:CL_0002324 "basal myoepithelial cell")         
+    17581:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:37380767")  
+  oboInOwl:hasBroadSynonym obo:CL_0002324 "basal-myoepithelial cell")         
+    17584:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:11250738")  
+  oboInOwl:hasExactSynonym obo:CL_0002324 "myoepithelial cell of mammary      
+  gland")                                                                     
+    17586:AnnotationAssertion(oboInOwl:hasNarrowSynonym obo:CL_0002324        
+  "myoepithelial cell of lactiferous gland")                                  
+    17590:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:38059556")  
+  rdfs:comment obo:CL_0002324 "Due inconsistencies in naming this and other   
+  mammary gland epithelial cell types, several mammary gland experts gathered 
+  for a breast atlas annotation jamboree organized by Chan-Zuckerberg         
+  initiative. They agreed to label this cell type as basal-myoepithelial cell 
+  (and abbreviated: B-Myo cell).")                                            
+    17591:AnnotationAssertion(rdfs:label obo:CL_0002324 "basal-myoepithelial  
+  cell of mammary gland")                                                     
+    18446:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:mah")        
+  Annotation(oboInOwl:hasDbXref "GOC:tfm") Annotation(oboInOwl:hasDbXref      
+  "PMID:17200706") obo:IAO_0000115 obo:CL_0002410 "A cell that is found in the
+  periacinar space of the exocrine pancreas and in perivascular and periductal
+  regions of the pancreas, and has long cytoplasmic processes that encircle   
+  the base of the acinus. Expresses several intermediate filament proteins    
+  including vimentin and nestin. Shares many of the characteristics of        
+  hepatatic stellate cells, but not stellate cells of the central nervous     
+  system. Upon activation, this cell type undergoes morphological and gene    
+  expression changes that make the cell suggestive of being a type of         
+  myofibroblast.")                                                            
+    18872:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:hjd")        
+  Annotation(oboInOwl:hasDbXref "GOC:tfm") Annotation(oboInOwl:hasDbXref      
+  "PMID:15987436") Annotation(oboInOwl:hasDbXref "PMID:16397499")             
+  Annotation(oboInOwl:hasDbXref "PMID:17851544") obo:IAO_0000115              
+  obo:CL_0002451 "A multi-fate stem cell that is the source of cells for      
+  growth of the mammary gland during puberty and gestation. This cell type    
+  gives rise to both the luminal and myoepithelial cell types of the gland,   
+  and have been shown to have the ability to regenerate the entire organ in   
+  mice. This cell type also plays an important role in carcinogenesis of the  
+  breast. This cell type is Lin-, CD24-positive, CD29-hi.")                   
+    19176:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:cjm")        
+  Annotation(oboInOwl:hasDbXref "GOC:tfm") Annotation(oboInOwl:hasDbXref      
+  "MP:0006420") obo:IAO_0000115 obo:CL_0002481 "The flattened smooth          
+  myoepithelial cells of mesodermal origin that lie just outside the basal    
+  lamina of the seminiferous tubule.")                                        
+    20510:# Class: obo:CL_0002623 (acinar cell of salivary gland)             
+    20512:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  Annotation(oboInOwl:hasDbXref "PMID:24646566") Annotation(oboInOwl:hasDbXref
+  "PMID:25843887") Annotation(oboInOwl:hasDbXref "PMID:28623666")             
+  Annotation(oboInOwl:hasDbXref "PMID:34989394") Annotation(oboInOwl:hasDbXref
+  "PMID:35343828") obo:IAO_0000115 obo:CL_0002623 "An acinar cell that is part
+  of the salivary gland epithelium, responsible for synthesizing and secreting
+  the primary saliva essential for oral digestion, antimicrobial defense, and 
+  mucosal immunity. It features apical-basal polarity with apical secretory   
+  granules, and tight junctions that maintain polarity and regulate calcium-  
+  dependent saliva exocytosis triggered by parasympathetic and sympathetic    
+  signals (Ambudkar, 2015). This cell functions in coordination with          
+  contractile myoepithelial cells, which aid saliva flow through the ducts    
+  into the oral cavity (Khan et al., 2022). In mice and humans, acinar cell   
+  development relies on the transcription factor SOX2 (Emmerson et al., 2017),
+  with self-renewal achieved primarily through acinar cell self-duplication   
+  and supported by progenitor populations during injury and regeneration (Aure
+  et al., 2016).")                                                            
+    20515:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:24646566")  
+  oboInOwl:hasExactSynonym obo:CL_0002623 "salivary acinar cell")             
+    20516:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:24646566")  
+  oboInOwl:hasExactSynonym obo:CL_0002623 "salivary gland acinar cell")       
+    20517:AnnotationAssertion(rdfs:label obo:CL_0002623 "acinar cell of       
+  salivary gland")                                                            
+    22450:# Class: obo:CL_0005006 (ionocyte)                                  
+    22452:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:17555741")  
+  Annotation(oboInOwl:hasDbXref "PMID:19268451") obo:IAO_0000115              
+  obo:CL_0005006 "Specialized epithelial cells involved in the maintenance of 
+  osmotic homeostasis. They are characterized by abundant mitochondria and ion
+  transporters. In amniotes, they are present in the renal system. In         
+  freshwater fish, ionocytes in the skin and gills help maintain osmotic      
+  homeostasis by absorbing salt from the external environment.")              
+    22453:AnnotationAssertion(rdfs:label obo:CL_0005006 "ionocyte")           
+    23344:# Class: obo:CL_0009005 (salivary gland cell)                       
+    23346:AnnotationAssertion(obo:IAO_0000115 obo:CL_0009005 "Any cell in a   
+  salivary gland.")                                                           
+    23349:AnnotationAssertion(rdfs:label obo:CL_0009005 "salivary gland cell")
+    25124:# Class: obo:CL_0017000 (pulmonary ionocyte)                        
+    25126:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:30069044")  
+  Annotation(oboInOwl:hasDbXref "PMID:30069046") obo:IAO_0000115              
+  obo:CL_0017000 "An ionocyte that is part of the lung epithelium. The cells  
+  from this type are major sources of the CFTR protein in human and mice.")   
+    25128:AnnotationAssertion(rdfs:label obo:CL_0017000 "pulmonary ionocyte") 
+    27284:# Class: obo:CL_1000394 (myoepithelial cell of intralobular         
+  lactiferous duct)                                                           
+    27286:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000394 "A myoepithelial cell that is part of the    
+  intralobular part of terminal lactiferous duct.")                           
+    27288:AnnotationAssertion(rdfs:label obo:CL_1000394 "myoepithelial cell of
+  intralobular lactiferous duct")                                             
+    27457:# Class: obo:CL_1000416 (obsolete myoepithelial cell of lactiferous 
+  gland)                                                                      
+    27459:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000416 "OBSOLETE. A myoepithelial cell that is part 
+  of the mammary gland.")                                                     
+    27461:AnnotationAssertion(rdfs:comment obo:CL_1000416 "Term merged into   
+  CL:0002324 (myoepithelial cell of mammary gland)")                          
+    27462:AnnotationAssertion(rdfs:label obo:CL_1000416 "obsolete             
+  myoepithelial cell of lactiferous gland")                                   
+    27465:# Class: obo:CL_1000417 (myoepithelial cell of sweat gland)         
+    27467:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000417 "A myoepithelial cell that is part of the    
+  sweat gland.")                                                              
+    27469:AnnotationAssertion(rdfs:label obo:CL_1000417 "myoepithelial cell of
+  sweat gland")                                                               
+    27473:# Class: obo:CL_1000418 (myoepithelial cell of lactiferous alveolus)
+    27475:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000418 "A myoepithelial cell that is part of the    
+  mammary gland alveolus.")                                                   
+    27478:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "FMA:67802")      
+  oboInOwl:hasExactSynonym obo:CL_1000418 "myoepithelial cell of mammary      
+  alveolus")                                                                  
+    27479:AnnotationAssertion(rdfs:label obo:CL_1000418 "myoepithelial cell of
+  lactiferous alveolus")                                                      
+    27483:# Class: obo:CL_1000419 (myoepithelial cell of lactiferous duct)    
+    27485:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000419 "A myoepithelial cell that is part of the    
+  lactiferous duct.")                                                         
+    27487:AnnotationAssertion(rdfs:label obo:CL_1000419 "myoepithelial cell of
+  lactiferous duct")                                                          
+    27491:# Class: obo:CL_1000420 (myoepithelial cell of terminal lactiferous 
+  duct)                                                                       
+    27493:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000420 "A myoepithelial cell that is part of the    
+  terminal lactiferous duct.")                                                
+    27495:AnnotationAssertion(rdfs:label obo:CL_1000420 "myoepithelial cell of
+  terminal lactiferous duct")                                                 
+    27678:# Class: obo:CL_1000445 (myoepithelial cell of dilator pupillae)    
+    27680:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000445 "A myoepithelial cell that is part of the    
+  dilatator pupillae.")                                                       
+    27682:AnnotationAssertion(rdfs:label obo:CL_1000445 "myoepithelial cell of
+  dilator pupillae")                                                          
+    27840:# Class: obo:CL_1000468 (myoepithelial cell of acinus of lactiferous
+  gland)                                                                      
+    27842:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000468 "A myoepithelial cell that is part of the    
+  acinus of lactiferous gland.")                                              
+    27845:AnnotationAssertion(rdfs:label obo:CL_1000468 "myoepithelial cell of
+  acinus of lactiferous gland")                                               
+    27849:# Class: obo:CL_1000469 (myoepithelial cell of main lactiferous     
+  duct)                                                                       
+    27851:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000469 "A myoepithelial cell that is part of the    
+  main lactiferous duct.")                                                    
+    27853:AnnotationAssertion(rdfs:label obo:CL_1000469 "myoepithelial cell of
+  main lactiferous duct")                                                     
+    27856:# Class: obo:CL_1000470 (myoepithelial cell of primary lactiferous  
+  duct)                                                                       
+    27858:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000470 "A myoepithelial cell that is part of the    
+  primary lactiferous duct.")                                                 
+    27860:AnnotationAssertion(rdfs:label obo:CL_1000470 "myoepithelial cell of
+  primary lactiferous duct")                                                  
+    27863:# Class: obo:CL_1000471 (myoepithelial cell of secondary lactiferous
+  duct)                                                                       
+    27865:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000471 "A myoepithelial cell that is part of the    
+  secondary lactiferous duct.")                                               
+    27867:AnnotationAssertion(rdfs:label obo:CL_1000471 "myoepithelial cell of
+  secondary lactiferous duct")                                                
+    27870:# Class: obo:CL_1000472 (myoepithelial cell of tertiary lactiferous 
+  duct)                                                                       
+    27872:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000472 "A myoepithelial cell that is part of the    
+  tertiary lactiferous duct.")                                                
+    27874:AnnotationAssertion(rdfs:label obo:CL_1000472 "myoepithelial cell of
+  tertiary lactiferous duct")                                                 
+    27877:# Class: obo:CL_1000473 (myoepithelial cell of quarternary          
+  lactiferous duct)                                                           
+    27879:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  obo:IAO_0000115 obo:CL_1000473 "A myoepithelial cell that is part of the    
+  quarternary lactiferous duct.")                                             
+    27881:AnnotationAssertion(rdfs:label obo:CL_1000473 "myoepithelial cell of
+  quarternary lactiferous duct")                                              
+    29360:# Class: obo:CL_1001596 (salivary gland glandular cell)             
+    29362:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "HPA:HPA")        
+  Annotation(oboInOwl:hasDbXref "NPX:PDR") obo:IAO_0000115 obo:CL_1001596     
+  "Glandular cell of salivary gland. Example: Serous cells, mucous cells,     
+  cuboidal epithelial cells of the intercalated ducts, simple cuboidal        
+  epithelium of the striated ducts, epithelial cells of excretory ducts.")    
+    29364:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "CALOHA:TS-1282") 
+  oboInOwl:hasRelatedSynonym obo:CL_1001596 "salivary gland glandular cells") 
+    29365:AnnotationAssertion(rdfs:label obo:CL_1001596 "salivary gland       
+  glandular cell")                                                            
+    32786:# Class: obo:CL_4033003 (myoepithelial cell of bronchus submucosal  
+  gland)                                                                      
+    32788:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:19996346")  
+  Annotation(oboInOwl:hasDbXref "PMID:5487122") obo:IAO_0000115 obo:CL_4033003
+  "A(n) myoepithelial cell that is part of a(n) bronchus submucosal gland.")  
+    32790:AnnotationAssertion(rdfs:label obo:CL_4033003 "myoepithelial cell of
+  bronchus submucosal gland")                                                 
+    32952:# Class: obo:CL_4033021 (myoepithelial cell of trachea gland)       
+    32954:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:29656943")  
+  obo:IAO_0000115 obo:CL_4033021 "A myoepithelial cell that is part of a      
+  submucosal gland of the trachea.")                                          
+    32958:AnnotationAssertion(rdfs:label obo:CL_4033021 "myoepithelial cell of
+  trachea gland")                                                             
+    33245:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25564622")  
+  Annotation(oboInOwl:hasDbXref "PMID:34044844") Annotation(oboInOwl:hasDbXref
+  "PMID:35387001") Annotation(oboInOwl:hasDbXref "PMID:37834236")             
+  obo:IAO_0000115 obo:CL_4033048 "A respiratory epithelial cell derived from a
+  basal cell, with a topographic nuclear position between the basal and       
+  luminal cells of the airway epithelium. This non-basal, intermediate        
+  progenitor cell has limited proliferative capacity and can differentiate    
+  into multiciliated, secretory, or rare airway cells (ionocytes, tuft cells, 
+  neuroendocrine cells). It shares some ultrastructural features with basal   
+  cells but lacks the defined characteristics of fully differentiated cellular
+  phenotypes.")                                                               
+    <exited with exit code 0>
+
+Bash: Check idrange for CL_99 IDs
+$ cd /home/runner/work/cell-ontology/cell-ontology && cat src/ontology/cl-
+  idranges.owl | grep -A5 'idrange:81|CL_99'                                  
+    Datatype: idrange:81                                                      
+        Annotations:                                                          
+            allocatedto: "Temporary IDs"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 9900000, < 10000000]                               
+    <exited with exit code 0>
+
+Bash: Find the last CL_99 IDs used
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep 'CL_99'        
+  src/ontology/cl-edit.owl | tail -30                                         
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find latest CL_990 and CL_4xxx IDs used
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep 'CL_990|CL_4[0-
+  9]{6}' src/ontology/cl-edit.owl | grep 'Declaration' | sort | tail -20      
+    Declaration(Class(obo:CL_4072032))                                        
+    Declaration(Class(obo:CL_4072034))                                        
+    Declaration(Class(obo:CL_4072035))                                        
+    Declaration(Class(obo:CL_4072036))                                        
+    Declaration(Class(obo:CL_4072037))                                        
+    Declaration(Class(obo:CL_4072038))                                        
+    Declaration(Class(obo:CL_4072039))                                        
+    Declaration(Class(obo:CL_4072040))                                        
+    Declaration(Class(obo:CL_4072041))                                        
+    Declaration(Class(obo:CL_4072042))                                        
+    Declaration(Class(obo:CL_4072043))                                        
+    Declaration(Class(obo:CL_4072044))                                        
+    Declaration(Class(obo:CL_4072045))                                        
+    Declaration(Class(obo:CL_4072046))                                        
+    Declaration(Class(obo:CL_4072102))                                        
+    Declaration(Class(obo:CL_4072103))                                        
+    Declaration(Class(obo:CL_4072104))                                        
+    Declaration(ObjectProperty(obo:CL_4030044))                               
+    Declaration(ObjectProperty(obo:CL_4030045))                               
+    Declaration(ObjectProperty(obo:CL_4030046))                               
+    <exited with exit code 0>
+
+Bash: Find highest CL IDs used
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -o 'CL_[0-     
+  9]{7}' src/ontology/cl-edit.owl | sort -u | tail -30                        
+    CL_4072017                                                                
+    CL_4072018                                                                
+    CL_4072019                                                                
+    CL_4072021                                                                
+    CL_4072022                                                                
+    CL_4072027                                                                
+    CL_4072029                                                                
+    CL_4072031                                                                
+    CL_4072032                                                                
+    CL_4072034                                                                
+    CL_4072035                                                                
+    CL_4072036                                                                
+    CL_4072037                                                                
+    CL_4072038                                                                
+    CL_4072039                                                                
+    CL_4072040                                                                
+    CL_4072041                                                                
+    CL_4072042                                                                
+    CL_4072043                                                                
+    CL_4072044                                                                
+    CL_4072045                                                                
+    CL_4072046                                                                
+    CL_4072102                                                                
+    CL_4072103                                                                
+    CL_4072104                                                                
+    CL_7770002                                                                
+    CL_7770003                                                                
+    CL_7770004                                                                
+    CL_7770005                                                                
+    CL_7770006                                                                
+    <exited with exit code 0>
+
+Bash: View full idranges file
+$ cd /home/runner/work/cell-ontology/cell-ontology && cat src/ontology/cl-
+  idranges.owl                                                                
+    Prefix: idrange: <http://purl.obolibrary.org/obo/cl/idrange/>             
+    Prefix: allocatedto: <http://purl.obolibrary.org/obo/IAO_0000597>         
+    Prefix: iddigits: <http://purl.obolibrary.org/obo/IAO_0000596>            
+    Prefix: idprefix: <http://purl.obolibrary.org/obo/IAO_0000599>            
+    Prefix: idsfor: <http://purl.obolibrary.org/obo/IAO_0000598>              
+    Prefix: comment: <http://www.w3.org/2000/01/rdf-schema#comment>           
+                                                                              
+    Ontology: <http://purl.obolibrary.org/obo/cl/cl-idranges.owl>             
+                                                                              
+    Annotations:                                                              
+        idprefix: "http://purl.obolibrary.org/obo/CL_",                       
+        iddigits: 7,                                                          
+        idsfor: "CL"                                                          
+                                                                              
+    AnnotationProperty: allocatedto:                                          
+                                                                              
+    AnnotationProperty: idprefix:                                             
+                                                                              
+    AnnotationProperty: iddigits:                                             
+                                                                              
+    AnnotationProperty: idsfor:                                               
+                                                                              
+    AnnotationProperty: comment:                                              
+                                                                              
+    Datatype: idrange:1                                                       
+        Annotations:                                                          
+            allocatedto: "Alexander Diehl"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 1, < 2000]                                         
+                                                                              
+    Datatype: idrange:2                                                       
+        Annotations:                                                          
+            allocatedto: "Terrence Meehan"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 2001, < 4000]                                      
+                                                                              
+    Datatype: idrange:3                                                       
+        Annotations:                                                          
+            allocatedto: "Wade Valleau and Alexander Diehl, nervous system    
+  cell types"                                                                 
+        EquivalentTo:                                                         
+            xsd:integer[>= 4001, < 5000]                                      
+                                                                              
+    Datatype: idrange:4                                                       
+        Annotations:                                                          
+            allocatedto: "Ceri Van Slyke"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 5001, < 6000]                                      
+                                                                              
+    Datatype: idrange:5                                                       
+        Annotations:                                                          
+            allocatedto: "Alan Ruttenberg"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 6001, < 7000]                                      
+                                                                              
+    Datatype: idrange:6                                                       
+        Annotations:                                                          
+            allocatedto: "Melissa Haendel"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 7001, < 8000]                                      
+                                                                              
+    Datatype: idrange:7                                                       
+        Annotations:                                                          
+            allocatedto: "David Osumi-Sutherland"                             
+        EquivalentTo:                                                         
+            xsd:integer[>= 8001, < 9000]                                      
+                                                                              
+    Datatype: idrange:8                                                       
+        Annotations:                                                          
+            allocatedto: "Paola Roncaglia"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 9001, < 10000]                                     
+                                                                              
+    Datatype: idrange:9                                                       
+        Annotations:                                                          
+            allocatedto: "Chris Mungall"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 10001, < 11000]                                    
+                                                                              
+    Datatype: idrange:10                                                      
+        Annotations:                                                          
+            allocatedto: "Nicole Vasilevsky"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 11001, < 12000]                                    
+                                                                              
+    Datatype: idrange:11                                                      
+        Annotations:                                                          
+            allocatedto: "Tanya Berardini"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 12001, < 13000]                                    
+                                                                              
+    Datatype: idrange:12                                                      
+        Annotations:                                                          
+            allocatedto: "David Hill"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 13001, < 14000]                                    
+                                                                              
+    Datatype: idrange:13                                                      
+        Annotations:                                                          
+            allocatedto: "Jane Lomax"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 14001, < 15000]                                    
+                                                                              
+    Datatype: idrange:14                                                      
+        Annotations:                                                          
+            allocatedto: "Yvonne Bradford"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 15001, < 16000]                                    
+                                                                              
+    Datatype: idrange:15                                                      
+        Annotations:                                                          
+            allocatedto: "Matt Brush"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 16001, < 17000]                                    
+                                                                              
+    Datatype: idrange:16                                                      
+        Annotations:                                                          
+            allocatedto: "Tiago Lubiana Alves"                                
+        EquivalentTo:                                                         
+            xsd:integer[>= 17001, < 17500]                                    
+                                                                              
+    Datatype: idrange:17                                                      
+        Annotations:                                                          
+            allocatedto: "Nicolas Matentzoglu"                                
+        EquivalentTo:                                                         
+            xsd:integer[>= 17501, < 18000]                                    
+                                                                              
+    Datatype: idrange:18                                                      
+        Annotations:                                                          
+            allocatedto: "Zoe Pendlington"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 18001, < 19000]                                    
+                                                                              
+    Datatype: idrange:19                                                      
+        Annotations:                                                          
+            allocatedto: "Maria Keays"                                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 19001, < 20000]                                    
+                                                                              
+    Datatype: idrange:20                                                      
+        Annotations:                                                          
+            allocatedto: "Chris Mungall, automatic generation"                
+        EquivalentTo:                                                         
+            xsd:integer[>= 1000001, < 2000000]                                
+                                                                              
+    Datatype: idrange:21                                                      
+        Annotations:                                                          
+            allocatedto: "TermGenie, automatic generation"                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 2000001, < 3000000]                                
+                                                                              
+    Datatype: idrange:22                                                      
+        Annotations:                                                          
+            allocatedto: "Cell BLAST, automatic generation"                   
+        EquivalentTo:                                                         
+            xsd:integer[>= 3000001, < 4000000]                                
+                                                                              
+    Datatype: idrange:23                                                      
+        Annotations:                                                          
+            allocatedto: "Leigh Carmody"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4000001, < 4000500]                                
+                                                                              
+    Datatype: idrange:24                                                      
+        Annotations:                                                          
+            allocatedto: "Lauren Chan"                                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 4000501, < 4001000]                                
+                                                                              
+    Datatype: idrange:25                                                      
+        Annotations:                                                          
+            allocatedto: "Meghan Balk"                                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 4001001, < 4001500]                                
+                                                                              
+    Datatype: idrange:26                                                      
+        Annotations:                                                          
+            allocatedto: "Jennifer Chien"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 4001501, < 4002000]                                
+                                                                              
+    Datatype: idrange:27                                                      
+        Annotations:                                                          
+            allocatedto: "Keith Curtis"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4002001, < 4002500]                                
+                                                                              
+    Datatype: idrange:28                                                      
+        Annotations:                                                          
+            allocatedto: "Brian Aevermann"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4002501, < 4003000]                                
+                                                                              
+    Datatype: idrange:29                                                      
+        Annotations:                                                          
+            allocatedto: "Joanna Argasinska"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4003001, < 4003500]                                
+                                                                              
+    Datatype: idrange:30                                                      
+        Annotations:                                                          
+            allocatedto: "Laura Barisoni"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 4003501, < 4004000]                                
+                                                                              
+    Datatype: idrange:31                                                      
+        Annotations:                                                          
+            allocatedto: "Eric Brunskill"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 4004001, < 4004500]                                
+                                                                              
+    Datatype: idrange:32                                                      
+        Annotations:                                                          
+            allocatedto: "Ami Day"                                            
+        EquivalentTo:                                                         
+            xsd:integer[>= 4004501, < 4005000]                                
+                                                                              
+    Datatype: idrange:33                                                      
+        Annotations:                                                          
+            allocatedto: "Deborah Hoshizaki"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4005001, < 4005500]                                
+                                                                              
+    Datatype: idrange:34                                                      
+        Annotations:                                                          
+            allocatedto: "HOGUNE IM"                                          
+        EquivalentTo:                                                         
+            xsd:integer[>= 4005501, < 4006000]                                
+                                                                              
+    Datatype: idrange:35                                                      
+        Annotations:                                                          
+            allocatedto: "Bonita Lam"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 4006001, < 4006500]                                
+                                                                              
+    Datatype: idrange:36                                                      
+        Annotations:                                                          
+            allocatedto: "Teresa Marquez"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 4006501, < 4007000]                                
+                                                                              
+    Datatype: idrange:37                                                      
+        Annotations:                                                          
+            allocatedto: "Parisa Nejad"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4007001, < 4007500]                                
+                                                                              
+    Datatype: idrange:38                                                      
+        Annotations:                                                          
+            allocatedto: "Shawn O'Neil"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4007501, < 4008000]                                
+                                                                              
+    Datatype: idrange:39                                                      
+        Annotations:                                                          
+            allocatedto: "Ellen Quardokus"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4008001, < 4008500]                                
+                                                                              
+    Datatype: idrange:40                                                      
+        Annotations:                                                          
+            allocatedto: "Kathy Reinold"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4008501, < 4009000]                                
+                                                                              
+    Datatype: idrange:41                                                      
+        Annotations:                                                          
+            allocatedto: "Heba Sailem"                                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 4009001, < 4009500]                                
+                                                                              
+    Datatype: idrange:42                                                      
+        Annotations:                                                          
+            allocatedto: "Enrique Sapena Ventura"                             
+        EquivalentTo:                                                         
+            xsd:integer[>= 4009501, < 4010000]                                
+                                                                              
+    Datatype: idrange:43                                                      
+        Annotations:                                                          
+            allocatedto: "Marion Shadbolt"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4010001, < 4010500]                                
+                                                                              
+    Datatype: idrange:44                                                      
+        Annotations:                                                          
+            allocatedto: "Ray Stefancsik"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 4010501, < 4011000]                                
+                                                                              
+    Datatype: idrange:45                                                      
+        Annotations:                                                          
+            allocatedto: "M. Todd Valerius"                                   
+        EquivalentTo:                                                         
+            xsd:integer[>= 4011001, < 4011500]                                
+                                                                              
+    Datatype: idrange:46                                                      
+        Annotations:                                                          
+            allocatedto: "Jennifer Zamanian"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4011501, < 4012000]                                
+                                                                              
+    Datatype: idrange:47                                                      
+        Annotations:                                                          
+            allocatedto: "Aleks Michalewicz"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4012001, < 4012500]                                
+                                                                              
+    Datatype: idrange:48                                                      
+        Annotations:                                                          
+            allocatedto: "Victoria Alonso"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4013001, < 4013500]                                
+                                                                              
+    Datatype: idrange:49                                                      
+        Annotations:                                                          
+            allocatedto: "ALICE AUGUSTINE"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4013501, < 4014000]                                
+                                                                              
+    Datatype: idrange:50                                                      
+        Annotations:                                                          
+            allocatedto: "Aisha Blfgeh"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4014001, < 4014500]                                
+                                                                              
+    Datatype: idrange:51                                                      
+        Annotations:                                                          
+            allocatedto: "Reham Alharbi"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4014501, < 4015000]                                
+                                                                              
+    Datatype: idrange:52                                                      
+        Annotations:                                                          
+            allocatedto: "Jason Hilton"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4015001, < 4015500]                                
+                                                                              
+    Datatype: idrange:53                                                      
+        Annotations:                                                          
+            allocatedto: "FADHL ALAKWAA"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4015501, < 4016000]                                
+                                                                              
+    Datatype: idrange:54                                                      
+        Annotations:                                                          
+            allocatedto: "Chris Briggs"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4016001, < 4016500]                                
+                                                                              
+    Datatype: idrange:55                                                      
+        Annotations:                                                          
+            allocatedto: "Whitney Leach"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4018501, < 4019000]                                
+                                                                              
+    Datatype: idrange:56                                                      
+        Annotations:                                                          
+            allocatedto: "Sofia Robb"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 4019001, < 4019500]                                
+                                                                              
+    Datatype: idrange:57                                                      
+        Annotations:                                                          
+            allocatedto: "Helen Miller"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4019501, < 4020000]                                
+                                                                              
+    Datatype: idrange:58                                                      
+        Annotations:                                                          
+            allocatedto: "Mary Mays"                                          
+        EquivalentTo:                                                         
+            xsd:integer[>= 4020001, < 4020500]                                
+                                                                              
+    Datatype: idrange:59                                                      
+        Annotations:                                                          
+            allocatedto: "David Rowe"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 4020501, < 4021000]                                
+                                                                              
+    Datatype: idrange:60                                                      
+        Annotations:                                                          
+            allocatedto: "Shawn Tan"                                          
+        EquivalentTo:                                                         
+            xsd:integer[>= 4023001, < 4025000]                                
+                                                                              
+    Datatype: idrange:61                                                      
+        Annotations:                                                          
+            allocatedto: "Kallia Panoutsopoulou"                              
+        EquivalentTo:                                                         
+            xsd:integer[>= 4025001, < 4026000]                                
+                                                                              
+    Datatype: idrange:62                                                      
+        Annotations:                                                          
+            allocatedto: "Karthik Soman"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4027001, < 4028000]                                
+                                                                              
+    Datatype: idrange:63                                                      
+        Annotations:                                                          
+            allocatedto: "Joshua Fortriede"                                   
+        EquivalentTo:                                                         
+            xsd:integer[>= 4028001, < 4029000]                                
+                                                                              
+    Datatype: idrange:64                                                      
+        Annotations:                                                          
+            allocatedto: "Damien Goutte-Gattat"                               
+        EquivalentTo:                                                         
+            xsd:integer[>= 4029001, < 4030000]                                
+                                                                              
+    Datatype: idrange:65                                                      
+        Annotations:                                                          
+            allocatedto: "ad hoc EBI editor"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4030001, < 4032000]                                
+                                                                              
+    Datatype: idrange:66                                                      
+        Annotations:                                                          
+            allocatedto: "Arwa Ibrahim"                                       
+        EquivalentTo:                                                         
+            xsd:integer[>= 4032001, < 4033000]                                
+                                                                              
+    Datatype: idrange:67                                                      
+        Annotations:                                                          
+            allocatedto: "Aleix Puig"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 4033001, < 4040000]                                
+                                                                              
+    Datatype: idrange:68                                                      
+        Annotations:                                                          
+            allocatedto: "Paula Duek Roggli"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4040001, < 4042000]                                
+                                                                              
+    Datatype: idrange:69                                                      
+        Annotations:                                                          
+            allocatedto: "Alida Avola"                                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 4042001, < 4047000]                                
+                                                                              
+    Datatype: idrange:70                                                      
+        Annotations:                                                          
+            allocatedto: "Jasmine Belfiore"                                   
+        EquivalentTo:                                                         
+            xsd:integer[>= 4047001, < 4052000]                                
+                                                                              
+    Datatype: idrange:71                                                      
+        Annotations:                                                          
+            allocatedto: "Caroline Eastwood"                                  
+        EquivalentTo:                                                         
+            xsd:integer[>= 4052001, < 4060000]                                
+                                                                              
+    Datatype: idrange:72                                                      
+        Annotations:                                                          
+            allocatedto: "KGCL"                                               
+        EquivalentTo:                                                         
+            xsd:integer[>= 4060001, < 4070000]                                
+                                                                              
+    Datatype: idrange:73                                                      
+        Annotations:                                                          
+            allocatedto: "NDI Cloud"                                          
+        EquivalentTo:                                                         
+            xsd:integer[>= 4070001, < 4072000]                                
+                                                                              
+    Datatype: idrange:74                                                      
+        Annotations:                                                          
+            allocatedto: "Andrea D Rivera"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4072001, < 4080000]                                
+                                                                              
+    Datatype: idrange:75                                                      
+        Annotations:                                                          
+            allocatedto: "Meena Kharatmal"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4012501, < 4013000]                                
+                                                                              
+    Datatype: idrange:76                                                      
+        Annotations:                                                          
+            allocatedto: "Phillip McCown"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 4017001, < 4017500]                                
+                                                                              
+    Datatype: idrange:77                                                      
+        Annotations:                                                          
+            allocatedto: "Laurel Cooper"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 4017501, < 4018000]                                
+                                                                              
+    Datatype: idrange:78                                                      
+        Annotations:                                                          
+            allocatedto: "Lacey Ellington"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 4018001, < 4018500]                                
+                                                                              
+    Datatype: idrange:79                                                      
+        Annotations:                                                          
+            allocatedto: "Josef Hardi"                                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 4026001, < 4027000]                                
+                                                                              
+    Datatype: idrange:80                                                      
+        Annotations:                                                          
+            allocatedto: "BICAN, automatic generation"                        
+        EquivalentTo:                                                         
+            xsd:integer[>= 4300001, < 4800000]                                
+                                                                              
+    Datatype: idrange:81                                                      
+        Annotations:                                                          
+            allocatedto: "Temporary IDs"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 9900000, < 10000000]                               
+                                                                              
+    Datatype: idrange:82                                                      
+        Annotations:                                                          
+            allocatedto: "Automation"                                         
+        EquivalentTo:                                                         
+            xsd:integer[>= 20000, < 120000]                                   
+                                                                              
+    Datatype: idrange:83                                                      
+        Annotations:                                                          
+            allocatedto: "Jie Zheng"                                          
+        EquivalentTo:                                                         
+            xsd:integer[>= 4080001, < 4082000]                                
+    <exited with exit code 0>
+
+Bash: Find the last CL_4072 terms added
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n 'CL_4072'   
+  src/ontology/cl-edit.owl | grep 'Declaration|# Class' | tail -20            
+    35570:# Class: obo:CL_4072027 (sst GABAergic interneuron (Homo sapiens))  
+    35588:# Class: obo:CL_4072029 (pvalb GABAergic interneuron (Homo sapiens))
+    35601:# Class: obo:CL_4072031 (sst chodl GABAergic interneuron (Homo      
+  sapiens))                                                                   
+    35616:# Class: obo:CL_4072032 (VIP GABAergic interneuron (Homo sapiens))  
+    35637:# Class: obo:CL_4072034 (lamp5 GABAergic interneuron (Homo sapiens))
+    35652:# Class: obo:CL_4072035 (sncg GABAergic interneuron (Homo sapiens)) 
+    35669:# Class: obo:CL_4072036 (PAX6 GABAergic interneuron (Homo sapiens)) 
+    35682:# Class: obo:CL_4072037 (L2/3 intratelencephalic projecting         
+  glutamatergic neuron (Homo sapiens))                                        
+    35698:# Class: obo:CL_4072038 (L5 intratelencephalic projecting           
+  glutamatergic neuron (Homo sapiens))                                        
+    35714:# Class: obo:CL_4072039 (L4 intratelencephalic projecting           
+  glutamatergic neuron (Homo sapiens))                                        
+    35728:# Class: obo:CL_4072040 (L6 intratelencephalic projecting Car3      
+  glutamatergic neuron (Homo sapiens))                                        
+    35746:# Class: obo:CL_4072041 (L6 intratelencephalic projecting           
+  glutamatergic neuron (Homo sapiens))                                        
+    35762:# Class: obo:CL_4072042 (L5/6 near-projecting glutamatergic neuron  
+  (Homo sapiens))                                                             
+    35777:# Class: obo:CL_4072043 (L5 extratelencephalic projecting           
+  glutamatergic cortical neuron (Homo sapiens))                               
+    35798:# Class: obo:CL_4072044 (L6 corticothalamic-projecting glutamatergic
+  cortical neuron (Homo sapiens))                                             
+    35814:# Class: obo:CL_4072045 (L6b glutamatergic cortical neuron (Homo    
+  sapiens))                                                                   
+    35828:# Class: obo:CL_4072046 (pvalb chandelier GABAergic interneuron     
+  (Homo sapiens))                                                             
+    35846:# Class: obo:CL_4072102 (Purkinje layer interneuron)                
+    35855:# Class: obo:CL_4072103 (hair follicle dermal stem cell)            
+    35866:# Class: obo:CL_4072104 (fibrochondrocyte)                          
+    <exited with exit code 0>
+
+Bash: Find existing CL_99 IDs
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -o 'CL_99[0-   
+  9]*' src/ontology/cl-edit.owl | sort -u | tail -20                          
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check if any CL_99 IDs exist
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -c 'CL_99'     
+  src/ontology/cl-edit.owl                                                    
+    0                                                                         
+    <exited with exit code 1>
+
+Bash: Look at pulmonary ionocyte as an example
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n 'CL_0017000|
+  CL_4033003|pulmonary ionocyte' src/ontology/cl-edit.owl                     
+    2224:Declaration(Class(obo:CL_0017000))                                   
+    3047:Declaration(Class(obo:CL_4033003))                                   
+    25124:# Class: obo:CL_0017000 (pulmonary ionocyte)                        
+    25126:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:30069044")  
+  Annotation(oboInOwl:hasDbXref "PMID:30069046") obo:IAO_0000115              
+  obo:CL_0017000 "An ionocyte that is part of the lung epithelium. The cells  
+  from this type are major sources of the CFTR protein in human and mice.")   
+    25127:AnnotationAssertion(terms:contributor obo:CL_0017000 <https://orcid.
+  org/0000-0003-2473-2313>)                                                   
+    25128:AnnotationAssertion(rdfs:label obo:CL_0017000 "pulmonary ionocyte") 
+    25129:EquivalentClasses(obo:CL_0017000 ObjectIntersectionOf(obo:CL_0005006
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000115)))                  
+    25130:SubClassOf(obo:CL_0017000 obo:CL_0005006)                           
+    32786:# Class: obo:CL_4033003 (myoepithelial cell of bronchus submucosal  
+  gland)                                                                      
+    32788:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:19996346")  
+  Annotation(oboInOwl:hasDbXref "PMID:5487122") obo:IAO_0000115 obo:CL_4033003
+  "A(n) myoepithelial cell that is part of a(n) bronchus submucosal gland.")  
+    32789:AnnotationAssertion(terms:contributor obo:CL_4033003 <https://orcid.
+  org/0000-0001-6677-8489>)                                                   
+    32790:AnnotationAssertion(rdfs:label obo:CL_4033003 "myoepithelial cell of
+  bronchus submucosal gland")                                                 
+    32791:EquivalentClasses(obo:CL_4033003 ObjectIntersectionOf(obo:CL_0000185
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_8410043)))                  
+    <exited with exit code 0>
+
+Bash: View pulmonary ionocyte term
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '25124,      
+  25135p' src/ontology/cl-edit.owl                                            
+    # Class: obo:CL_0017000 (pulmonary ionocyte)                              
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:30069044")        
+  Annotation(oboInOwl:hasDbXref "PMID:30069046") obo:IAO_0000115              
+  obo:CL_0017000 "An ionocyte that is part of the lung epithelium. The cells  
+  from this type are major sources of the CFTR protein in human and mice.")   
+    AnnotationAssertion(terms:contributor obo:CL_0017000 <https://orcid.      
+  org/0000-0003-2473-2313>)                                                   
+    AnnotationAssertion(rdfs:label obo:CL_0017000 "pulmonary ionocyte")       
+    EquivalentClasses(obo:CL_0017000 ObjectIntersectionOf(obo:CL_0005006      
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000115)))                  
+    SubClassOf(obo:CL_0017000 obo:CL_0005006)                                 
+                                                                              
+    # Class: obo:CL_0017001 (splanchnic mesodermal cell)                      
+                                                                              
+    AnnotationAssertion(obo:IAO_0000115 obo:CL_0017001 "A mesodermal cell that
+  is part of the splanchnic layer of lateral plate mesoderm.")                
+    AnnotationAssertion(terms:contributor obo:CL_0017001 <https://orcid.      
+  org/0000-0003-2473-2313>)                                                   
+    <exited with exit code 0>
+
+Bash: View the last added terms (CL_4072103, CL_4072104)
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '35855,      
+  35900p' src/ontology/cl-edit.owl                                            
+    # Class: obo:CL_4072103 (hair follicle dermal stem cell)                  
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25465495")        
+  Annotation(oboInOwl:hasDbXref "PMID:29691589") Annotation(oboInOwl:hasDbXref
+  "PMID:35036581") Annotation(oboInOwl:hasDbXref "PMID:35069694")             
+  obo:IAO_0000115 obo:CL_4072103 "A bipotent mesenchymal stem cell that       
+  resides in the dermal sheath, specifically within the dermal sheath cup at  
+  the base of the hair follicle, characterized by its capacity for self-      
+  renewal and differentiation into both dermal sheath and dermal papilla cells
+  throughout hair cycling. In humans, this cell is marked by enriched         
+  expression of gremlin-2 (GREM2) and dipeptidase-1 (DPEP1), and acts as a    
+  progenitor reservoir sustaining and regenerating the follicle's mesenchymal 
+  compartments.")                                                             
+    AnnotationAssertion(terms:contributor obo:CL_4072103 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(oboInOwl:creation_date obo:CL_4072103 "2025-11-       
+  05T11:49:53Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:38016881")        
+  oboInOwl:hasNarrowSynonym obo:CL_4072103 "dermal sheath cup cell")          
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25465495")        
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072103 "hfDSC")                          
+    AnnotationAssertion(rdfs:label obo:CL_4072103 "hair follicle dermal stem  
+  cell")                                                                      
+    EquivalentClasses(obo:CL_4072103 ObjectIntersectionOf(obo:CL_0000134      
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0002073)))                  
+    SubClassOf(obo:CL_4072103 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0042634))                                                            
+                                                                              
+    # Class: obo:CL_4072104 (fibrochondrocyte)                                
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:28939894")        
+  Annotation(oboInOwl:hasDbXref "PMID:31871141") Annotation(oboInOwl:hasDbXref
+  "PMID:34608249") obo:IAO_0000115 obo:CL_4072104 "A chondrocyte with hybrid  
+  fibroblastic-chondrogenic characteristics found in fibrocartilage,          
+  particularly in the avascular inner zone and transitional middle zone of the
+  meniscus. In humans, fibrochondrocytes are marked by predominant expression 
+  of type I collagen (COL1A1) and fibril-associated collagens (COL3A1, COL6A1),
+  while retaining type II collagen (COL2A1) expression and exhibiting lower   
+  SOX9 than hyaline chondrocytes. This molecular profile underlies the        
+  synthesis of abundant type I collagen essential for fibrocartilage matrix   
+  and reflects an intermediate phenotype between fibroblast and chondrocyte.")
+    AnnotationAssertion(terms:contributor obo:CL_4072104 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:34608249")        
+  oboInOwl:hasExactSynonym obo:CL_4072104 "fibrocartilage chondrocyte")       
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:28939894")        
+  oboInOwl:hasNarrowSynonym obo:CL_4072104 "meniscus fibrochondrocyte")       
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:31871141")        
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072104 "FC")                             
+    AnnotationAssertion(rdfs:label obo:CL_4072104 "fibrochondrocyte")         
+    EquivalentClasses(obo:CL_4072104 ObjectIntersectionOf(obo:CL_0000138      
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001995)))                  
+    SubClassOf(obo:CL_4072104 obo:CL_0002320)                                 
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002202             
+  obo:CL_0020021))                                                            
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_000003264))                                                          
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_000003328))                                                          
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_000003353))                                                          
+                                                                              
+    # Class: obo:CL_7770002 (juxtacanalicular tissue cell)                    
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25356439")        
+  Annotation(oboInOwl:hasDbXref "PMID:32341164") Annotation(oboInOwl:hasDbXref
+  "PMID:39829808") obo:IAO_0000115 obo:CL_7770002 "A trabecular meshwork cell 
+  of the juxtacanalicular tissue (JCT), characterized by a spindle-shaped,    
+  fibroblast-like morphology within a loose extracellular matrix immediately  
+  adjacent to Schlemm's canal. It expresses CHI3L1 (human and mouse) and      
+  ANGPTL7 (human), as well as smooth muscle actin for contractility. Unlike   
+  other trabecular meshwork cells, it does not form monolayers but exists in a
+  loose network, regulating aqueous humor outflow resistance through          
+  continuous ECM remodelling, mechanotransduction, and formation of           
+  intracellular pores historically called giant vacuoles.")                   
+    AnnotationAssertion(obo:IAO_0000233 obo:CL_7770002 "https://github.       
+  com/obophenotype/cell-ontology/issues/3275")                                
+    AnnotationAssertion(terms:contributor obo:CL_7770002 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(oboInOwl:creation_date obo:CL_7770002 "2025-01-       
+  29T08:52:00Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:32341164")        
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_7770002 "JCT cell")                       
+    AnnotationAssertion(rdfs:label obo:CL_7770002 "juxtacanalicular tissue    
+  cell")                                                                      
+    SubClassOf(obo:CL_7770002 obo:CL_0000327)                                 
+    SubClassOf(obo:CL_7770002 obo:CL_0002367)                                 
+    SubClassOf(obo:CL_7770002 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0070278))                                                            
+                                                                              
+    # Class: obo:CL_7770003 (beam A cell)                                     
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:27443500")        
+  Annotation(oboInOwl:hasDbXref "PMID:32341164") Annotation(oboInOwl:hasDbXref
+  "PMID:39829808") obo:IAO_0000115 obo:CL_7770003 "A beam cell within the     
+  eye's trabecular meshwork, molecularly distinguished by FABP4 expression in 
+  humans and spatially intermingled with Beam B cells throughout the uveal and
+  corneoscleral meshwork regions. In mice, a transcriptionally analogous Beam 
+  A–like cluster (mC14) exists, sharing core TM markers (Myoc, Mgp, Pdpn,     
+  Chil1) and functional attributes.")                                         
+    AnnotationAssertion(terms:contributor obo:CL_7770003 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(oboInOwl:creation_date obo:CL_7770003 "2025-08-       
+  29T08:53:47Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(rdfs:label obo:CL_7770003 "beam A cell")              
+    AnnotationAssertion(Annotation(dc:license <http://creativecommons.        
+  org/licenses/by/4.0/>) Annotation(oboInOwl:hasDbXref "PMID:35836364")       
+  Annotation(rdfs:comment "Trabecular meshwork (TM) structure. The TM consists
+  of uveal (blue), corneoscleral (red), and juxtacanalicular (green) regions. 
+  TM beam cells (blue/red) line the uveal and corneoscleral regions, while JCT
+  cells (green) occupy the juxtacanalicular region.") foaf:depiction          
+  obo:CL_7770003 "http://purl.obolibrary.                                     
+  org/obo/cl/images/Trabecular_meshowk_cells_PMID35836364.jpg")               
+    SubClassOf(obo:CL_7770003 obo:CL_7770005)                                 
+    <exited with exit code 0>
+
+Bash: Find examples with date, creator, term_tracker_item
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n 'terms:date|
+  terms:creator|term_tracker_item' src/ontology/cl-edit.owl | tail -20        
+    35576:AnnotationAssertion(terms:date obo:CL_4072027 "2025-08-             
+  12T10:45:41Z"^^xsd:dateTime)                                                
+    35594:AnnotationAssertion(terms:date obo:CL_4072029 "2025-08-             
+  12T14:31:10Z"^^xsd:dateTime)                                                
+    35607:AnnotationAssertion(terms:date obo:CL_4072031 "2025-09-             
+  04T10:20:07Z"^^xsd:dateTime)                                                
+    35622:AnnotationAssertion(terms:date obo:CL_4072032 "2025-09-             
+  04T10:52:00Z"^^xsd:dateTime)                                                
+    35643:AnnotationAssertion(terms:date obo:CL_4072034 "2025-09-             
+  04T14:48:07Z"^^xsd:dateTime)                                                
+    35658:AnnotationAssertion(terms:date obo:CL_4072035 "2025-09-             
+  05T10:49:37Z"^^xsd:dateTime)                                                
+    35675:AnnotationAssertion(terms:date obo:CL_4072036 "2025-09-             
+  10T08:47:34Z"^^xsd:dateTime)                                                
+    35688:AnnotationAssertion(terms:date obo:CL_4072037 "2025-09-             
+  10T09:15:51Z"^^xsd:dateTime)                                                
+    35704:AnnotationAssertion(terms:date obo:CL_4072038 "2025-09-             
+  10T09:47:23Z"^^xsd:dateTime)                                                
+    35719:AnnotationAssertion(terms:date obo:CL_4072039 "2025-09-             
+  10T10:05:26Z"^^xsd:dateTime)                                                
+    35734:AnnotationAssertion(terms:date obo:CL_4072040 "2025-09-             
+  10T10:23:11Z"^^xsd:dateTime)                                                
+    35752:AnnotationAssertion(terms:date obo:CL_4072041 "2025-09-             
+  11T14:38:02Z"^^xsd:dateTime)                                                
+    35768:AnnotationAssertion(terms:date obo:CL_4072042 "2025-09-             
+  16T08:55:09Z"^^xsd:dateTime)                                                
+    35783:AnnotationAssertion(terms:date obo:CL_4072043 "2025-09-             
+  16T09:26:37Z"^^xsd:dateTime)                                                
+    35804:AnnotationAssertion(terms:date obo:CL_4072044 "2025-09-             
+  16T09:42:20Z"^^xsd:dateTime)                                                
+    35820:AnnotationAssertion(terms:date obo:CL_4072045 "2025-09-             
+  16T10:30:38Z"^^xsd:dateTime)                                                
+    35834:AnnotationAssertion(terms:date obo:CL_4072046 "2025-09-             
+  29T10:07:47Z"^^xsd:dateTime)                                                
+    35849:AnnotationAssertion(terms:date obo:CL_4072102 "2025-04-             
+  29T13:06:36Z"^^xsd:dateTime)                                                
+    35906:AnnotationAssertion(terms:date obo:CL_7770004 "2025-09-             
+  05T07:59:28Z"^^xsd:dateTime)                                                
+    35925:AnnotationAssertion(terms:date obo:CL_7770006 "2025-09-             
+  15T08:48:01Z"^^xsd:dateTime)                                                
+    <exited with exit code 0>
+
+Bash: Find term_tracker_item examples
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n 'IAO_0000233|
+  term_tracker' src/ontology/cl-edit.owl | head -20                           
+    3746:AnnotationAssertion(obo:IAO_0000233                                  
+  cl:has_high_plasma_membrane_amount <https://github.com/obophenotype/cell-   
+  ontology/issues/1481>)                                                      
+    3754:AnnotationAssertion(obo:IAO_0000233 cl:has_low_plasma_membrane_amount
+  <https://github.com/obophenotype/cell-ontology/issues/1481>)                
+    3808:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000003 <https://github.  
+  com/obophenotype/cell-ontology/issues/2124>)                                
+    4331:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000054 <https://github.  
+  com/obophenotype/cell-ontology/issues/2698>)                                
+    4340:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000055 "https://github.  
+  com/obophenotype/cell-ontology/issues/2922")                                
+    4529:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000073 <https://github.  
+  com/obophenotype/cell-ontology/issues/1149>)                                
+    4633:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000085 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4641:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000086 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4649:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000087 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4657:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000088 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4665:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000089 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4673:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000090 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4894:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000111 <https://github.  
+  com/obophenotype/cell-ontology/issues/1069>)                                
+    5020:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000124 <https://github.  
+  com/obophenotype/cell-ontology/issues/715>)                                 
+    5395:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000161 <https://github.  
+  com/obophenotype/cell-ontology/issues/427>)                                 
+    5598:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000181 <https://github.  
+  com/obophenotype/cell-ontology/issues/720>)                                 
+    5855:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000212 <https://github.  
+  com/obophenotype/cell-ontology/issues/2271>)                                
+    5863:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000213 <https://github.  
+  com/obophenotype/cell-ontology/issues/3014>)                                
+    5881:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000215 <https://github.  
+  com/obophenotype/cell-ontology/issues/3012>)                                
+    5901:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000217 <https://github.  
+  com/obophenotype/cell-ontology/issues/3013>)                                
+    <exited with exit code 0>
+
+Bash: View acinar cell of salivary gland term
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '20510,      
+  20525p' src/ontology/cl-edit.owl                                            
+    # Class: obo:CL_0002623 (acinar cell of salivary gland)                   
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")              
+  Annotation(oboInOwl:hasDbXref "PMID:24646566") Annotation(oboInOwl:hasDbXref
+  "PMID:25843887") Annotation(oboInOwl:hasDbXref "PMID:28623666")             
+  Annotation(oboInOwl:hasDbXref "PMID:34989394") Annotation(oboInOwl:hasDbXref
+  "PMID:35343828") obo:IAO_0000115 obo:CL_0002623 "An acinar cell that is part
+  of the salivary gland epithelium, responsible for synthesizing and secreting
+  the primary saliva essential for oral digestion, antimicrobial defense, and 
+  mucosal immunity. It features apical-basal polarity with apical secretory   
+  granules, and tight junctions that maintain polarity and regulate calcium-  
+  dependent saliva exocytosis triggered by parasympathetic and sympathetic    
+  signals (Ambudkar, 2015). This cell functions in coordination with          
+  contractile myoepithelial cells, which aid saliva flow through the ducts    
+  into the oral cavity (Khan et al., 2022). In mice and humans, acinar cell   
+  development relies on the transcription factor SOX2 (Emmerson et al., 2017),
+  with self-renewal achieved primarily through acinar cell self-duplication   
+  and supported by progenitor populations during injury and regeneration (Aure
+  et al., 2016).")                                                            
+    AnnotationAssertion(terms:contributor obo:CL_0002623 <https://orcid.      
+  org/0000-0003-1980-3228>)                                                   
+    AnnotationAssertion(oboInOwl:creation_date obo:CL_0002623 "2011-03-       
+  14T02:22:22Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:24646566")        
+  oboInOwl:hasExactSynonym obo:CL_0002623 "salivary acinar cell")             
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:24646566")        
+  oboInOwl:hasExactSynonym obo:CL_0002623 "salivary gland acinar cell")       
+    AnnotationAssertion(rdfs:label obo:CL_0002623 "acinar cell of salivary    
+  gland")                                                                     
+    EquivalentClasses(obo:CL_0002623 ObjectIntersectionOf(obo:CL_0000622      
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0004809)))                  
+    SubClassOf(Annotation(oboInOwl:is_inferred "true") obo:CL_0002623         
+  obo:CL_0000622)                                                             
+    SubClassOf(obo:CL_0002623 ObjectSomeValuesFrom(obo:BFO_0000051            
+  obo:GO_0030141))                                                            
+    SubClassOf(obo:CL_0002623 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0017156))                                                            
+    SubClassOf(obo:CL_0002623 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0045087))                                                            
+    SubClassOf(obo:CL_0002623 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0046541))                                                            
+                                                                              
+    # Class: obo:CL_0002624 (paneth cell of the appendix)                     
+    <exited with exit code 0>
+
+
+Now let me look at the parent term structures and find a recent NTR example 
+  with the issue number:
+
+Bash: Find tuft cell, basal cell, and duct epithelial cell
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n 'CL_0002204|
+  CL_0002251|CL_0000646|CL_0002077' src/ontology/cl-edit.owl | head -30       
+    700:Declaration(Class(obo:CL_0000646))                                    
+    1218:Declaration(Class(obo:CL_0002077))                                   
+    1345:Declaration(Class(obo:CL_0002204))                                   
+    1392:Declaration(Class(obo:CL_0002251))                                   
+    9412:# Class: obo:CL_0000646 (basal cell)                                 
+    9414:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")         
+  Annotation(oboInOwl:hasDbXref "ISBN:0517223651") obo:IAO_0000115            
+  obo:CL_0000646 "Undifferentiated; mitotic stem cell for other epithelial    
+  cell types; rounded or elliptical with little cytoplasm and few organelles; 
+  contain cytokeratin intermediate filament.")                                
+    9415:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000646 "BTO:0000939") 
+    9416:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000646 "FMA:62516")   
+    9417:AnnotationAssertion(rdfs:label obo:CL_0000646 "basal cell")          
+    9418:SubClassOf(obo:CL_0000646 obo:CL_0000036)                            
+    9974:EquivalentClasses(obo:CL_0000710 ObjectIntersectionOf(obo:CL_0002077 
+  ObjectSomeValuesFrom(obo:RO_0002202 obo:CL_0000133)))                       
+    14838:EquivalentClasses(obo:CL_0002075 ObjectIntersectionOf(obo:CL_0002204
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0008397)))                  
+    14850:# Class: obo:CL_0002077 (ecto-epithelial cell)                      
+    14852:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "FMA:69074")      
+  Annotation(oboInOwl:hasDbXref "GOC:tfm") obo:IAO_0000115 obo:CL_0002077 "An 
+  epithelial cell derived from ectoderm.")                                    
+    14853:AnnotationAssertion(terms:contributor obo:CL_0002077 <https://orcid.
+  org/0000-0003-1980-3228>)                                                   
+    14854:AnnotationAssertion(oboInOwl:creation_date obo:CL_0002077 "2010-06- 
+  29T03:38:22Z"^^xsd:dateTime)                                                
+    14855:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0002077 "FMA:69074")  
+    14856:AnnotationAssertion(rdfs:label obo:CL_0002077 "ecto-epithelial      
+  cell")                                                                      
+    14857:EquivalentClasses(obo:CL_0002077 ObjectIntersectionOf(obo:CL_0000066
+  ObjectSomeValuesFrom(obo:RO_0002202 obo:CL_0000221)))                       
+    15752:SubClassOf(obo:CL_0002159 obo:CL_0002077)                           
+    15948:SubClassOf(Annotation(oboInOwl:is_inferred "true") obo:CL_0002178   
+  obo:CL_0002251)                                                             
+    16042:EquivalentClasses(obo:CL_0002187 ObjectIntersectionOf(obo:CL_0000646
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0002025)))                  
+    16221:EquivalentClasses(obo:CL_0002203 ObjectIntersectionOf(obo:CL_0002204
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001278)))                  
+    16223:# Class: obo:CL_0002204 (tuft cell)                                 
+    16225:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  Annotation(oboInOwl:hasDbXref "ISBN:0517223651")                            
+  Annotation(oboInOwl:hasDbXref "PMID:15817800") Annotation(oboInOwl:hasDbXref
+  "PMID:30379593") Annotation(oboInOwl:hasDbXref "PMID:36704202")             
+  obo:IAO_0000115 obo:CL_0002204 "An epithelial cell found in various organs, 
+  including the gastrointestinal and respiratory tracts, characterized by a   
+  tuft of 120-140 blunt microvilli on its apical surface. This cell exhibits  
+  diverse functions depending on its location, which includes chemosensation, 
+  initiation of immune responses, contribution to mucociliary clearance, and  
+  defense against parasites.")                                                
+    16226:AnnotationAssertion(terms:contributor obo:CL_0002204 <https://orcid.
+  org/0000-0003-1980-3228>)                                                   
+    16227:AnnotationAssertion(oboInOwl:creation_date obo:CL_0002204 "2010-09- 
+  02T02:28:53Z"^^xsd:dateTime)                                                
+    16228:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0002204 "FMA:67978")  
+    16229:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:36704202")  
+  oboInOwl:hasExactSynonym obo:CL_0002204 "brush cell")                       
+    16230:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:36704202")  
+  oboInOwl:hasExactSynonym obo:CL_0002204 "caveolated cell")                  
+    <exited with exit code 0>
+
+Bash: Check if issue 3471 already has any entries
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  'issues/3471' src/ontology/cl-edit.owl                                      
+    25985:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020045 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    25999:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020046 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    26013:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020047 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    26024:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020048 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    26036:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020049 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    26049:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020050 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    26060:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020051 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    26070:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020052 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    26084:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020053 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    26096:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020054 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    26109:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020055 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    26120:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020056 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    26131:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020057 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    26143:AnnotationAssertion(obo:IAO_0000233 obo:CL_0020058 <https://github. 
+  com/obophenotype/cell-ontology/issues/3471>)                                
+    <exited with exit code 0>
+
+Bash: Find existing terms linked to issue 3471
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n 'CL_0020045|
+  CL_0020046|CL_0020047|CL_0020048|CL_0020049|CL_0020050|CL_0020051|CL_0020052|
+  CL_0020053|CL_0020054|CL_0020055|CL_0020056|CL_0020057|CL_0020058'          
+  src/ontology/cl-edit.owl | grep 'rdfs:label|# Class'                        
+    25982:# Class: obo:CL_0020045 (Dogiel type II neuron)                     
+    25992:AnnotationAssertion(rdfs:label obo:CL_0020045 "Dogiel type II       
+  neuron")                                                                    
+    25996:# Class: obo:CL_0020046 (intrinsic primary afferent neuron of       
+  myenteric plexus)                                                           
+    26005:AnnotationAssertion(rdfs:label obo:CL_0020046 "intrinsic primary    
+  afferent neuron of myenteric plexus")                                       
+    26010:# Class: obo:CL_0020047 (interneuron of myenteric plexus)           
+    26017:AnnotationAssertion(rdfs:label obo:CL_0020047 "interneuron of       
+  myenteric plexus")                                                          
+    26021:# Class: obo:CL_0020048 (secretomotor/vasodilator neuron of         
+  myenteric plexus)                                                           
+    26029:AnnotationAssertion(rdfs:label obo:CL_0020048                       
+  "secretomotor/vasodilator neuron of myenteric plexus")                      
+    26033:# Class: obo:CL_0020049 (intestinofugal neuron)                     
+    26042:AnnotationAssertion(rdfs:label obo:CL_0020049 "intestinofugal       
+  neuron")                                                                    
+    26046:# Class: obo:CL_0020050 (ascending interneuron of myenteric plexus) 
+    26054:AnnotationAssertion(rdfs:label obo:CL_0020050 "ascending interneuron
+  of myenteric plexus")                                                       
+    26057:# Class: obo:CL_0020051 (descending interneuron of myenteric plexus)
+    26064:AnnotationAssertion(rdfs:label obo:CL_0020051 "descending           
+  interneuron of myenteric plexus")                                           
+    26067:# Class: obo:CL_0020052 (stubby Dogiel type I neuron of myenteric   
+  plexus)                                                                     
+    26075:AnnotationAssertion(rdfs:label obo:CL_0020052 "stubby Dogiel type I 
+  neuron of myenteric plexus")                                                
+    26081:# Class: obo:CL_0020053 (spiny Dogiel type I neuron of myenteric    
+  plexus)                                                                     
+    26088:AnnotationAssertion(rdfs:label obo:CL_0020053 "spiny Dogiel type I  
+  neuron of myenteric plexus")                                                
+    26093:# Class: obo:CL_0020054 (Dogiel type II neuron of myenteric plexus) 
+    26102:AnnotationAssertion(rdfs:label obo:CL_0020054 "Dogiel type II neuron
+  of myenteric plexus")                                                       
+    26106:# Class: obo:CL_0020055 (calretinin-positive intrinsic primary      
+  afferent neuron of myenteric plexus)                                        
+    26114:AnnotationAssertion(rdfs:label obo:CL_0020055 "calretinin-positive  
+  intrinsic primary afferent neuron of myenteric plexus")                     
+    26117:# Class: obo:CL_0020056 (calretinin-negative intrinsic primary      
+  afferent neuron of myenteric plexus)                                        
+    26125:AnnotationAssertion(rdfs:label obo:CL_0020056 "calretinin-negative  
+  intrinsic primary afferent neuron of myenteric plexus")                     
+    26128:# Class: obo:CL_0020057 (cholinergic neuron of myenteric plexus)    
+    26135:AnnotationAssertion(rdfs:label obo:CL_0020057 "cholinergic neuron of
+  myenteric plexus")                                                          
+    26140:# Class: obo:CL_0020058 (nitrergic neuron of myenteric plexus)      
+    26148:AnnotationAssertion(rdfs:label obo:CL_0020058 "nitrergic neuron of  
+  myenteric plexus")                                                          
+    <exited with exit code 0>
+
+Bash: Check GitHub issue 3471
+$ cd /home/runner/work/cell-ontology/cell-ontology && gh issue view 3471  
+  2>/dev/null | head -30                                                      
+    title:	[EPIC] - HubMap requests 2511                                       
+    state:	OPEN                                                                
+    author:	dosumis                                                            
+    labels:	                                                                   
+    comments:	33                                                               
+    assignees:	zhengj2007                                                      
+    projects:	CL_wtgc_ticket_tracker (To Do)                                   
+    milestone:	Milestone 02/03/2026                                            
+    number:	3471                                                               
+    --                                                                        
+    This ticket is intended to track a large number of requests arising from  
+  HubMap (Nov 2025).                                                          
+                                                                              
+    Breakdown:                                                                
+                                                                              
+     - "Missing" CL terms (@zhengj2007 is reviewing which of these are missing
+  mappings)                                                                   
+        - Missing mappings - fix by updating tables. Priority 1. (Some of     
+  these might be borderline composable)                                       
+        - Missing PNS terms. Priority 1. Extend existing template + add       
+  Agentic review.                                                             
+        - Review remaining for clear missing cell types (evidence that they   
+  are distinct - priority 1) vs cross-products (TBD)                          
+            - [ ] @zhengj2007 to review to pull out sets of related terms to  
+  make tickets, making sure that the AS term and any available references are 
+  present - e.g. mouth table has a whole set of salivary gland terms to add;  
+  There are many possible new terms to add for spleen.                        
+     - Terms from Azimuth cross-walks                                         
+         - Aziumth v2 - these have references and so should be prioritised.   
+  Use agents + paper.                                                         
+         - Pan tissue Azimuth - Hold for now. Lack of refs mean we will need a
+  new strategy.                                                               
+                                                                              
+    @zhengj2007 to post links/tables with examples                            
+                                                                              
+    Folder for sharing (not open to world) https://drive.google.              
+  com/drive/u/4/folders/1Wm35YzgKHNSa1R-Q2UlmsaiC60RqhPNN                     
+    <exited with exit code 0>
+
+Bash: Search for mouth terms issue
+$ cd /home/runner/work/cell-ontology/cell-ontology && gh issue list --    
+  search "mouth terms hubmap" 2>/dev/null | head -10                          
+    3597	OPEN	[NTR] Add mouth terms for Hubmap	new term request	2026-03-          
+  24T10:44:58Z                                                                
+    3471	OPEN	[EPIC] - HubMap requests 2511		2026-02-20T17:52:10Z                 
+    <exited with exit code 0>
+
+Bash: Check if any requested terms already exist
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -i 'serous     
+  demilune|demilune|basal duct cell|periductal fibroblast|junctional          
+  epithelial|tuft cell of parotid|tuft cell of sublingual|ionocyte of salivary|
+  myoepithelial cell of salivary' src/ontology/cl-edit.owl                    
+                                                                              
+    <exited with exit code 1>
+
+
+Now let me look at how recent terms with UBERON parts are structured to     
+  understand the exact syntax:
+
+Bash: Look at myoepithelial cell of bronchus and trachea gland patterns
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '32786,      
+  32795p' src/ontology/cl-edit.owl && echo "---" && sed -n '32952,32965p'     
+  src/ontology/cl-edit.owl                                                    
+    # Class: obo:CL_4033003 (myoepithelial cell of bronchus submucosal gland) 
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:19996346")        
+  Annotation(oboInOwl:hasDbXref "PMID:5487122") obo:IAO_0000115 obo:CL_4033003
+  "A(n) myoepithelial cell that is part of a(n) bronchus submucosal gland.")  
+    AnnotationAssertion(terms:contributor obo:CL_4033003 <https://orcid.      
+  org/0000-0001-6677-8489>)                                                   
+    AnnotationAssertion(rdfs:label obo:CL_4033003 "myoepithelial cell of      
+  bronchus submucosal gland")                                                 
+    EquivalentClasses(obo:CL_4033003 ObjectIntersectionOf(obo:CL_0000185      
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_8410043)))                  
+                                                                              
+    # Class: obo:CL_4033004 (smooth muscle cell of taenia coli)               
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:10715339")        
+  Annotation(oboInOwl:hasDbXref "PMID:22320805") obo:IAO_0000115              
+  obo:CL_4033004 "A(n) smooth muscle cell that is part of a(n) taenia coli.") 
+    ---                                                                       
+    # Class: obo:CL_4033021 (myoepithelial cell of trachea gland)             
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:29656943")        
+  obo:IAO_0000115 obo:CL_4033021 "A myoepithelial cell that is part of a      
+  submucosal gland of the trachea.")                                          
+    AnnotationAssertion(terms:contributor obo:CL_4033021 <https://orcid.      
+  org/0000-0001-6677-8489>)                                                   
+    AnnotationAssertion(terms:contributor obo:CL_4033021 <https://orcid.      
+  org/0000-0002-9185-3994>)                                                   
+    AnnotationAssertion(terms:date obo:CL_4033021 "2023-03-                   
+  16T13:36:43Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(rdfs:label obo:CL_4033021 "myoepithelial cell of      
+  trachea gland")                                                             
+    EquivalentClasses(obo:CL_4033021 ObjectIntersectionOf(obo:CL_0000185      
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0005203)))                  
+                                                                              
+    # Class: obo:CL_4033022 (mucus secreting cell of bronchus submucosal      
+  gland)                                                                      
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:19965983")        
+  obo:IAO_0000115 obo:CL_4033022 "A mucus secreting cell of a submucosal gland
+  of the bronchus.")                                                          
+    AnnotationAssertion(terms:contributor obo:CL_4033022 <https://orcid.      
+  org/0000-0001-6677-8489>)                                                   
+    AnnotationAssertion(terms:contributor obo:CL_4033022 <https://orcid.      
+  org/0000-0002-9185-3994>)                                                   
+    <exited with exit code 0>
+
+Bash: Check UBERON IDs in ontology
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  'UBERON_0001044|UBERON_0001837|UBERON_0001831|UBERON_0001832|UBERON_0001949'
+  src/ontology/cl-edit.owl | head -20                                         
+    20498:EquivalentClasses(obo:CL_0002621 ObjectIntersectionOf(obo:CL_0000240
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001949)))                  
+    23351:SubClassOf(obo:CL_0009005 ObjectSomeValuesFrom(obo:BFO_0000050      
+  obo:UBERON_0001044))                                                        
+    29366:EquivalentClasses(obo:CL_1001596 ObjectIntersectionOf(obo:CL_0000150
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001044)))                  
+    <exited with exit code 0>
+
+Bash: Find usages of specific UBERON terms
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep 'UBERON_0001044|
+  UBERON_0001837|UBERON_0001831|UBERON_0001832' src/ontology/cl-edit.owl |    
+  head -20                                                                    
+    SubClassOf(obo:CL_0009005 ObjectSomeValuesFrom(obo:BFO_0000050            
+  obo:UBERON_0001044))                                                        
+    EquivalentClasses(obo:CL_1001596 ObjectIntersectionOf(obo:CL_0000150      
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001044)))                  
+    <exited with exit code 0>
+
+Bash: Check if UBERON terms are declared
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n 'Declaration.
+  *UBERON_0001044|Declaration.*UBERON_0001837|Declaration.*UBERON_0001831|    
+  Declaration.*UBERON_0001832|Declaration.*UBERON_0001949' src/ontology/cl-   
+  edit.owl                                                                    
+                                                                              
+    <exited with exit code 1>
+
+Bash: Check if UBERON terms for parotid/sublingual/duct exist
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  'UBERON_0001831|UBERON_0001832|UBERON_0001837' src/ontology/cl-edit.owl |   
+  head -20                                                                    
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check UBERON gingival epithelium
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  'UBERON_0001949' src/ontology/cl-edit.owl | head -10                        
+    20498:EquivalentClasses(obo:CL_0002621 ObjectIntersectionOf(obo:CL_0000240
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001949)))                  
+    <exited with exit code 0>
+
+Bash: Check how UBERON classes are declared
+$ cd /home/runner/work/cell-ontology/cell-ontology && head -200           
+  src/ontology/cl-edit.owl | grep 'Declaration(Class(obo:UBERON' | head -20   
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check if UBERON_0001044 is declared
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep                
+  'Declaration(Class(obo:UBERON_0001044' src/ontology/cl-edit.owl             
+                                                                              
+    <exited with exit code 1>
+
+Bash: Look for UBERON declarations in the file
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep                
+  'Declaration(Class(obo:UBERON' src/ontology/cl-edit.owl | head -20          
+    Declaration(Class(obo:UBERON_0000156))                                    
+    Declaration(Class(obo:UBERON_0000157))                                    
+    Declaration(Class(obo:UBERON_0000371))                                    
+    Declaration(Class(obo:UBERON_0000424))                                    
+    Declaration(Class(obo:UBERON_0000482))                                    
+    Declaration(Class(obo:UBERON_0001004))                                    
+    Declaration(Class(obo:UBERON_0001335))                                    
+    Declaration(Class(obo:UBERON_0001434))                                    
+    Declaration(Class(obo:UBERON_0001786))                                    
+    Declaration(Class(obo:UBERON_0001872))                                    
+    Declaration(Class(obo:UBERON_0001881))                                    
+    Declaration(Class(obo:UBERON_0002034))                                    
+    Declaration(Class(obo:UBERON_0002139))                                    
+    Declaration(Class(obo:UBERON_0002162))                                    
+    Declaration(Class(obo:UBERON_0002197))                                    
+    Declaration(Class(obo:UBERON_0002219))                                    
+    Declaration(Class(obo:UBERON_0002222))                                    
+    Declaration(Class(obo:UBERON_0002282))                                    
+    Declaration(Class(obo:UBERON_0002283))                                    
+    Declaration(Class(obo:UBERON_0002339))                                    
+    <exited with exit code 0>
+
+Bash: View end of the OWL file
+$ cd /home/runner/work/cell-ontology/cell-ontology && tail -30            
+  src/ontology/cl-edit.owl                                                    
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000040 obo:CL_0017507)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000040 "ID was moved to the CL   
+  namespace. Use CL:0017507.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000040 "obsolete CP:0000040")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000040 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:CP_0000043 (obsolete CP:0000043)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000043 obo:CL_0017508)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000043 "ID was moved to the CL   
+  namespace. Use CL:0017508.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000043 "obsolete CP:0000043")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000043 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:D96882F1-8709-49AB-BCA9-772A67EA6C33 (obsolete D96882F1-8709-
+  49AB-BCA9-772A67EA6C33)                                                     
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:D96882F1-8709-49AB-BCA9-          
+  772A67EA6C33 obo:CL_0017509)                                                
+    AnnotationAssertion(rdfs:comment obo:D96882F1-8709-49AB-BCA9-772A67EA6C33 
+  "ID was moved to the CL namespace. Use CL:0017509.")                        
+    AnnotationAssertion(rdfs:label obo:D96882F1-8709-49AB-BCA9-772A67EA6C33   
+  "obsolete D96882F1-8709-49AB-BCA9-772A67EA6C33")                            
+    AnnotationAssertion(owl:deprecated obo:D96882F1-8709-49AB-BCA9-           
+  772A67EA6C33 "true"^^xsd:boolean)                                           
+                                                                              
+    # Class: obo:GO_0051932 (synaptic transmission, GABAergic)                
+                                                                              
+    EquivalentClasses(obo:GO_0051932 ObjectIntersectionOf(obo:GO_0007268      
+  ObjectSomeValuesFrom(obo:RO_0000057 obo:CHEBI_59888)                        
+  ObjectSomeValuesFrom(obo:RO_0000057 obo:CL_0000617)))                       
+                                                                              
+                                                                              
+    SubClassOf(ObjectIntersectionOf(obo:CL_0000163                            
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000160)) obo:CL_0000164)   
+    SubClassOf(ObjectIntersectionOf(obo:CL_0000163                            
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000945)) obo:CL_0000164)   
+    SubClassOf(ObjectIntersectionOf(obo:CL_0000163                            
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001264)) obo:CL_0000164)   
+    SubClassOf(Annotation(oboInOwl:hasDbXref <https://github.                 
+  com/obophenotype/cell-ontology/issues/757>)                                 
+  ObjectIntersectionOf(obo:CL_0000540 ObjectSomeValuesFrom(obo:RO_0002162     
+  obo:NCBITaxon_7742)) ObjectSomeValuesFrom(obo:RO_0002202 obo:CL_0000031))   
+    )                                                                         
+    <exited with exit code 0>
+
+Bash: Check how UBERON_0001044 is referenced
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  '^Declaration(Class(obo:UBERON_0001044|obo:UBERON_0001044\b' src/ontology/cl-
+  edit.owl | head -5                                                          
+    23351:SubClassOf(obo:CL_0009005 ObjectSomeValuesFrom(obo:BFO_0000050      
+  obo:UBERON_0001044))                                                        
+    29366:EquivalentClasses(obo:CL_1001596 ObjectIntersectionOf(obo:CL_0000150
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001044)))                  
+    <exited with exit code 0>
+
+Bash: Check GO terms in the file
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep 'GO_0046541|   
+  GO_0006939|GO_0050801|GO_0002227|GO_0030198' src/ontology/cl-edit.owl | head -
+  10                                                                          
+    EquivalentClasses(obo:CL_0000940 ObjectIntersectionOf(obo:CL_0000791      
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0002227)                         
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0032394)                         
+  ObjectSomeValuesFrom(obo:RO_0002353 obo:GO_0030217)))                       
+    SubClassOf(obo:CL_0002623 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0046541))                                                            
+    <exited with exit code 0>
+
+Bash: Check for any existing CL_990 declarations
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  'Declaration(Class(obo:CL_9900|Declaration(Class(obo:CL_990' src/ontology/cl-
+  edit.owl | head -10                                                         
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check GO smooth muscle contraction and ion homeostasis
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n 'GO_0006939|
+  GO_0050801|GO_0030198' src/ontology/cl-edit.owl | head -10                  
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check UBERON IDs for parotid/sublingual/duct of salivary gland
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep 'UBERON_0001831|
+  UBERON_0001832|UBERON_0001837' src/ontology/cl-edit.owl | head -5           
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check imports and prefixes in the file
+$ cd /home/runner/work/cell-ontology/cell-ontology && head -100           
+  src/ontology/cl-edit.owl | grep -i 'import|prefix'                          
+    Prefix(:=<http://purl.obolibrary.org/obo/cl.owl#>)                        
+    Prefix(cl:=<http://purl.obolibrary.org/obo/cl#>)                          
+    Prefix(dc:=<http://purl.org/dc/elements/1.1/>)                            
+    Prefix(go:=<http://purl.obolibrary.org/obo/go#>)                          
+    Prefix(pr:=<http://purl.obolibrary.org/obo/pr#>)                          
+    Prefix(obo:=<http://purl.obolibrary.org/obo/>)                            
+    Prefix(owl:=<http://www.w3.org/2002/07/owl#>)                             
+    Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)                
+    Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)                       
+    Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)                          
+    Prefix(core:=<http://purl.obolibrary.org/obo/uberon/core#>)               
+    Prefix(foaf:=<http://xmlns.com/foaf/0.1/>)                                
+    Prefix(pato:=<http://purl.obolibrary.org/obo/pato#>)                      
+    Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)                     
+    Prefix(sssom:=<https://w3id.org/sssom/>)                                  
+    Prefix(terms:=<http://purl.org/dc/terms/>)                                
+    Prefix(uberon:=<http://purl.obolibrary.org/obo/uberon#>)                  
+    Prefix(ubprop:=<http://purl.obolibrary.org/obo/ubprop#>)                  
+    Prefix(subsets:=<http://purl.obolibrary.org/obo/ro/subsets#>)             
+    Prefix(oboInOwl:=<http://www.geneontology.org/formats/oboInOwl#>)         
+    Prefix(ncbitaxon:=<http://purl.obolibrary.org/obo/ncbitaxon#>)            
+    Import(<http://purl.obolibrary.org/obo/cl/components/PNS_neurons.owl>)    
+    Import(<http://purl.obolibrary.org/obo/cl/components/bgo-cl-comp.owl>)    
+    Import(<http://purl.obolibrary.                                           
+  org/obo/cl/components/blood_and_immune_upper_slim.owl>)                     
+    Import(<http://purl.obolibrary.org/obo/cl/components/cellxgene_subset.    
+  owl>)                                                                       
+    Import(<http://purl.obolibrary.org/obo/cl/components/clm-cl.owl>)         
+    Import(<http://purl.obolibrary.org/obo/cl/components/eye_upper_slim.owl>) 
+    Import(<http://purl.obolibrary.                                           
+  org/obo/cl/components/general_cell_types_upper_slim.owl>)                   
+    Import(<http://purl.obolibrary.org/obo/cl/components/hra_subset.owl>)     
+    Import(<http://purl.obolibrary.org/obo/cl/components/kidney_upper_slim.   
+  owl>)                                                                       
+    Import(<http://purl.obolibrary.org/obo/cl/components/mappings.owl>)       
+    Import(<http://purl.obolibrary.org/obo/cl/components/wmbo-cl-comp.owl>)   
+    Import(<http://purl.obolibrary.                                           
+  org/obo/cl/components/2DFTU_HRA_illustrations.owl>)                         
+    Import(<http://purl.obolibrary.org/obo/cl/imports/merged_import.owl>)     
+    Import(<http://purl.obolibrary.org/obo/cl/patterns/definitions.owl>)      
+    <exited with exit code 0>
+
+Bash: Check how UBERON_0001786 is declared
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep 'UBERON_0001786|
+  Declaration.*UBERON_0001786' src/ontology/cl-edit.owl | head -5             
+    Declaration(Class(obo:UBERON_0001786))                                    
+    SubClassOf(obo:CL_4033036 ObjectSomeValuesFrom(obo:BFO_0000050            
+  obo:UBERON_0001786))                                                        
+    <exited with exit code 0>
+
+Bash: Count UBERON declarations
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  'Declaration(Class(obo:UBERON' src/ontology/cl-edit.owl | wc -l             
+    89                                                                        
+    <exited with exit code 0>
+
+Bash: Check if specific UBERON terms are declared
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep                
+  'Declaration(Class(obo:UBERON_00010[34][0-9][0-9]|                          
+  Declaration(Class(obo:UBERON_00018[0-9][0-9]|                               
+  Declaration(Class(obo:UBERON_0001044|Declaration(Class(obo:UBERON_0001831|  
+  Declaration(Class(obo:UBERON_0001832|Declaration(Class(obo:UBERON_0001837|  
+  Declaration(Class(obo:UBERON_0001949' src/ontology/cl-edit.owl              
+    Declaration(Class(obo:UBERON_0001872))                                    
+    Declaration(Class(obo:UBERON_0001881))                                    
+    <exited with exit code 0>
+
+Bash: Check GO term declarations
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep 'Declaration.  
+  *GO_0006939|Declaration.*GO_0050801' src/ontology/cl-edit.owl               
+                                                                              
+    <exited with exit code 1>
+
+Bash: Check existing GO term usage
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep 'GO_0046541|   
+  GO_0002227' src/ontology/cl-edit.owl | head -5                              
+    EquivalentClasses(obo:CL_0000940 ObjectIntersectionOf(obo:CL_0000791      
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0002227)                         
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0032394)                         
+  ObjectSomeValuesFrom(obo:RO_0002353 obo:GO_0030217)))                       
+    SubClassOf(obo:CL_0002623 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0046541))                                                            
+    <exited with exit code 0>
+
+Bash: Find the last CL declarations
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  '^Declaration(Class(obo:CL_' src/ontology/cl-edit.owl | tail -20            
+    3306:Declaration(Class(obo:CL_4072035))                                   
+    3307:Declaration(Class(obo:CL_4072036))                                   
+    3308:Declaration(Class(obo:CL_4072037))                                   
+    3309:Declaration(Class(obo:CL_4072038))                                   
+    3310:Declaration(Class(obo:CL_4072039))                                   
+    3311:Declaration(Class(obo:CL_4072040))                                   
+    3312:Declaration(Class(obo:CL_4072041))                                   
+    3313:Declaration(Class(obo:CL_4072042))                                   
+    3314:Declaration(Class(obo:CL_4072043))                                   
+    3315:Declaration(Class(obo:CL_4072044))                                   
+    3316:Declaration(Class(obo:CL_4072045))                                   
+    3317:Declaration(Class(obo:CL_4072046))                                   
+    3318:Declaration(Class(obo:CL_4072102))                                   
+    3319:Declaration(Class(obo:CL_4072103))                                   
+    3320:Declaration(Class(obo:CL_4072104))                                   
+    3321:Declaration(Class(obo:CL_7770002))                                   
+    3322:Declaration(Class(obo:CL_7770003))                                   
+    3323:Declaration(Class(obo:CL_7770004))                                   
+    3324:Declaration(Class(obo:CL_7770005))                                   
+    3325:Declaration(Class(obo:CL_7770006))                                   
+    <exited with exit code 0>
+
+Bash: View area after last CL declaration
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '3320,3340p' 
+  src/ontology/cl-edit.owl                                                    
+    Declaration(Class(obo:CL_4072104))                                        
+    Declaration(Class(obo:CL_7770002))                                        
+    Declaration(Class(obo:CL_7770003))                                        
+    Declaration(Class(obo:CL_7770004))                                        
+    Declaration(Class(obo:CL_7770005))                                        
+    Declaration(Class(obo:CL_7770006))                                        
+    Declaration(Class(obo:CP_0000000))                                        
+    Declaration(Class(obo:CP_0000025))                                        
+    Declaration(Class(obo:CP_0000027))                                        
+    Declaration(Class(obo:CP_0000028))                                        
+    Declaration(Class(obo:CP_0000035))                                        
+    Declaration(Class(obo:CP_0000037))                                        
+    Declaration(Class(obo:CP_0000039))                                        
+    Declaration(Class(obo:CP_0000040))                                        
+    Declaration(Class(obo:CP_0000043))                                        
+    Declaration(Class(obo:D96882F1-8709-49AB-BCA9-772A67EA6C33))              
+    Declaration(Class(obo:GO_0001552))                                        
+    Declaration(Class(obo:GO_0001649))                                        
+    Declaration(Class(obo:GO_0001958))                                        
+    Declaration(Class(obo:GO_0002288))                                        
+    Declaration(Class(obo:GO_0002491))                                        
+    <exited with exit code 0>
+
+Bash: Find sections for CL_7770006 and CP_0000000
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n '# Class:   
+  obo:CL_7770006|# Class: obo:CP_0000000' src/ontology/cl-edit.owl            
+    35921:# Class: obo:CL_7770006 (beam B cell, human)                        
+    35932:# Class: obo:CP_0000000 (obsolete CP:0000000)                       
+    <exited with exit code 0>
+
+Bash: View area between CL_7770006 and CP sections
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '35921,      
+  35935p' src/ontology/cl-edit.owl                                            
+    # Class: obo:CL_7770006 (beam B cell, human)                              
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25356439")        
+  Annotation(oboInOwl:hasDbXref "PMID:32341164") Annotation(oboInOwl:hasDbXref
+  "PMID:39829808") obo:IAO_0000115 obo:CL_7770006 "A trabecular meshwork cell 
+  within the eye's trabecular meshwork. This cell is molecularly distinguished
+  by TMEFF2 expression in humans. A beam B cell is spatially intermingled with
+  beam A cells throughout the uveal and corneoscleral meshwork regions, but   
+  demonstrates a tendency to localise closer to the juxtacanalicular tissue.")
+    AnnotationAssertion(terms:contributor obo:CL_7770006 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(terms:date obo:CL_7770006 "2025-09-                   
+  15T08:48:01Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(rdfs:label obo:CL_7770006 "beam B cell, human")       
+    AnnotationAssertion(Annotation(dc:license <http://creativecommons.        
+  org/licenses/by/4.0/>) Annotation(oboInOwl:hasDbXref "PMID:35836364")       
+  Annotation(rdfs:comment "Trabecular meshwork (TM) structure. The TM consists
+  of uveal (blue), corneoscleral (red), and juxtacanalicular (green) regions. 
+  TM beam cells (blue/red) line the uveal and corneoscleral regions, while JCT
+  cells (green) occupy the juxtacanalicular region.") foaf:depiction          
+  obo:CL_7770006 "http://purl.obolibrary.                                     
+  org/obo/cl/images/Trabecular_meshowk_cells_PMID35836364.jpg")               
+    SubClassOf(obo:CL_7770006 obo:CL_0002367)                                 
+    SubClassOf(obo:CL_7770006 ObjectSomeValuesFrom(obo:RO_0002162             
+  obo:NCBITaxon_9606))                                                        
+    SubClassOf(obo:CL_7770006 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_Q9UIK5))                                                             
+                                                                              
+    # Class: obo:CP_0000000 (obsolete CP:0000000)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000000 obo:CL_0017500)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000000 "ID was moved to the CL   
+  namespace. Use CL:0017500.")                                                
+    <exited with exit code 0>
+
+Bash: Find CL_0002251 definition
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n '# Class:   
+  obo:CL_0002251' src/ontology/cl-edit.owl                                    
+    16735:# Class: obo:CL_0002251 (epithelial cell of alimentary canal)       
+    <exited with exit code 0>
+
+Bash: View CL_0002251 label
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -A4 '# Class:  
+  obo:CL_0002251' src/ontology/cl-edit.owl | head -10                         
+    # Class: obo:CL_0002251 (epithelial cell of alimentary canal)             
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")              
+  Annotation(oboInOwl:hasDbXref "ISBN:0721662544") obo:IAO_0000115            
+  obo:CL_0002251 "An epithelial cell of the musculomembranous digestive tube  
+  extending from the mouth to the anus.")                                     
+    AnnotationAssertion(terms:contributor obo:CL_0002251 <https://orcid.      
+  org/0000-0003-1980-3228>)                                                   
+    AnnotationAssertion(oboInOwl:creation_date obo:CL_0002251 "2010-09-       
+  08T09:26:53Z"^^xsd:dateTime)                                                
+    <exited with exit code 0>
+
+
+Now I have all the information I need. Let me report my plan and then       
+  implement the changes.
+
+Progress update: Initial plan for adding mouth terms for HuBMAP
+
+[ ] Add serous demilune cell of salivary gland (CL_9900001) - parent        
+  CL:0000313                                                                  
+  [ ] Add basal duct cell of salivary gland (CL_9900002) - parent CL:0000646  
+  [ ] Add periductal fibroblast of salivary gland (CL_9900003) - parent       
+  CL:0000057                                                                  
+  [ ] Add junctional epithelial cell (CL_9900004) - parent CL:0002077         
+  [ ] Add tuft cell of parotid gland (CL_9900005) - parent CL:0002204         
+  [ ] Add tuft cell of sublingual gland (CL_9900006) - parent CL:0002204,     
+  CL:0002251                                                                  
+  [ ] Add ionocyte of salivary gland (CL_9900007) - parent CL:0005006         
+  [ ] Add myoepithelial cell of salivary gland (CL_9900008) - parent          
+  CL:0000185
+
+
+Now let me add the 8 Declaration statements for the new terms:
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str":                                                              
+  "Declaration(Class(obo:CL_7770006))\nDeclaration(Class(obo:CL_9900001))\nDeclaration(Class(obo:CL_9900002))\nDeclaration(Class(obo:CL_9900003))\nDeclaration(Class(obo:CL_9900004))\nDeclaration(Class(obo:CL_9900005))\nDeclaration(Class(obo:CL_9900006))\nDeclaration(Class(obo:CL_9900007))\nDeclaration(Class(obo:CL_9900008))\nDeclaration(Class(obo:CP_0000000))",
+      "old_str":                                                              
+  "Declaration(Class(obo:CL_7770006))\nDeclaration(Class(obo:CP_0000000))",   
+      "path": "/home/runner/work/cell-ontology/cell-ontology/src/ontology/cl- 
+  edit.owl"                                                                   
+    }
+
+
+Now let me add the actual class axioms. I'll insert them between the        
+  CL_7770006 section and the CP_0000000 section:
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "# Class: obo:CL_9900001 (serous demilune cell of salivary   
+  gland)\n\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                 
+  \"PMID:23209333\") Annotation(oboInOwl:hasDbXref \"PMID:41686279\")         
+  obo:IAO_0000115 obo:CL_9900001 \"A serous secreting cell that is part of a  
+  salivary gland, forming crescent-shaped (demilune) caps at the distal ends  
+  of mucous acini in mixed glands. Prominent in human submandibular and       
+  sublingual glands, this cell delivers its watery, enzyme-rich secretions    
+  including alpha-amylase through intercellular canaliculi that run between   
+  adjacent mucous cells to reach the acinar lumen (Amano et al., 2012). In    
+  rodents, these cells also express neuronal nitric oxide synthase (nNOS).    
+  \")\nAnnotationAssertion(obo:IAO_0000233 obo:CL_9900001 \u003chttps://github.
+  com/obophenotype/cell-                                                      
+  ontology/issues/3597\u003e)\nAnnotationAssertion(terms:contributor          
+  obo:CL_9900001 \u003chttps://orcid.org/0000-0002-5507-                      
+  2103\u003e)\nAnnotationAssertion(terms:creator obo:CL_9900001 \"GitHub      
+  Copilot\")\nAnnotationAssertion(terms:date obo:CL_9900001 \"2026-03-        
+  24T10:46:30Z\"^^xsd:dateTime)\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref
+  \"PMID:23209333\") oboInOwl:hasExactSynonym obo:CL_9900001 \"serous demilune
+  cell\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                  
+  \"PMID:23209333\") oboInOwl:hasRelatedSynonym obo:CL_9900001 \"demilune cell
+  of salivary gland\")\nAnnotationAssertion(oboInOwl:hasRelatedSynonym        
+  obo:CL_9900001 \"serous crescent                                            
+  cell\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref \"https://en.    
+  wikipedia.org/wiki/Serous_demilune\") oboInOwl:hasRelatedSynonym            
+  obo:CL_9900001 \"Crescents of Giannuzzi\")\nAnnotationAssertion(rdfs:comment
+  obo:CL_9900001 \"The classic crescent-shaped morphology that gives demilune 
+  cells their name is a well-established histological feature, but must be    
+  caveated with the fixation artifact issue. Amano et al. (2012) describe how 
+  rapid-freeze fixation reveals a more tubular arrangement, suggesting the    
+  demilune shape is at least partly artifactual.                              
+  \")\nAnnotationAssertion(rdfs:label obo:CL_9900001 \"serous demilune cell of
+  salivary gland\")\nEquivalentClasses(obo:CL_9900001                         
+  ObjectIntersectionOf(obo:CL_0000313 ObjectSomeValuesFrom(obo:BFO_0000050    
+  obo:UBERON_0001044)))\nSubClassOf(obo:CL_9900001                            
+  obo:CL_0000313)\nSubClassOf(obo:CL_9900001                                  
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0046541))\n\n# Class:            
+  obo:CL_9900002 (basal duct cell of salivary                                 
+  gland)\n\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                 
+  \"PMID:37446355\") Annotation(oboInOwl:hasDbXref \"PMID:39346911\")         
+  obo:IAO_0000115 obo:CL_9900002 \"A basal cell that is part of the duct of a 
+  salivary gland, characterized by an undifferentiated phenotype, expression  
+  of KRT5, and a position surrounding the striated ductal epithelium. This    
+  cell is presumed to function as a salivary gland stem/progenitor cell       
+  capable of regenerating ductal and potentially acinar cell populations (Yura
+  and Hamada, 2023). In mice, Lgr5-expressing cells within this compartment   
+  demonstrate tripotent capacity, able to generate acinar, ductal, and        
+  myoepithelial cell lineages.\")\nAnnotationAssertion(obo:IAO_0000233        
+  obo:CL_9900002 \u003chttps://github.com/obophenotype/cell-                  
+  ontology/issues/3597\u003e)\nAnnotationAssertion(terms:contributor          
+  obo:CL_9900002 \u003chttps://orcid.org/0000-0002-5507-                      
+  2103\u003e)\nAnnotationAssertion(terms:creator obo:CL_9900002 \"GitHub      
+  Copilot\")\nAnnotationAssertion(terms:date obo:CL_9900002 \"2026-03-        
+  24T10:46:30Z\"^^xsd:dateTime)\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref
+  \"PMID:37446355\") oboInOwl:hasExactSynonym obo:CL_9900002 \"basal ductal   
+  cell of salivary gland\")\nAnnotationAssertion(rdfs:label obo:CL_9900002    
+  \"basal duct cell of salivary gland\")\nEquivalentClasses(obo:CL_9900002    
+  ObjectIntersectionOf(obo:CL_0000646 ObjectSomeValuesFrom(obo:BFO_0000050    
+  obo:UBERON_0001837)))\nSubClassOf(obo:CL_9900002 obo:CL_0000646)\n\n# Class:
+  obo:CL_9900003 (periductal fibroblast of salivary                           
+  gland)\n\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                 
+  \"PMID:31213547\") Annotation(oboInOwl:hasDbXref \"PMID:39346911\")         
+  Annotation(oboInOwl:hasDbXref \"PMID:41411773\") obo:IAO_0000115            
+  obo:CL_9900003 \"A fibroblast that is part of the stroma of a salivary gland,
+  positioned in the periductal connective tissue surrounding the ductal system.
+  This cell maintains the extracellular matrix framework around salivary gland
+  ducts and participates in immunomodulatory signaling. In the context of     
+  Sjögren's syndrome, periductal fibroblasts respond to IL-13 stimulation by  
+  upregulating VCAM-1, PDPN, and ICAM-1, contributing to the formation of     
+  tertiary lymphoid structures (Nayar et al., 2019).                          
+  \")\nAnnotationAssertion(obo:IAO_0000233 obo:CL_9900003 \u003chttps://github.
+  com/obophenotype/cell-                                                      
+  ontology/issues/3597\u003e)\nAnnotationAssertion(terms:contributor          
+  obo:CL_9900003 \u003chttps://orcid.org/0000-0002-5507-                      
+  2103\u003e)\nAnnotationAssertion(terms:creator obo:CL_9900003 \"GitHub      
+  Copilot\")\nAnnotationAssertion(terms:date obo:CL_9900003 \"2026-03-        
+  24T10:46:30Z\"^^xsd:dateTime)\nAnnotationAssertion(oboInOwl:hasBroadSynonym 
+  obo:CL_9900003 \"salivary gland                                             
+  fibroblast\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref            
+  \"PMID:31213547\") oboInOwl:hasRelatedSynonym obo:CL_9900003                
+  \"immunofibroblast of salivary gland\")\nAnnotationAssertion(rdfs:label     
+  obo:CL_9900003 \"periductal fibroblast of salivary                          
+  gland\")\nEquivalentClasses(obo:CL_9900003                                  
+  ObjectIntersectionOf(obo:CL_0000057 ObjectSomeValuesFrom(obo:BFO_0000050    
+  obo:UBERON_0001044)))\nSubClassOf(obo:CL_9900003 obo:CL_0000057)\n\n# Class:
+  obo:CL_9900004 (junctional epithelial                                       
+  cell)\n\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                  
+  \"PMID:39590534\") Annotation(oboInOwl:hasDbXref \"PMID:40723411\")         
+  Annotation(oboInOwl:hasDbXref \"PMID:41331699\")                            
+  Annotation(oboInOwl:hasDbXref \"PMID:41143768\") obo:IAO_0000115            
+  obo:CL_9900004 \"An epithelial cell that is part of the junctional          
+  epithelium of the gingiva, forming a collar-like band around the cervix of  
+  the tooth. This cell attaches to the tooth surface via hemidesmosomes and an
+  internal basal lamina rich in laminin-332 and ODAM (Gavriiloglou et al.,    
+  2024). The junctional epithelium is a stratified squamous non-keratinized   
+  epithelium ranging from 15-30 cell layers coronally to 1-3 cell layers      
+  apically. This cell expresses cytokeratin 19 (CK19) as a specific marker,   
+  along with ODAM and FDC-SP, and participates in innate immune defense by    
+  producing IL-8, IL-1alpha, and MMP-7, facilitating the transmigration of    
+  polymorphonuclear leukocytes through the epithelium (Gavriiloglou et al.,   
+  2024). This cell has a high turnover rate, with complete renewal occurring  
+  every 4-6 days (Lin et al., 2025), and develops from the reduced enamel     
+  epithelium during tooth eruption, although it can regenerate de novo without
+  this precursor.\")\nAnnotationAssertion(obo:IAO_0000233 obo:CL_9900004      
+  \u003chttps://github.com/obophenotype/cell-                                 
+  ontology/issues/3597\u003e)\nAnnotationAssertion(terms:contributor          
+  obo:CL_9900004 \u003chttps://orcid.org/0000-0002-5507-                      
+  2103\u003e)\nAnnotationAssertion(terms:creator obo:CL_9900004 \"GitHub      
+  Copilot\")\nAnnotationAssertion(terms:date obo:CL_9900004 \"2026-03-        
+  24T10:46:30Z\"^^xsd:dateTime)\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref
+  \"PMID:14756251\") Annotation(oboInOwl:hasDbXref \"PMID:39590534\")         
+  Annotation(oboInOwl:hasDbXref \"PMID:40723411\") oboInOwl:hasExactSynonym   
+  obo:CL_9900004 \"JE                                                         
+  cell\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                  
+  \"PMID:18973537\") oboInOwl:hasExactSynonym obo:CL_9900004 \"cell of        
+  junctional epithelium\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref 
+  \"PMID:19646321\") oboInOwl:hasRelatedSynonym obo:CL_9900004 \"gingival     
+  junctional epithelial                                                       
+  cell\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref \"PMID:2480439\")
+  Annotation(oboInOwl:hasDbXref \"PMID:7814753\") oboInOwl:hasNarrowSynonym   
+  obo:CL_9900004 \"DAT cell\")\nAnnotationAssertion(rdfs:label obo:CL_9900004 
+  \"junctional epithelial cell\")\nEquivalentClasses(obo:CL_9900004           
+  ObjectIntersectionOf(obo:CL_0002077 ObjectSomeValuesFrom(obo:BFO_0000050    
+  obo:UBERON_0001949)))\nSubClassOf(obo:CL_9900004                            
+  obo:CL_0002077)\nSubClassOf(obo:CL_9900004                                  
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0002227))\n\n# Class:            
+  obo:CL_9900005 (tuft cell of parotid                                        
+  gland)\n\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                 
+  \"PMID:23209333\") Annotation(oboInOwl:hasDbXref \"PMID:35993302\")         
+  Annotation(oboInOwl:hasDbXref \"PMID:38098741\")                            
+  Annotation(oboInOwl:hasDbXref \"PMID:38358561\") obo:IAO_0000115            
+  obo:CL_9900005 \"A tuft cell that is part of the epithelium of the parotid  
+  gland, localized to the striated ducts and never observed in acini. This    
+  cell is characterized by expression of POU2F3 and is expected to possess    
+  chemosensory function consistent with tuft cells in other tissues.          
+  Immunohistochemical analysis of normal human parotid gland tissue detected  
+  POU2F3-positive cells as a very rare population within the ductal           
+  compartment, positioned on the luminal side (Hoki et al., 2024).            
+  \")\nAnnotationAssertion(obo:IAO_0000233 obo:CL_9900005 \u003chttps://github.
+  com/obophenotype/cell-                                                      
+  ontology/issues/3597\u003e)\nAnnotationAssertion(terms:contributor          
+  obo:CL_9900005 \u003chttps://orcid.org/0000-0002-5507-                      
+  2103\u003e)\nAnnotationAssertion(terms:creator obo:CL_9900005 \"GitHub      
+  Copilot\")\nAnnotationAssertion(terms:date obo:CL_9900005 \"2026-03-        
+  24T10:46:30Z\"^^xsd:dateTime)\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref
+  \"PMID:3284416\") Annotation(oboInOwl:hasDbXref \"PMID:38358561\")          
+  oboInOwl:hasExactSynonym obo:CL_9900005 \"parotid gland tuft                
+  cell\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                  
+  \"PMID:18062147\") Annotation(oboInOwl:hasDbXref \"PMID:23209333\")         
+  oboInOwl:hasRelatedSynonym obo:CL_9900005 \"brush cell of parotid           
+  gland\")\nAnnotationAssertion(rdfs:label obo:CL_9900005 \"tuft cell of      
+  parotid gland\")\nEquivalentClasses(obo:CL_9900005                          
+  ObjectIntersectionOf(obo:CL_0002204 ObjectSomeValuesFrom(obo:BFO_0000050    
+  obo:UBERON_0001831)))\nSubClassOf(obo:CL_9900005 obo:CL_0002204)\n\n# Class:
+  obo:CL_9900006 (tuft cell of sublingual                                     
+  gland)\n\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                 
+  \"PMID:23209333\") Annotation(oboInOwl:hasDbXref \"PMID:38358561\")         
+  obo:IAO_0000115 obo:CL_9900006 \"A tuft cell that is part of the epithelium 
+  of the sublingual gland, localized to the ductal compartment. This cell is  
+  characterized by expression of POU2F3, consistent with tuft cell identity.  
+  Immunohistochemical analysis detected POU2F3-positive cells in normal human 
+  sublingual gland tissue (Hoki et al., 2024).                                
+  \")\nAnnotationAssertion(obo:IAO_0000233 obo:CL_9900006 \u003chttps://github.
+  com/obophenotype/cell-                                                      
+  ontology/issues/3597\u003e)\nAnnotationAssertion(terms:contributor          
+  obo:CL_9900006 \u003chttps://orcid.org/0000-0002-5507-                      
+  2103\u003e)\nAnnotationAssertion(terms:creator obo:CL_9900006 \"GitHub      
+  Copilot\")\nAnnotationAssertion(terms:date obo:CL_9900006 \"2026-03-        
+  24T10:46:30Z\"^^xsd:dateTime)\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref
+  \"PMID:38358561\") Annotation(oboInOwl:hasDbXref \"PMID:8874101\")          
+  oboInOwl:hasExactSynonym obo:CL_9900006 \"sublingual gland tuft             
+  cell\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                  
+  \"PMID:18062147\") Annotation(oboInOwl:hasDbXref \"PMID:23209333\")         
+  oboInOwl:hasRelatedSynonym obo:CL_9900006 \"brush cell of sublingual        
+  gland\")\nAnnotationAssertion(rdfs:label obo:CL_9900006 \"tuft cell of      
+  sublingual gland\")\nEquivalentClasses(obo:CL_9900006                       
+  ObjectIntersectionOf(obo:CL_0002204 ObjectSomeValuesFrom(obo:BFO_0000050    
+  obo:UBERON_0001832)))\nSubClassOf(obo:CL_9900006                            
+  obo:CL_0002204)\nSubClassOf(obo:CL_9900006 obo:CL_0002251)\n\n# Class:      
+  obo:CL_9900007 (ionocyte of salivary                                        
+  gland)\n\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                 
+  \"PMID:30069044\") Annotation(oboInOwl:hasDbXref \"PMID:30069046\")         
+  Annotation(oboInOwl:hasDbXref \"PMID:38358561\")                            
+  Annotation(oboInOwl:hasDbXref \"PMID:39346911\")                            
+  Annotation(oboInOwl:hasDbXref \"PMID:41721487\") obo:IAO_0000115            
+  obo:CL_9900007 \"An ionocyte that is part of a salivary gland, localized to 
+  the ductal compartment on the luminal side. This specialized epithelial cell
+  is characterized by expression of FOXI1 and is involved in regulating and   
+  maintaining osmotic pressure within the glandular environment (Dong et al., 
+  2024). In normal human salivary glands, FOXI1-positive cells constitute less
+  than 5% of ductal epithelial cells and are found exclusively in ducts, never
+  in acini, across all major gland types including parotid, submandibular,    
+  sublingual, and minor salivary glands (Hoki et al., 2024). Like ionocytes in
+  other tissues, this cell is expected to express high levels of CFTR and     
+  possess abundant mitochondria and ion transporters.                         
+  \")\nAnnotationAssertion(obo:IAO_0000233 obo:CL_9900007 \u003chttps://github.
+  com/obophenotype/cell-                                                      
+  ontology/issues/3597\u003e)\nAnnotationAssertion(terms:contributor          
+  obo:CL_9900007 \u003chttps://orcid.org/0000-0002-5507-                      
+  2103\u003e)\nAnnotationAssertion(terms:creator obo:CL_9900007 \"GitHub      
+  Copilot\")\nAnnotationAssertion(terms:date obo:CL_9900007 \"2026-03-        
+  24T10:46:30Z\"^^xsd:dateTime)\nAnnotationAssertion(rdfs:label obo:CL_9900007
+  \"ionocyte of salivary gland\")\nEquivalentClasses(obo:CL_9900007           
+  ObjectIntersectionOf(obo:CL_0005006 ObjectSomeValuesFrom(obo:BFO_0000050    
+  obo:UBERON_0001044)))\nSubClassOf(obo:CL_9900007                            
+  obo:CL_0005006)\nSubClassOf(obo:CL_9900007                                  
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0050801))\n\n# Class:            
+  obo:CL_9900008 (myoepithelial cell of salivary                              
+  gland)\n\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                 
+  \"PMID:23209333\") Annotation(oboInOwl:hasDbXref \"PMID:39346911\")         
+  Annotation(oboInOwl:hasDbXref \"PMID:40837863\")                            
+  Annotation(oboInOwl:hasDbXref \"PMID:41271704\") obo:IAO_0000115            
+  obo:CL_9900008 \"A myoepithelial cell that is part of a salivary gland,     
+  positioned between the basal lamina and the secretory or ductal epithelial  
+  cells surrounding acini and intercalated ducts. This cell adopts a stellate 
+  morphology with four to eight cellular processes around acini and an        
+  elongated form parallel to the ductal axis around intercalated ducts (Amano 
+  et al., 2012). It expresses alpha-smooth muscle actin (ACTA2/alpha-SMA) as a
+  primary marker, along with p63 and aquaporin 1 (AQP1), and contracts        
+  rhythmically in response to neural stimulation to facilitate saliva         
+  expulsion from secretory acini into the ductal system (Amano et al., 2012). 
+  This cell also produces FGF7, which activates FGFR2b-dependent              
+  transcriptional programs essential for seromucous acinar cell               
+  differentiation (Aure et al., 2023). In mice, myoepithelial cells express   
+  SOX2 and possess regenerative capacity, contributing to acinar cell         
+  restoration during tissue repair after severe injury.                       
+  \")\nAnnotationAssertion(obo:IAO_0000233 obo:CL_9900008 \u003chttps://github.
+  com/obophenotype/cell-                                                      
+  ontology/issues/3597\u003e)\nAnnotationAssertion(terms:contributor          
+  obo:CL_9900008 \u003chttps://orcid.org/0000-0002-5507-                      
+  2103\u003e)\nAnnotationAssertion(terms:creator obo:CL_9900008 \"GitHub      
+  Copilot\")\nAnnotationAssertion(terms:date obo:CL_9900008 \"2026-03-        
+  24T10:46:30Z\"^^xsd:dateTime)\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref
+  \"PMID:23209333\") Annotation(oboInOwl:hasDbXref \"PMID:39346911\")         
+  Annotation(oboInOwl:hasDbXref \"PMID:8155903\") oboInOwl:hasExactSynonym    
+  obo:CL_9900008 \"salivary gland myoepithelial                               
+  cell\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                  
+  \"PMID:40837863\") oboInOwl:hasExactSynonym obo:CL_9900008 \"salivary       
+  myoepithelial cell\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref    
+  \"PMID:26015726\") Annotation(oboInOwl:hasDbXref \"PMID:27721614\")         
+  Annotation(oboInOwl:hasDbXref \"PMID:38273256\") oboInOwl:hasRelatedSynonym 
+  obo:CL_9900008 \"basket cell of salivary                                    
+  gland\")\nAnnotationAssertion(rdfs:label obo:CL_9900008 \"myoepithelial cell
+  of salivary gland\")\nEquivalentClasses(obo:CL_9900008                      
+  ObjectIntersectionOf(obo:CL_0000185 ObjectSomeValuesFrom(obo:BFO_0000050    
+  obo:UBERON_0001044)))\nSubClassOf(obo:CL_9900008                            
+  obo:CL_0000185)\nSubClassOf(obo:CL_9900008                                  
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0006939))\n\n# Class:            
+  obo:CP_0000000 (obsolete CP:0000000)",                                      
+      "old_str": "# Class: obo:CP_0000000 (obsolete CP:0000000)",             
+      "path": "/home/runner/work/cell-ontology/cell-ontology/src/ontology/cl- 
+  edit.owl"                                                                   
+    }
+
+
+Now let me verify the changes are correct:
+
+Bash: Verify new term additions
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n 'CL_9900'   
+  src/ontology/cl-edit.owl | head -40                                         
+    3326:Declaration(Class(obo:CL_9900001))                                   
+    3327:Declaration(Class(obo:CL_9900002))                                   
+    3328:Declaration(Class(obo:CL_9900003))                                   
+    3329:Declaration(Class(obo:CL_9900004))                                   
+    3330:Declaration(Class(obo:CL_9900005))                                   
+    3331:Declaration(Class(obo:CL_9900006))                                   
+    3332:Declaration(Class(obo:CL_9900007))                                   
+    3333:Declaration(Class(obo:CL_9900008))                                   
+    35940:# Class: obo:CL_9900001 (serous demilune cell of salivary gland)    
+    35942:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:23209333")  
+  Annotation(oboInOwl:hasDbXref "PMID:41686279") obo:IAO_0000115              
+  obo:CL_9900001 "A serous secreting cell that is part of a salivary gland,   
+  forming crescent-shaped (demilune) caps at the distal ends of mucous acini  
+  in mixed glands. Prominent in human submandibular and sublingual glands,    
+  this cell delivers its watery, enzyme-rich secretions including alpha-      
+  amylase through intercellular canaliculi that run between adjacent mucous   
+  cells to reach the acinar lumen (Amano et al., 2012). In rodents, these     
+  cells also express neuronal nitric oxide synthase (nNOS).")                 
+    35943:AnnotationAssertion(obo:IAO_0000233 obo:CL_9900001 <https://github. 
+  com/obophenotype/cell-ontology/issues/3597>)                                
+    35944:AnnotationAssertion(terms:contributor obo:CL_9900001 <https://orcid.
+  org/0000-0002-5507-2103>)                                                   
+    35945:AnnotationAssertion(terms:creator obo:CL_9900001 "GitHub Copilot")  
+    35946:AnnotationAssertion(terms:date obo:CL_9900001 "2026-03-             
+  24T10:46:30Z"^^xsd:dateTime)                                                
+    35947:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:23209333")  
+  oboInOwl:hasExactSynonym obo:CL_9900001 "serous demilune cell")             
+    35948:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:23209333")  
+  oboInOwl:hasRelatedSynonym obo:CL_9900001 "demilune cell of salivary gland")
+    35949:AnnotationAssertion(oboInOwl:hasRelatedSynonym obo:CL_9900001       
+  "serous crescent cell")                                                     
+    35950:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "https://en.      
+  wikipedia.org/wiki/Serous_demilune") oboInOwl:hasRelatedSynonym             
+  obo:CL_9900001 "Crescents of Giannuzzi")                                    
+    35951:AnnotationAssertion(rdfs:comment obo:CL_9900001 "The classic        
+  crescent-shaped morphology that gives demilune cells their name is a well-  
+  established histological feature, but must be caveated with the fixation    
+  artifact issue. Amano et al. (2012) describe how rapid-freeze fixation      
+  reveals a more tubular arrangement, suggesting the demilune shape is at     
+  least partly artifactual.")                                                 
+    35952:AnnotationAssertion(rdfs:label obo:CL_9900001 "serous demilune cell 
+  of salivary gland")                                                         
+    35953:EquivalentClasses(obo:CL_9900001 ObjectIntersectionOf(obo:CL_0000313
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001044)))                  
+    35954:SubClassOf(obo:CL_9900001 obo:CL_0000313)                           
+    35955:SubClassOf(obo:CL_9900001 ObjectSomeValuesFrom(obo:RO_0002215       
+  obo:GO_0046541))                                                            
+    35957:# Class: obo:CL_9900002 (basal duct cell of salivary gland)         
+    35959:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:37446355")  
+  Annotation(oboInOwl:hasDbXref "PMID:39346911") obo:IAO_0000115              
+  obo:CL_9900002 "A basal cell that is part of the duct of a salivary gland,  
+  characterized by an undifferentiated phenotype, expression of KRT5, and a   
+  position surrounding the striated ductal epithelium. This cell is presumed  
+  to function as a salivary gland stem/progenitor cell capable of regenerating
+  ductal and potentially acinar cell populations (Yura and Hamada, 2023). In  
+  mice, Lgr5-expressing cells within this compartment demonstrate tripotent   
+  capacity, able to generate acinar, ductal, and myoepithelial cell lineages. 
+  ")                                                                          
+    35960:AnnotationAssertion(obo:IAO_0000233 obo:CL_9900002 <https://github. 
+  com/obophenotype/cell-ontology/issues/3597>)                                
+    35961:AnnotationAssertion(terms:contributor obo:CL_9900002 <https://orcid.
+  org/0000-0002-5507-2103>)                                                   
+    35962:AnnotationAssertion(terms:creator obo:CL_9900002 "GitHub Copilot")  
+    35963:AnnotationAssertion(terms:date obo:CL_9900002 "2026-03-             
+  24T10:46:30Z"^^xsd:dateTime)                                                
+    35964:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:37446355")  
+  oboInOwl:hasExactSynonym obo:CL_9900002 "basal ductal cell of salivary      
+  gland")                                                                     
+    35965:AnnotationAssertion(rdfs:label obo:CL_9900002 "basal duct cell of   
+  salivary gland")                                                            
+    35966:EquivalentClasses(obo:CL_9900002 ObjectIntersectionOf(obo:CL_0000646
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001837)))                  
+    35967:SubClassOf(obo:CL_9900002 obo:CL_0000646)                           
+    35969:# Class: obo:CL_9900003 (periductal fibroblast of salivary gland)   
+    35971:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:31213547")  
+  Annotation(oboInOwl:hasDbXref "PMID:39346911") Annotation(oboInOwl:hasDbXref
+  "PMID:41411773") obo:IAO_0000115 obo:CL_9900003 "A fibroblast that is part  
+  of the stroma of a salivary gland, positioned in the periductal connective  
+  tissue surrounding the ductal system. This cell maintains the extracellular 
+  matrix framework around salivary gland ducts and participates in            
+  immunomodulatory signaling. In the context of Sjögren's syndrome, periductal
+  fibroblasts respond to IL-13 stimulation by upregulating VCAM-1, PDPN, and  
+  ICAM-1, contributing to the formation of tertiary lymphoid structures (Nayar
+  et al., 2019).")                                                            
+    35972:AnnotationAssertion(obo:IAO_0000233 obo:CL_9900003 <https://github. 
+  com/obophenotype/cell-ontology/issues/3597>)                                
+    35973:AnnotationAssertion(terms:contributor obo:CL_9900003 <https://orcid.
+  org/0000-0002-5507-2103>)                                                   
+    35974:AnnotationAssertion(terms:creator obo:CL_9900003 "GitHub Copilot")  
+    35975:AnnotationAssertion(terms:date obo:CL_9900003 "2026-03-             
+  24T10:46:30Z"^^xsd:dateTime)                                                
+    35976:AnnotationAssertion(oboInOwl:hasBroadSynonym obo:CL_9900003         
+  "salivary gland fibroblast")                                                
+    <exited with exit code 0>
+
+Bash: Verify remaining new terms
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n 'CL_9900'   
+  src/ontology/cl-edit.owl | tail -40                                         
+    36005:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:3284416")   
+  Annotation(oboInOwl:hasDbXref "PMID:38358561") oboInOwl:hasExactSynonym     
+  obo:CL_9900005 "parotid gland tuft cell")                                   
+    36006:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:18062147")  
+  Annotation(oboInOwl:hasDbXref "PMID:23209333") oboInOwl:hasRelatedSynonym   
+  obo:CL_9900005 "brush cell of parotid gland")                               
+    36007:AnnotationAssertion(rdfs:label obo:CL_9900005 "tuft cell of parotid 
+  gland")                                                                     
+    36008:EquivalentClasses(obo:CL_9900005 ObjectIntersectionOf(obo:CL_0002204
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001831)))                  
+    36009:SubClassOf(obo:CL_9900005 obo:CL_0002204)                           
+    36011:# Class: obo:CL_9900006 (tuft cell of sublingual gland)             
+    36013:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:23209333")  
+  Annotation(oboInOwl:hasDbXref "PMID:38358561") obo:IAO_0000115              
+  obo:CL_9900006 "A tuft cell that is part of the epithelium of the sublingual
+  gland, localized to the ductal compartment. This cell is characterized by   
+  expression of POU2F3, consistent with tuft cell identity.                   
+  Immunohistochemical analysis detected POU2F3-positive cells in normal human 
+  sublingual gland tissue (Hoki et al., 2024).")                              
+    36014:AnnotationAssertion(obo:IAO_0000233 obo:CL_9900006 <https://github. 
+  com/obophenotype/cell-ontology/issues/3597>)                                
+    36015:AnnotationAssertion(terms:contributor obo:CL_9900006 <https://orcid.
+  org/0000-0002-5507-2103>)                                                   
+    36016:AnnotationAssertion(terms:creator obo:CL_9900006 "GitHub Copilot")  
+    36017:AnnotationAssertion(terms:date obo:CL_9900006 "2026-03-             
+  24T10:46:30Z"^^xsd:dateTime)                                                
+    36018:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:38358561")  
+  Annotation(oboInOwl:hasDbXref "PMID:8874101") oboInOwl:hasExactSynonym      
+  obo:CL_9900006 "sublingual gland tuft cell")                                
+    36019:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:18062147")  
+  Annotation(oboInOwl:hasDbXref "PMID:23209333") oboInOwl:hasRelatedSynonym   
+  obo:CL_9900006 "brush cell of sublingual gland")                            
+    36020:AnnotationAssertion(rdfs:label obo:CL_9900006 "tuft cell of         
+  sublingual gland")                                                          
+    36021:EquivalentClasses(obo:CL_9900006 ObjectIntersectionOf(obo:CL_0002204
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001832)))                  
+    36022:SubClassOf(obo:CL_9900006 obo:CL_0002204)                           
+    36023:SubClassOf(obo:CL_9900006 obo:CL_0002251)                           
+    36025:# Class: obo:CL_9900007 (ionocyte of salivary gland)                
+    36027:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:30069044")  
+  Annotation(oboInOwl:hasDbXref "PMID:30069046") Annotation(oboInOwl:hasDbXref
+  "PMID:38358561") Annotation(oboInOwl:hasDbXref "PMID:39346911")             
+  Annotation(oboInOwl:hasDbXref "PMID:41721487") obo:IAO_0000115              
+  obo:CL_9900007 "An ionocyte that is part of a salivary gland, localized to  
+  the ductal compartment on the luminal side. This specialized epithelial cell
+  is characterized by expression of FOXI1 and is involved in regulating and   
+  maintaining osmotic pressure within the glandular environment (Dong et al., 
+  2024). In normal human salivary glands, FOXI1-positive cells constitute less
+  than 5% of ductal epithelial cells and are found exclusively in ducts, never
+  in acini, across all major gland types including parotid, submandibular,    
+  sublingual, and minor salivary glands (Hoki et al., 2024). Like ionocytes in
+  other tissues, this cell is expected to express high levels of CFTR and     
+  possess abundant mitochondria and ion transporters.")                       
+    36028:AnnotationAssertion(obo:IAO_0000233 obo:CL_9900007 <https://github. 
+  com/obophenotype/cell-ontology/issues/3597>)                                
+    36029:AnnotationAssertion(terms:contributor obo:CL_9900007 <https://orcid.
+  org/0000-0002-5507-2103>)                                                   
+    36030:AnnotationAssertion(terms:creator obo:CL_9900007 "GitHub Copilot")  
+    36031:AnnotationAssertion(terms:date obo:CL_9900007 "2026-03-             
+  24T10:46:30Z"^^xsd:dateTime)                                                
+    36032:AnnotationAssertion(rdfs:label obo:CL_9900007 "ionocyte of salivary 
+  gland")                                                                     
+    36033:EquivalentClasses(obo:CL_9900007 ObjectIntersectionOf(obo:CL_0005006
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001044)))                  
+    36034:SubClassOf(obo:CL_9900007 obo:CL_0005006)                           
+    36035:SubClassOf(obo:CL_9900007 ObjectSomeValuesFrom(obo:RO_0002215       
+  obo:GO_0050801))                                                            
+    36037:# Class: obo:CL_9900008 (myoepithelial cell of salivary gland)      
+    36039:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:23209333")  
+  Annotation(oboInOwl:hasDbXref "PMID:39346911") Annotation(oboInOwl:hasDbXref
+  "PMID:40837863") Annotation(oboInOwl:hasDbXref "PMID:41271704")             
+  obo:IAO_0000115 obo:CL_9900008 "A myoepithelial cell that is part of a      
+  salivary gland, positioned between the basal lamina and the secretory or    
+  ductal epithelial cells surrounding acini and intercalated ducts. This cell 
+  adopts a stellate morphology with four to eight cellular processes around   
+  acini and an elongated form parallel to the ductal axis around intercalated 
+  ducts (Amano et al., 2012). It expresses alpha-smooth muscle actin          
+  (ACTA2/alpha-SMA) as a primary marker, along with p63 and aquaporin 1 (AQP1),
+  and contracts rhythmically in response to neural stimulation to facilitate  
+  saliva expulsion from secretory acini into the ductal system (Amano et al., 
+  2012). This cell also produces FGF7, which activates FGFR2b-dependent       
+  transcriptional programs essential for seromucous acinar cell               
+  differentiation (Aure et al., 2023). In mice, myoepithelial cells express   
+  SOX2 and possess regenerative capacity, contributing to acinar cell         
+  restoration during tissue repair after severe injury.")                     
+    36040:AnnotationAssertion(obo:IAO_0000233 obo:CL_9900008 <https://github. 
+  com/obophenotype/cell-ontology/issues/3597>)                                
+    36041:AnnotationAssertion(terms:contributor obo:CL_9900008 <https://orcid.
+  org/0000-0002-5507-2103>)                                                   
+    36042:AnnotationAssertion(terms:creator obo:CL_9900008 "GitHub Copilot")  
+    36043:AnnotationAssertion(terms:date obo:CL_9900008 "2026-03-             
+  24T10:46:30Z"^^xsd:dateTime)                                                
+    36044:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:23209333")  
+  Annotation(oboInOwl:hasDbXref "PMID:39346911") Annotation(oboInOwl:hasDbXref
+  "PMID:8155903") oboInOwl:hasExactSynonym obo:CL_9900008 "salivary gland     
+  myoepithelial cell")                                                        
+    36045:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:40837863")  
+  oboInOwl:hasExactSynonym obo:CL_9900008 "salivary myoepithelial cell")      
+    36046:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:26015726")  
+  Annotation(oboInOwl:hasDbXref "PMID:27721614") Annotation(oboInOwl:hasDbXref
+  "PMID:38273256") oboInOwl:hasRelatedSynonym obo:CL_9900008 "basket cell of  
+  salivary gland")                                                            
+    36047:AnnotationAssertion(rdfs:label obo:CL_9900008 "myoepithelial cell of
+  salivary gland")                                                            
+    36048:EquivalentClasses(obo:CL_9900008 ObjectIntersectionOf(obo:CL_0000185
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001044)))                  
+    36049:SubClassOf(obo:CL_9900008 obo:CL_0000185)                           
+    36050:SubClassOf(obo:CL_9900008 ObjectSomeValuesFrom(obo:RO_0002215       
+  obo:GO_0006939))                                                            
+    <exited with exit code 0>
+
+
+The terms are all correctly added. Now let me validate the OWL syntax using 
+  robot:
+
+Bash: Find robot tool
+$ cd /home/runner/work/cell-ontology/cell-ontology && which robot         
+  2>/dev/null || ls src/ontology/run.sh 2>/dev/null                           
+    /home/runner/work/cell-ontology/cell-ontology/tools/robot                 
+    <exited with exit code 0>
+
+Bash: Validate OWL syntax with robot convert
+$ cd /home/runner/work/cell-ontology/cell-ontology && tools/robot convert --
+  input src/ontology/cl-edit.owl --output /tmp/cl-edit-test.owl 2>&1 | head - 
+  30                                                                          
+                                                                              
+    <exited with exit code 0>
+
+Bash: Run reasoner on the ontology
+$ cd /home/runner/work/cell-ontology/cell-ontology && tools/robot reason --
+  input src/ontology/cl-edit.owl --output /tmp/cl-edit-reasoned.owl 2>&1 |    
+  head -30                                                                    
+                                                                              
+    <exited with exit code 0>
+
+
+The ontology validates successfully. Now let me run a code review:
+
+Call to code_review
+
+Input:
+
+{                                                                         
+      "prDescription": "This PR adds 8 new cell type terms to the Cell        
+  Ontology for HuBMAP, all related to oral/salivary gland cell types. All     
+  terms use temporary IDs (CL_99xxxxx range) as specified in idrange:81.      
+  \n\nTerms added:\n1. **CL_9900001** - serous demilune cell of salivary gland
+  (parent: CL:0000313 serous secreting cell)\n2. **CL_9900002** - basal duct  
+  cell of salivary gland (parent: CL:0000646 basal cell)\n3. **CL_9900003** - 
+  periductal fibroblast of salivary gland (parent: CL:0000057 fibroblast)\n4. 
+  **CL_9900004** - junctional epithelial cell (parent: CL:0002077 ecto-       
+  epithelial cell)\n5. **CL_9900005** - tuft cell of parotid gland (parent:   
+  CL:0002204 tuft cell)\n6. **CL_9900006** - tuft cell of sublingual gland    
+  (parent: CL:0002204 tuft cell, CL:0002251 epithelial cell of alimentary     
+  canal)\n7. **CL_9900007** - ionocyte of salivary gland (parent: CL:0005006  
+  ionocyte)\n8. **CL_9900008** - myoepithelial cell of salivary gland (parent:
+  CL:0000185 myoepithelial cell)\n\nEach term includes:\n- IAO_0000115        
+  definition with PMID xrefs\n- IAO_0000233 term tracker linking to issue     
+  #3597\n- terms:contributor (ORCID 0000-0002-5507-2103)\n- terms:creator     
+  \"GitHub Copilot\"\n- terms:date timestamp\n- rdfs:label\n-                 
+  EquivalentClasses (logical definition with part_of UBERON term)\n-          
+  SubClassOf assertions (parent class + optional capable_of GO terms)\n-      
+  Synonyms with xrefs",                                                       
+      "prTitle": "Add mouth terms for HuBMAP (issue #3597)"                   
+    }
+
+
+Let me check existing patterns with EquivalentClasses and SubClassOf in the 
+  file:
+
+Bash: Check pulmonary ionocyte pattern (has both EquivalentClasses and SubClassOf)
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '25124,      
+  25132p' src/ontology/cl-edit.owl                                            
+    # Class: obo:CL_0015000 (cranial motor neuron)                            
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "ZFIN:CVS")             
+  obo:IAO_0000115 obo:CL_0015000 "Motor neuron that innervate muscles that    
+  control eye, jaw, and facial movements of the vertebrate head and           
+  parasympathetic neurons that innervate certain glands and organs.")         
+    AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0015000 "PMID:14699587")    
+    AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0015000 "cranial      
+  motoneuron")                                                                
+    AnnotationAssertion(rdfs:label obo:CL_0015000 "cranial motor neuron")     
+    SubClassOf(obo:CL_0015000 obo:CL_0000100)                                 
+                                                                              
+    # Class: obo:CL_0017000 (pulmonary ionocyte)                              
+    <exited with exit code 0>
+
+Bash: View pulmonary ionocyte class full definition
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '25132,      
+  25142p' src/ontology/cl-edit.owl                                            
+    # Class: obo:CL_0017000 (pulmonary ionocyte)                              
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:30069044")        
+  Annotation(oboInOwl:hasDbXref "PMID:30069046") obo:IAO_0000115              
+  obo:CL_0017000 "An ionocyte that is part of the lung epithelium. The cells  
+  from this type are major sources of the CFTR protein in human and mice.")   
+    AnnotationAssertion(terms:contributor obo:CL_0017000 <https://orcid.      
+  org/0000-0003-2473-2313>)                                                   
+    AnnotationAssertion(rdfs:label obo:CL_0017000 "pulmonary ionocyte")       
+    EquivalentClasses(obo:CL_0017000 ObjectIntersectionOf(obo:CL_0005006      
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000115)))                  
+    SubClassOf(obo:CL_0017000 obo:CL_0005006)                                 
+                                                                              
+    # Class: obo:CL_0017001 (splanchnic mesodermal cell)                      
+                                                                              
+    AnnotationAssertion(obo:IAO_0000115 obo:CL_0017001 "A mesodermal cell that
+  is part of the splanchnic layer of lateral plate mesoderm.")                
+    <exited with exit code 0>
+
+
+The reviewer's comments are about redundancy, but looking at the existing   
+  pattern in the file (pulmonary ionocyte CL_0017000 also has both            
+  EquivalentClasses AND explicit SubClassOf), this is an established pattern  
+  in the ontology. The explicit SubClassOf is intentionally added for clarity.
+  I'll keep the pattern consistent with existing terms.                       
+                                                                              
+  Now let me run the CodeQL check and then commit:
+
+Run CodeQL analysis
+
+Input:
+
+{                                                                         
+      "trivialChangeDeclaration": {                                           
+        "isTrivial": true,                                                    
+        "reason": "Only ontology OWL file changes - adding new class          
+  definitions with annotations. No executable code changes."                  
+      }                                                                       
+    }
+
+Progress update: Add 8 new mouth/salivary gland cell type terms for HuBMAP (issue #3597)
+
+Added the following new terms with temporary IDs (CL_990xxxx range):
+- CL_9900001: serous demilune cell of salivary gland (parent: CL:0000313)
+- CL_9900002: basal duct cell of salivary gland (parent: CL:0000646)
+- CL_9900003: periductal fibroblast of salivary gland (parent: CL:0000057)
+- CL_9900004: junctional epithelial cell (parent: CL:0002077)
+- CL_9900005: tuft cell of parotid gland (parent: CL:0002204)
+- CL_9900006: tuft cell of sublingual gland (parent: CL:0002204, CL:0002251)
+- CL_9900007: ionocyte of salivary gland (parent: CL:0005006)
+- CL_9900008: myoepithelial cell of salivary gland (parent: CL:0000185)
+
+Each term includes definition with PMID xrefs, term tracker (issue #3597),
+contributor ORCID, synonyms, EquivalentClasses logical definition with
+part_of UBERON terms, and SubClassOf axioms.
+
+Signed-off-by: GitHub Copilot
+
+[x] Add serous demilune cell of salivary gland (CL_9900001) - parent        
+  CL:0000313                                                                  
+  [x] Add basal duct cell of salivary gland (CL_9900002) - parent CL:0000646  
+  [x] Add periductal fibroblast of salivary gland (CL_9900003) - parent       
+  CL:0000057                                                                  
+  [x] Add junctional epithelial cell (CL_9900004) - parent CL:0002077         
+  [x] Add tuft cell of parotid gland (CL_9900005) - parent CL:0002204         
+  [x] Add tuft cell of sublingual gland (CL_9900006) - parent CL:0002204,     
+  CL:0002251                                                                  
+  [x] Add ionocyte of salivary gland (CL_9900007) - parent CL:0005006         
+  [x] Add myoepithelial cell of salivary gland (CL_9900008) - parent          
+  CL:0000185
+
+
+All 8 new cell type terms have been successfully added to the Cell Ontology.
+  Here's a summary of what was implemented:                                   
+                                                                              
+  ## Summary                                                                  
+                                                                              
+  Added 8 new mouth/salivary gland cell type terms to src/ontology/cl-edit.owl
+  for HuBMAP (GitHub issue #3597), using temporary IDs in the CL_990xxxx      
+  range:                                                                      
+                                                                              
+   ID         | Label                            | Parent                     
+  ------------|----------------------------------|--------------------------  
+   CL_9900001 | serous demilune cell of salivar… | CL:0000313 (serous secr…   
+   CL_9900002 | basal duct cell of salivary gla… | CL:0000646 (basal cell)    
+   CL_9900003 | periductal fibroblast of saliva… | CL:0000057 (fibroblast)    
+   CL_9900004 | junctional epithelial cell       | CL:0002077 (ecto-epithe…   
+   CL_9900005 | tuft cell of parotid gland       | CL:0002204 (tuft cell)     
+   CL_9900006 | tuft cell of sublingual gland    | CL:0002204 + CL:0002251    
+   CL_9900007 | ionocyte of salivary gland       | CL:0005006 (ionocyte)      
+   CL_9900008 | myoepithelial cell of salivary … | CL:0000185 (myoepitheli…   
+                                                                              
+  Each term includes:                                                         
+                                                                              
+  • **Definition** (IAO_0000115) with PMID cross-references                   
+  • **Term tracker** (IAO_0000233) linking to issue #3597                     
+  • **Contributor ORCID** (0000-0002-5507-2103)                               
+  • **Creator** "GitHub Copilot"                                              
+  • **Timestamp** for creation date                                           
+  • **Synonyms** with appropriate types (exact/related/broad/narrow) and PMID 
+  xrefs                                                                       
+  • **Logical definitions** (EquivalentClasses with part_of UBERON anatomical 
+  structure)                                                                  
+  • **SubClassOf** assertions to parent classes                               
+  • **capable_****of** assertions for selected terms (saliva secretion, innate
+  immune response, ion homeostasis, smooth muscle contraction)                
+                                                                              
+  The changes were validated with robot convert and robot reason to confirm   
+  valid OWL syntax and successful reasoning.
+

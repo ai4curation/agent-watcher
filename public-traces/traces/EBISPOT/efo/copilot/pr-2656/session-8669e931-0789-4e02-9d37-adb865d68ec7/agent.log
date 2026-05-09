@@ -1,0 +1,1587 @@
+Clone repository EBISPOT/efo
+Start 'playwright' MCP server
+Start 'github-mcp-server' MCP server
+Start 'ebi-kg' MCP server
+Start 'ols4' MCP server
+Start 'artl-mcp' MCP server
+
+I'll start by understanding the issue and searching for relevant patterns in
+  the repository.
+
+Call to search_code_subagent
+
+Input:
+
+{                                                                         
+      "query": "immunocytochemistry immunohistochemistry assay experimental   
+  process EFO term"                                                           
+    }
+
+Bash: Search for immunocytochemistry in efo-edit.owl
+$ cd /home/runner/work/efo/efo && gh issue list --limit 5 2>/dev/null |   
+  head -20; grep -i "immunocytochemistry|immunohistochemistry"                
+  src/ontology/efo-edit.owl | head -20                                        
+    <obo:IAO_0000115>Urocortin 2 (Ucn2) is an endogenous peptide in the       
+  corticotrophin-releasing factor (CRF) family.[1] Immunohistochemistry       
+  analysis of human myocytes has shown greater immunoreactivity of Ucn2 in    
+  myocytes of the failing heart compared to those of the healthy heart.       
+  Researchers suggest this is a result of an innate mechanism in which Ucn2   
+  acts to improve function of the failing heart [2]. The pathophysiology of   
+  heart failure is often a consequence of improper calcium handling and       
+  relaxation resulting in a lower cardiac output, decreased blood flow and    
+  overall decreased heart function [3]. Infusion of Ucn2 in healthy humans has
+  shown a dose dependent increase in cardiac output, heart rate and left      
+  ventricle ejection fraction and a decrease in systemic vascular resistance  
+  [4]. Ucn2 has been studied as potential treatment for individuals with heart
+  failure.</obo:IAO_0000115>                                                  
+            <obo:IAO_0000115>Cell line was established from a patient with    
+  essential thrombocytosis that transformed into acute leukemia. The          
+  patient&apos;s initial clinical presentation included skin and lymph node   
+  infiltrations that were taken for an angiosarcoma due to positivity for CD34,
+  CD31, and von Willebrand factor on immunohistology. In addition to          
+  hematopoietic markers, leukemic cells expressed endothelial antigens such as
+  CD62E, CD105, and bound Ulex europäeus lectin-1. Immunocytochemistry        
+  revealed positive staining for vascular endothelial growth factor receptor  
+  type 2 (KDR), Tie-2/Tek, the angiopoietin receptor, and vascular endothelial
+  cadherin. These results were confirmed by PCR analysis. Simultaneous        
+  staining for CD62E and FISH analysis showed that cells with endothelial     
+  characteristics belonged to the leukemia. FISH analysis of histologic       
+  sections of the lymph node infiltration confirmed this manifestation as part
+  of the leukemic process. The derived cell line, UKE-1, forms colonies in    
+  soft agar and is tumorigenic in SCID mice.</obo:IAO_0000115>                
+            <obo:IAO_0000115>quantification of some aspect of TP53 mutation,  
+  such as the number of accummulated mutations, determined either through     
+  immunohistochemistry or DNA sequencing</obo:IAO_0000115>                    
+            <rdfs:label xml:lang="en">immunohistochemistry</rdfs:label>       
+            <obo:IAO_0000115>An infrequent pituitary gland adenoma composed of
+  an admixture of acidophilic and chromophobic cells that produce growth      
+  hormone and prolactin respectively. Unlike mammosomatotroph adenomas, these 
+  two hormones are not localized in the same cell by immunohistochemistry.    
+  </obo:IAO_0000115>                                                          
+            <owl:annotatedTarget>An infrequent pituitary gland adenoma        
+  composed of an admixture of acidophilic and chromophobic cells that produce 
+  growth hormone and prolactin respectively. Unlike mammosomatotroph adenomas,
+  these two hormones are not localized in the same cell by                    
+  immunohistochemistry.</owl:annotatedTarget>                                 
+            <obo:IAO_0000115>A primary carcinoma of the thyroid gland composed
+  of undifferentiated cells. The malignant cells demonstrate evidence of      
+  epithelial differentiation, either by immunohistochemistry or electron      
+  microscopic studies. Microscopically, in the majority of cases there is a   
+  mixture of spindle, epithelioid, and giant cells. The vast majority of the  
+  patients present with a rapidly enlarging neck mass. The clinical course is 
+  usually aggressive.</obo:IAO_0000115>                                       
+            <owl:annotatedTarget>A primary carcinoma of the thyroid gland     
+  composed of undifferentiated cells. The malignant cells demonstrate evidence
+  of epithelial differentiation, either by immunohistochemistry or electron   
+  microscopic studies. Microscopically, in the majority of cases there is a   
+  mixture of spindle, epithelioid, and giant cells. The vast majority of the  
+  patients present with a rapidly enlarging neck mass. The clinical course is 
+  usually aggressive.</owl:annotatedTarget>                                   
+            <obo:IAO_0000115>A benign brain tumor composed of neural elements 
+  which most often arise from the SEPTUM PELLUCIDUM and the walls of the      
+  lateral ventricles. Immunohistochemistry and electron microscopy evaluations
+  may reveal expression of neuron specific enolase and synaptophysin and cells
+  containing microtubuli, neurosecretory granules, and presynaptic vesicles.  
+  (From Acta Med Port 1994 Feb;7(2):113-9)</obo:IAO_0000115>                  
+    <exited with exit code 0>
+
+Bash: Find immunohistochemistry term definition
+$ cd /home/runner/work/efo/efo && grep -n "immunohistochemistry"          
+  src/ontology/efo-edit.owl | grep "rdfs:label|owl:Class|rdf:about" | head -20
+    416190:        <rdfs:label xml:lang="en">immunohistochemistry</rdfs:label>
+    <exited with exit code 0>
+
+Bash: Find EFO:0002694 experimental process
+$ cd /home/runner/work/efo/efo && grep -n "EFO_0002694" src/ontology/efo- 
+  edit.owl | head -10                                                         
+    2666:                <owl:someValuesFrom rdf:resource="http://www.ebi.ac. 
+  uk/efo/EFO_0002694"/>                                                       
+    2692:                <owl:someValuesFrom rdf:resource="http://www.ebi.ac. 
+  uk/efo/EFO_0002694"/>                                                       
+    33974:                <owl:someValuesFrom rdf:resource="http://www.ebi.ac.
+  uk/efo/EFO_0002694"/>                                                       
+    34903:                        <owl:someValuesFrom rdf:resource="http://www.
+  ebi.ac.uk/efo/EFO_0002694"/>                                                
+    88274:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0002694"/>                                                       
+    88456:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0002694"/>                                                       
+    88501:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0002694"/>                                                       
+    88817:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0002694"/>                                                       
+    88863:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0002694"/>                                                       
+    89143:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.           
+  uk/efo/EFO_0002694"/>                                                       
+    <exited with exit code 0>
+
+Bash: Get immunohistochemistry full term block
+$ cd /home/runner/work/efo/efo && grep -n -B5 -A30                        
+  '"immunohistochemistry"' src/ontology/efo-edit.owl | head -80               
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find last EFO_092 ID used
+$ cd /home/runner/work/efo/efo && grep "EFO_092" src/ontology/efo-edit.owl |
+  tail -5                                                                     
+    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920058">              
+            <owl:annotatedSource rdf:resource="http://www.ebi.ac.             
+  uk/efo/EFO_0920058"/>                                                       
+        <!-- http://www.ebi.ac.uk/efo/EFO_0920059 -->                         
+        <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920059">          
+            <owl:annotatedSource rdf:resource="http://www.ebi.ac.             
+  uk/efo/EFO_0920059"/>                                                       
+    <exited with exit code 0>
+
+Bash: Find immunohistochemistry class definition lines
+$ cd /home/runner/work/efo/efo && grep -n "rdfs:label.                    
+  *immunohistochemistry|rdf:about.*immunohistochem" src/ontology/efo-edit.owl 
+    416190:        <rdfs:label xml:lang="en">immunohistochemistry</rdfs:label>
+    <exited with exit code 0>
+
+Bash: Find last EFO_092 class ID used
+$ cd /home/runner/work/efo/efo && grep -n "EFO_092" src/ontology/efo-edit.
+  owl | grep "rdf:about|owl:Class" | tail -10                                 
+    484525:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920050">   
+    484554:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920051">   
+    484587:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920052">   
+    484615:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920053">   
+    484644:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920054">   
+    484675:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920055">   
+    484705:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920056">   
+    484727:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920057">   
+    484750:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920058">   
+    484776:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920059">   
+    <exited with exit code 0>
+
+Bash: Get immunohistochemistry full block
+$ cd /home/runner/work/efo/efo && sed -n '416180,416230p' src/ontology/efo-
+  edit.owl                                                                    
+    <!-- http://www.ebi.ac.uk/efo/EFO_0022943 -->                             
+                                                                              
+        <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0022943">          
+            <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                 
+  uk/efo/EFO_0002694"/>                                                       
+            <obo:IAO_0000115>A method using antibodies to detect specific     
+  antigens, to determine presence/absence of a protein or a portion of a      
+  protein e.g. the C-terminus.</obo:IAO_0000115>                              
+            <dc:creator>Zoe May Pendlington</dc:creator>                      
+            <dc:date rdf:datatype="http://www.w3.                             
+  org/2001/XMLSchema#dateTime">2025-06-03T10:22:49Z</dc:date>                 
+            <rdfs:label xml:lang="en">immunohistochemistry</rdfs:label>       
+        </owl:Class>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://www.ebi.ac.             
+  uk/efo/EFO_0022943"/>                                                       
+            <owl:annotatedProperty rdf:resource="http://purl.obolibrary.      
+  org/obo/IAO_0000115"/>                                                      
+            <owl:annotatedTarget>A method using antibodies to detect specific 
+  antigens, to determine presence/absence of a protein or a portion of a      
+  protein e.g. the C-terminus.</owl:annotatedTarget>                          
+            <efo:definition_citation>PMID:18066593</efo:definition_citation>  
+        </owl:Axiom>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://www.ebi.ac.uk/efo/EFO_0022944 -->                         
+                                                                              
+        <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0022944">          
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0000070"/>                                                      
+            <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                 
+  uk/efo/EFO_0022943"/>                                                       
+            <obo:IAO_0000115>A method using fluorescently labelled antibodies 
+  to detect the presence and/or localization of a protein or other molecule   
+  within cells or tissues.</obo:IAO_0000115>                                  
+            <dc:creator>Zoe May Pendlington</dc:creator>                      
+            <dc:date rdf:datatype="http://www.w3.                             
+  org/2001/XMLSchema#dateTime">2025-06-03T10:23:46Z</dc:date>                 
+            <rdfs:label xml:lang="en">immunofluorescence assay</rdfs:label>   
+        </owl:Class>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://www.ebi.ac.             
+  uk/efo/EFO_0022944"/>                                                       
+            <owl:annotatedProperty rdf:resource="http://purl.obolibrary.      
+  org/obo/IAO_0000115"/>                                                      
+            <owl:annotatedTarget>A method using fluorescently labelled        
+  antibodies to detect the presence and/or localization of a protein or other 
+  molecule within cells or tissues.</owl:annotatedTarget>                     
+            <efo:definition_citation>PMID:36624481</efo:definition_citation>  
+        </owl:Axiom>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://www.ebi.ac.uk/efo/EFO_0022945 -->                         
+                                                                              
+        <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0022945">          
+            <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                 
+  uk/efo/EFO_0022943"/>                                                       
+            <obo:IAO_0000115>A method using separation of proteins by gel     
+  electrophoresis and antibodies to detect the presence and/or quantity of a  
+  protein or other molecule</obo:IAO_0000115>                                 
+            <dc:creator>Zoe May Pendlington</dc:creator>                      
+            <dc:date rdf:datatype="http://www.w3.                             
+  org/2001/XMLSchema#dateTime">2025-06-03T10:25:22Z</dc:date>                 
+            <oboInOwl:hasExactSynonym>Western blot</oboInOwl:hasExactSynonym> 
+            <rdfs:label xml:lang="en">Western blotting</rdfs:label>           
+        </owl:Class>                                                          
+        <owl:Axiom>                                                           
+    <exited with exit code 0>
+
+Bash: Get last EFO_0920059 term block
+$ cd /home/runner/work/efo/efo && sed -n '484750,484830p' src/ontology/efo-
+  edit.owl                                                                    
+    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920058">              
+            <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                 
+  uk/efo/EFO_0010961"/>                                                       
+            <obo:IAO_0000115>Visium HD Spatial Gene Expression is a probe-    
+  based, whole-transcriptome spatial gene expression assay that captures mRNA 
+  at single-cell-scale resolution using continuous 2 µm capture features (~11 
+  million features across a 6.5 × 6.5 mm capture area), compatible with       
+  formalin-fixed paraffin-embedded (FFPE), freshly frozen, and fixed frozen   
+  tissue sections.</obo:IAO_0000115>                                          
+            <obo:IAO_0000117>AI agent</obo:IAO_0000117>                       
+            <dc:creator>https://orcid.org/0000-0002-8937-3457</dc:creator>    
+            <dc:date rdf:datatype="http://www.w3.                             
+  org/2001/XMLSchema#dateTime">2026-02-25T13:48:06Z</dc:date>                 
+            <oboInOwl:hasExactSynonym>Visium HD Spatial Gene                  
+  Expression</oboInOwl:hasExactSynonym>                                       
+            <oboInOwl:hasRelatedSynonym>10x Genomics Visium                   
+  HD</oboInOwl:hasRelatedSynonym>                                             
+            <oboInOwl:hasRelatedSynonym>Visium HD                             
+  platform</oboInOwl:hasRelatedSynonym>                                       
+            <oboInOwl:hasRelatedSynonym>high-definition                       
+  Visium</oboInOwl:hasRelatedSynonym>                                         
+            <rdfs:label xml:lang="en">Visium HD</rdfs:label>                  
+            <rdfs:seeAlso>https://github.                                     
+  com/EBISPOT/efo/issues/2212</rdfs:seeAlso>                                  
+        </owl:Class>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://www.ebi.ac.             
+  uk/efo/EFO_0920058"/>                                                       
+            <owl:annotatedProperty rdf:resource="http://purl.obolibrary.      
+  org/obo/IAO_0000115"/>                                                      
+            <owl:annotatedTarget>Visium HD Spatial Gene Expression is a probe-
+  based, whole-transcriptome spatial gene expression assay that captures mRNA 
+  at single-cell-scale resolution using continuous 2 µm capture features (~11 
+  million features across a 6.5 × 6.5 mm capture area), compatible with       
+  formalin-fixed paraffin-embedded (FFPE), freshly frozen, and fixed frozen   
+  tissue sections.</owl:annotatedTarget>                                      
+            <oboInOwl:hasDbXref>PMID:39266749</oboInOwl:hasDbXref>            
+            <oboInOwl:hasDbXref>PMID:40473992</oboInOwl:hasDbXref>            
+            <oboInOwl:hasDbXref>https://jitc.bmj.                             
+  com/content/11/Suppl_1/A1620</oboInOwl:hasDbXref>                           
+        </owl:Axiom>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://www.ebi.ac.uk/efo/EFO_0920059 -->                         
+                                                                              
+        <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920059">          
+            <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                 
+  uk/efo/EFO_0000548"/>                                                       
+            <obo:IAO_0000115>CosMx SMI is a high-plex in situ analysis        
+  platform to provide spatial multiomics with formalin-fixed paraffin-embedded
+  (FFPE) and fresh frozen (FF) tissue samples at cellular and subcellular     
+  resolution.</obo:IAO_0000115>                                               
+            <obo:IAO_0000117>AI agent</obo:IAO_0000117>                       
+            <dc:creator>https://orcid.org/0000-0002-8937-3457</dc:creator>    
+            <dc:date rdf:datatype="http://www.w3.                             
+  org/2001/XMLSchema#dateTime">2026-03-11T11:04:16Z</dc:date>                 
+            <oboInOwl:hasExactSynonym>CosMx</oboInOwl:hasExactSynonym>        
+            <rdfs:label xml:lang="en">CosMx SMI</rdfs:label>                  
+            <rdfs:seeAlso>https://github.                                     
+  com/EBISPOT/efo/issues/2210</rdfs:seeAlso>                                  
+        </owl:Class>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://www.ebi.ac.             
+  uk/efo/EFO_0920059"/>                                                       
+            <owl:annotatedProperty rdf:resource="http://purl.obolibrary.      
+  org/obo/IAO_0000115"/>                                                      
+            <owl:annotatedTarget>CosMx SMI is a high-plex in situ analysis    
+  platform to provide spatial multiomics with formalin-fixed paraffin-embedded
+  (FFPE) and fresh frozen (FF) tissue samples at cellular and subcellular     
+  resolution.</owl:annotatedTarget>                                           
+            <oboInOwl:hasDbXref>PMID:36203011</oboInOwl:hasDbXref>            
+            <oboInOwl:hasDbXref>PMID:41006245</oboInOwl:hasDbXref>            
+        </owl:Axiom>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://www.ebi.ac.uk/efo/EFO_1000003 -->                         
+                                                                              
+        <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_1000003">          
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/HP_0008277"/>                                                       
+            <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                 
+  uk/efo/EFO_0000651"/>                                                       
+            <obo:IAO_0000115>A deficiency of the essential metal Zinc; an     
+  essential cofactor for many enzymes. Zinc deficiency is caused by a lack of 
+  zinc in the diet, loss of zinc after absorption, for example through loss   
+  through burns, inability to absorb Zinc, or increased loss through exercise.
+  </obo:IAO_0000115>                                                          
+            <obo:IAO_0000117>Helen Parkinson</obo:IAO_0000117>                
+            <efo:definition_citation>https://en.wikipedia.                    
+  org/wiki/Zinc_deficiency</efo:definition_citation>                          
+            <oboInOwl:hasDbXref>MedDRA:10048259</oboInOwl:hasDbXref>          
+            <oboInOwl:hasDbXref>SNOMEDCT:238124008</oboInOwl:hasDbXref>       
+            <rdfs:label>Zinc deficiency</rdfs:label>                          
+        </owl:Class>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://www.ebi.ac.uk/efo/EFO_1000012 -->                         
+                                                                              
+        <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_1000012">          
+            <obo:IAO_0000115>Loeys-Dietz syndrome-5 (LDS5), also known as     
+  Rienhoff (pronounced REENhoff) syndrome, is characterized by syndromic      
+  presentation of aortic aneurysms involving the thoracic and/or abdominal    
+  aorta, with risk of dissection and rupture. Other systemic features include 
+  cleft palate, bifid uvula, mitral valve disease, skeletal overgrowth,       
+  cervical spine instability, and clubfoot deformity; however, not all        
+  clinical features occur in all patients. In contrast to other forms of LDS, 
+  no striking aortic or arterial tortuosity is present in these patients, and 
+  there is no strong evidence for early aortic dissection.</obo:IAO_0000115>  
+            <oboInOwl:hasDbXref>OMIM:615582</oboInOwl:hasDbXref>              
+            <oboInOwl:hasExactSynonym>LDS5</oboInOwl:hasExactSynonym>         
+            <oboInOwl:hasExactSynonym>Loeys-Dietz syndrome                    
+  5</oboInOwl:hasExactSynonym>                                                
+            <oboInOwl:hasExactSynonym>Loeys-Dietz syndrome-                   
+  5</oboInOwl:hasExactSynonym>                                                
+            <rdfs:label>obsolete_Rienhoff syndrome</rdfs:label>               
+            <obo:IAO_0100001>http://purl.obolibrary.                          
+  org/obo/MONDO_0014262</obo:IAO_0100001>                                     
+            <efo:obsoleted_in_version>3.88.0</efo:obsoleted_in_version>       
+            <efo:reason_for_obsolescence>Replaced by Mondo term MONDO_0014262,
+  with which this term was previously merged. Use: http://purl.obolibrary.    
+  org/obo/MONDO_0014262</efo:reason_for_obsolescence>                         
+            <owl:deprecated rdf:datatype="http://www.w3.                      
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+        </owl:Class>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://www.ebi.ac.uk/efo/EFO_1000013 -->                         
+                                                                              
+        <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_1000013">          
+    <exited with exit code 0>
+
+
+Now let me search OLS for existing immunocytochemistry terms and look at the
+  GitHub issue:
+
+Bash: Check GitHub issues for immunocytochemistry
+$ cd /home/runner/work/efo/efo && gh issue list --search                  
+  "immunocytochemistry" --limit 10 2>/dev/null || echo "gh not available"     
+    gh not available                                                          
+    <exited with exit code 0>
+
+Call to ols4-searchClasses
+
+Input:
+
+{                                                                         
+      "query": "immunocytochemistry"                                          
+    }
+
+Bash: Parse OLS search results for immunocytochemistry
+$ cat /tmp/1774339113221-copilot-tool-output-sc317f.txt | python3 -c      
+  "import json,sys; data=json.load(sys.stdin); [print(f'{item.                
+  get(\"ontologyId\")} | {item.get(\"curie\")} | {item.get(\"label\")} | {item.
+  get(\"iri\")}') for item in data['items'][:15]]"                            
+    bao | BAO:0000416 | ['immunocytochemistry'] | http://www.bioassayontology.
+  org/bao#BAO_0000416                                                         
+    mi | MI:1200 | ['immunocytochemistry'] | http://purl.obolibrary.          
+  org/obo/MI_1200                                                             
+    obi | OBI:0002174 | ['immunocytochemistry'] | http://purl.obolibrary.     
+  org/obo/OBI_0002174                                                         
+    eco | ECO:0001053 | ['immunocytochemistry evidence'] | http://purl.       
+  obolibrary.org/obo/ECO_0001053                                              
+    eco | ECO:0001186 | ['immunocytochemistry evidence used in manual         
+  assertion'] | http://purl.obolibrary.org/obo/ECO_0001186                    
+    eco | ECO:0007390 | ['immunocytochemistry evidence used in automatic      
+  assertion'] | http://purl.obolibrary.org/obo/ECO_0007390                    
+    ncit | NCIT:C17731 | ['Immunocytochemistry'] | http://purl.obolibrary.    
+  org/obo/NCIT_C17731                                                         
+    enm | OBI:0002174 | ['immunocytochemistry'] | http://purl.obolibrary.     
+  org/obo/OBI_0002174                                                         
+    one | OBI:0002174 | ['immunocytochemistry'] | http://purl.obolibrary.     
+  org/obo/OBI_0002174                                                         
+    pbpko | OBI:0002174 | ['immunocytochemistry'] | http://purl.obolibrary.   
+  org/obo/OBI_0002174                                                         
+    mi | MI:1201 | ['anti-tag immunocytochemistry'] | http://purl.obolibrary. 
+  org/obo/MI_1201                                                             
+    bto | BTO:0006209 | ['HIPEC-65 cell'] | http://purl.obolibrary.           
+  org/obo/BTO_0006209                                                         
+    ncit | NCIT:C191515 | ['Suspected Acute COVID-19 Case'] | http://purl.    
+  obolibrary.org/obo/NCIT_C191515                                             
+    mesh | mesh:D019394 | ['Ki-67 Antigen'] | http://id.nlm.nih.              
+  gov/mesh/D019394                                                            
+    mesh | mesh:D007150 | ['Immunohistochemistry'] | http://id.nlm.nih.       
+  gov/mesh/D007150                                                            
+    <exited with exit code 0>
+
+
+OBI has an immunocytochemistry term (OBI:0002174). Let me check if it's     
+  already in EFO:
+
+Bash: Check if OBI:0002174 is already in EFO
+$ cd /home/runner/work/efo/efo && grep -r "OBI_0002174|OBI:0002174"       
+  src/ontology/ | head -10                                                    
+                                                                              
+    <exited with exit code 0>
+
+Call to ols4-fetch
+
+Output:
+
+{                                                                         
+      "id": "obi+http://purl.obolibrary.org/obo/OBI_0002174",                 
+      "isObsolete": false,                                                    
+      "metadata": {                                                           
+        "type": "class"                                                       
+      },                                                                      
+      "text": "An immuno staining assay in which samples of intact cells are  
+  examined that have had most, if not all, of their surrounding extracellular 
+  matrix removed",                                                            
+      "title": "OBI:0002174 immunocytochemistry",                             
+      "url": "http://purl.obolibrary.org/obo/OBI_0002174"                     
+    }
+
+
+Input:
+
+{                                                                         
+      "id": "obi+http://purl.obolibrary.org/obo/OBI_0002174"                  
+    }
+
+
+OBI:0002174 exists in OBI. I need to import it rather than create a new EFO 
+  term. Let me check the current state:
+
+Bash: List iri_dependencies files
+$ ls /home/runner/work/efo/efo/src/ontology/iri_dependencies/ | head -20  
+    chebi_terms.txt                                                           
+    cl_terms.txt                                                              
+    ecto_terms.txt                                                            
+    efo-relations.txt                                                         
+    fbbi_terms.txt                                                            
+    fbbt_terms.txt                                                            
+    go_terms.txt                                                              
+    gsso_terms.txt                                                            
+    gwas_header.tsv                                                           
+    gwas_terms.tsv                                                            
+    gwas_traits.tsv                                                           
+    hancestro_exclude.txt                                                     
+    hancestro_terms.txt                                                       
+    hp_terms.txt                                                              
+    mondo_exclude.txt                                                         
+    mondo_terms.txt                                                           
+    oba_terms.txt                                                             
+    obi_terms.txt                                                             
+    pr_exclude.txt                                                            
+    pr_terms.txt                                                              
+    <exited with exit code 0>
+
+Bash: Check if OBI:0002174 is in obi_terms.txt
+$ grep "OBI_0002174|0002174"                                              
+  /home/runner/work/efo/efo/src/ontology/iri_dependencies/obi_terms.txt       
+  2>/dev/null || echo "Not found"                                             
+    Not found                                                                 
+    <exited with exit code 0>
+
+
+Let me first outline my plan and then look at more details:
+
+Bash: Check existing OBI terms and structure
+$ cd /home/runner/work/efo/efo && grep -A5 "OBI_0000070|assay"            
+  src/ontology/iri_dependencies/obi_terms.txt | head -20; echo "---"; tail -5 
+  src/ontology/iri_dependencies/obi_terms.txt                                 
+    http://purl.obolibrary.org/obo/OBI_0000070                                
+    http://purl.obolibrary.org/obo/OBI_1110122                                
+    http://purl.obolibrary.org/obo/OBI_0000300                                
+    http://purl.obolibrary.org/obo/OBI_0000245                                
+    http://purl.obolibrary.org/obo/OBI_0600005                                
+    http://purl.obolibrary.org/obo/OBI_0000659                                
+    ---                                                                       
+    http://purl.obolibrary.org/obo/OBI_0000047                                
+    http://purl.obolibrary.org/obo/OBI_0000968                                
+    http://purl.obolibrary.org/obo/COB_0000022                                
+    http://purl.obolibrary.org/obo/COB_0000026                                
+    <exited with exit code 0>
+
+Bash: Check for existing immunology-related OBI terms
+$ cd /home/runner/work/efo/efo && grep -i "immuno"                        
+  src/ontology/iri_dependencies/obi_terms.txt | head -10                      
+                                                                              
+    <exited with exit code 0>
+
+Progress update: Initial plan for immunocytochemistry NTR
+
+[ ] Check OLS for existing immunocytochemistry term (found: OBI:0002174)    
+  [ ] Import OBI:0002174 (immunocytochemistry) via EFO-importer               
+  [ ] Verify term is accessible and has proper parent in EFO                  
+  [ ] Create PR
+
+
+Now I'll call @EFO-importer to import OBI:0002174 (immunocytochemistry):
+
+▶️ Begin subagent: EFO-importer
+❌ Failed subagent: EFO-importer
+Call to task
+
+Input:
+
+{                                                                         
+      "agent_type": "EFO-importer",                                           
+      "name": "import-immunocytochemistry",                                   
+      "prompt": "Please import OBI:0002174 (immunocytochemistry) into EFO.    
+  \n\nContext: Issue requesting new term \"immunocytochemistry\". This term   
+  already exists in OBI as OBI:0002174, so we should import it rather than    
+  creating a new EFO term.\n\nTask: \n1. Add `http://purl.obolibrary.         
+  org/obo/OBI_0002174` to `src/ontology/iri_dependencies/obi_terms.txt`\n2.   
+  Run the import regeneration process\n3. Check if the term has a parent in   
+  EFO after import, or if a subclass assertion needs to be added in           
+  `src/templates/subclasses.csv`\n\nThe issue requested EFO:0002694           
+  (experimental process) as the parent. Please verify if the term's parent in 
+  OBI is already in EFO, and if not, add an appropriate assertion to          
+  subclasses.csv.\n\nRepository location: /home/runner/work/efo/efo\nWorking  
+  branch: copilot/add-new-term-immunocytochemistry\n\nPlease commit the       
+  changes to the working branch."                                             
+    }
+
+▶️ Begin subagent: EFO-importer
+❌ Failed subagent: EFO-importer
+Call to task
+
+Input:
+
+{                                                                         
+      "agent_type": "EFO-importer",                                           
+      "name": "import-obi-immunocytochemistry",                               
+      "prompt": "Import OBI:0002174 (immunocytochemistry) into EFO.\n\nThe    
+  term OBI:0002174 exists in OBI and needs to be added to EFO via the import  
+  mechanism.\n\nSteps:\n1. Add the IRI `http://purl.obolibrary.               
+  org/obo/OBI_0002174` to `src/ontology/iri_dependencies/obi_terms.txt` \n2.  
+  Run ./get_mirrors.sh from src/ontology\n3. Run `make imports/obi_import.owl -
+  B` from src/ontology to regenerate the OBI import\n4. Check if the imported 
+  term has a parent visible in EFO, or needs a subclass assertion in          
+  src/templates/subclasses.csv\n5. If needed, add OBI_0002174 as a subclass of
+  EFO:0002694 (experimental process) in subclasses.csv and rebuild            
+  components/subclasses.owl\n\nRepository: /home/runner/work/efo/efo\nBranch: 
+  copilot/add-new-term-immunocytochemistry"                                   
+    }
+
+
+The EFO-importer agent isn't available. I'll perform the import manually    
+  following the documented process:
+
+Bash: Confirm OBI:0002174 not in obi_terms.txt
+$ grep "OBI_0002174"                                                      
+  /home/runner/work/efo/efo/src/ontology/iri_dependencies/obi_terms.txt; echo 
+  "Exit: $?"                                                                  
+    Exit: 1                                                                   
+    <exited with exit code 0>
+
+Bash: Add OBI:0002174 to obi_terms.txt
+$ echo "http://purl.obolibrary.org/obo/OBI_0002174" >>                    
+  /home/runner/work/efo/efo/src/ontology/iri_dependencies/obi_terms.txt       
+    echo "Added OBI:0002174 to obi_terms.txt"                                 
+    tail -5 /home/runner/work/efo/efo/src/ontology/iri_dependencies/obi_terms.
+  txt                                                                         
+    Added OBI:0002174 to obi_terms.txt                                        
+    http://purl.obolibrary.org/obo/OBI_0000968                                
+    http://purl.obolibrary.org/obo/COB_0000022                                
+    http://purl.obolibrary.org/obo/COB_0000026                                
+                                                                              
+    http://purl.obolibrary.org/obo/OBI_0002174                                
+    <exited with exit code 0>
+
+Bash: Check for make and mirror scripts
+$ cd /home/runner/work/efo/efo/src/ontology && ls *.sh | head -10; ls     
+  mirrors/ 2>/dev/null | head -5 || echo "No mirrors dir"; ls Makefile        
+  2>/dev/null && echo "Makefile exists"                                       
+    bubastis.sh                                                               
+    get_mirrors.sh                                                            
+    oboconverter.sh                                                           
+    odk.sh                                                                    
+    Makefile                                                                  
+    Makefile exists                                                           
+    <exited with exit code 0>
+
+Bash: Look at get_mirrors.sh
+$ cd /home/runner/work/efo/efo/src/ontology && cat get_mirrors.sh | head -
+  30                                                                          
+    #!/bin/bash                                                               
+                                                                              
+    mkdir -p mirror                                                           
+                                                                              
+    echo "Fetching MONDO..."                                                  
+    curl -L http://purl.obolibrary.org/obo/mondo/mondo-base.owl > mirror/mondo.
+  owl                                                                         
+                                                                              
+    echo "Fetching UBERON..."                                                 
+    curl -L http://purl.obolibrary.org/obo/uberon.owl > mirror/uberon.owl     
+                                                                              
+    echo "Fetching HPO..."                                                    
+    curl -L http://purl.obolibrary.org/obo/hp.owl > mirror/hp.owl             
+                                                                              
+    echo "Fetching MONDO (OWL Version)..."                                    
+    curl -L http://purl.obolibrary.org/obo/mondo.owl > mirror/mondo-owl.owl   
+                                                                              
+    echo "Fetching CHEBI..."                                                  
+    curl -L http://purl.obolibrary.org/obo/chebi.owl > mirror/chebi.owl       
+                                                                              
+    echo "Fetching PR..."                                                     
+    curl -L http://purl.obolibrary.org/obo/pr.owl > mirror/pr.owl             
+                                                                              
+    echo "Fetching ECTO..."                                                   
+    curl -L http://purl.obolibrary.org/obo/ecto.owl > mirror/ecto.owl         
+                                                                              
+    echo "Fetching CL..."                                                     
+    curl -L http://purl.obolibrary.org/obo/cl.owl > mirror/cl.owl             
+                                                                              
+    echo "Fetching GSSO..."                                                   
+    curl -L http://purl.obolibrary.org/obo/gsso.owl > mirror/gsso.owl         
+    <exited with exit code 0>
+
+Bash: Check for OBI mirror in get_mirrors.sh
+$ cd /home/runner/work/efo/efo/src/ontology && cat get_mirrors.sh | grep -
+  i obi                                                                       
+    echo "Fetching OBI..."                                                    
+    curl -L http://purl.obolibrary.org/obo/obi.owl > mirror/obi.owl           
+    <exited with exit code 0>
+
+Bash: Check if OBI mirror exists
+$ ls /home/runner/work/efo/efo/src/ontology/mirror/obi.owl 2>/dev/null && 
+  echo "exists" || echo "not found"                                           
+    not found                                                                 
+    <exited with exit code 0>
+
+Bash: Check mirror directory contents
+$ ls /home/runner/work/efo/efo/src/ontology/mirror/ 2>/dev/null | head -20 ||
+  echo "mirror dir empty or doesn't exist"                                    
+                                                                              
+    <exited with exit code 0>
+
+Bash: Test if OBI mirror download is possible
+$ curl -s --max-time 10 http://purl.obolibrary.org/obo/obi.owl -o         
+  /dev/null -w "%{http_code}" 2>&1 | head -5                                  
+    302                                                                       
+    <exited with exit code 0>
+
+Bash: Try downloading OBI owl file
+$ curl -sL --max-time 30 http://purl.obolibrary.org/obo/obi.owl -o        
+  /tmp/obi_test.owl 2>&1; ls -la /tmp/obi_test.owl 2>/dev/null || echo        
+  "download failed"                                                           
+    -rw-rw-r-- 1 runner runner 9575885 Mar 24 08:00 /tmp/obi_test.owl         
+    <exited with exit code 0>
+
+Bash: Verify OBI:0002174 in downloaded OBI file
+$ grep -A10 "OBI_0002174" /tmp/obi_test.owl | head -20                    
+    <!-- http://purl.obolibrary.org/obo/OBI_0002174 -->                       
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0002174">    
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0001632"/>                                                      
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0001977"/>                                                      
+            <rdfs:subClassOf>                                                 
+                <owl:Class>                                                   
+                    <owl:intersectionOf rdf:parseType="Collection">           
+                        <owl:Restriction>                                     
+                            <owl:onProperty rdf:resource="http://purl.        
+  obolibrary.org/obo/BFO_0000055"/>                                           
+                            <owl:someValuesFrom>                              
+                                <owl:Class>                                   
+                                    <owl:intersectionOf                       
+  rdf:parseType="Collection">                                                 
+    <exited with exit code 0>
+
+Bash: Check if OBI parents are already in EFO
+$ grep "OBI_0001632|OBI_0001977"                                          
+  /home/runner/work/efo/efo/src/ontology/imports/obi_import.owl | head -10;   
+  grep "OBI_0001632|OBI_0001977" /home/runner/work/efo/efo/src/ontology/efo-  
+  edit.owl | head -5                                                          
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check OBI:0002174 parents in OBI
+$ grep -A5 "OBI_0001632" /tmp/obi_test.owl | head -20; grep -A5           
+  "OBI_0001977" /tmp/obi_test.owl | head -20                                  
+    <!-- http://purl.obolibrary.org/obo/OBI_0001632 -->                       
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0001632">    
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0600017"/>                                                      
+            <rdfs:subClassOf>                                                 
+                <owl:Class>                                                   
+                    <owl:intersectionOf rdf:parseType="Collection">           
+                        <owl:Restriction>                                     
+    --                                                                        
+                        <rdf:Description rdf:about="http://purl.obolibrary.   
+  org/obo/OBI_0001632"/>                                                      
+                        <owl:Restriction>                                     
+                            <owl:onProperty rdf:resource="http://purl.        
+  obolibrary.org/obo/OBI_0000299"/>                                           
+                            <owl:someValuesFrom rdf:resource="http://purl.    
+  obolibrary.org/obo/OBI_0003141"/>                                           
+                        </owl:Restriction>                                    
+                        <owl:Restriction>                                     
+    --                                                                        
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0001632"/>                                                      
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0001703"/>                                                      
+            <obo:IAO_0000111>immuno staining assay measuring binding of a B   
+  cell epitope:antibody complex</obo:IAO_0000111>                             
+            <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.            
+  org/obo/IAO_0000120"/>                                                      
+                        <rdf:Description rdf:about="http://purl.obolibrary.   
+  org/obo/OBI_0001977"/>                                                      
+                        <owl:Restriction>                                     
+                            <owl:onProperty rdf:resource="http://purl.        
+  obolibrary.org/obo/OBI_0000293"/>                                           
+                            <owl:someValuesFrom rdf:resource="http://purl.    
+  obolibrary.org/obo/CL_0000000"/>                                            
+                        </owl:Restriction>                                    
+                        <owl:Restriction>                                     
+    --                                                                        
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0001977"/>                                                      
+            <obo:IAO_0000111>cell-cell killing assay</obo:IAO_0000111>        
+            <obo:IAO_0000112>Autologous EBV-transformed B-LCL were used as    
+  target cells for the influenza virus-specific CTL assays. Equal volumes of  
+  target and effector cells were added to tissue culture plates, and 1:2      
+  serial dilutions of effectors were made. After a 4-h incubation of the      
+  effector cells with the target cells, supernatants were collected and       
+  counted with the LKB 1272 Clinigamma counter. Percent specific killing was  
+  determined with the following equation: (experimental 51Cr release -        
+  spontaneous 51Cr release)/(maximum 51Cr release - spontaneous 51Cr release) 
+  x 100.</obo:IAO_0000112>                                                    
+            <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.            
+  org/obo/IAO_0000120"/>                                                      
+            <obo:IAO_0000115 xml:lang="en">A cytometry assay that monitors a  
+  cell population to track how many are killed by other cells.                
+  </obo:IAO_0000115>                                                          
+            <obo:IAO_0000117>IEDB</obo:IAO_0000117>                           
+    --                                                                        
+                        <rdf:Description rdf:about="http://purl.obolibrary.   
+  org/obo/OBI_0001977"/>                                                      
+                        <owl:Restriction>                                     
+                            <owl:onProperty rdf:resource="http://purl.        
+  obolibrary.org/obo/OBI_0000299"/>                                           
+                            <owl:someValuesFrom>                              
+                                <owl:Restriction>                             
+                                    <owl:onProperty rdf:resource="http://purl.
+  obolibrary.org/obo/IAO_0000136"/>                                           
+    <exited with exit code 0>
+
+Bash: Check existing OBI import file
+$ ls -la /home/runner/work/efo/efo/src/ontology/imports/obi_import.owl    
+  2>/dev/null && head -30                                                     
+  /home/runner/work/efo/efo/src/ontology/imports/obi_import.owl || echo       
+  "obi_import.owl not found"                                                  
+    -rw-r--r-- 1 runner runner 100436 Mar 24 07:56                            
+  /home/runner/work/efo/efo/src/ontology/imports/obi_import.owl               
+    <?xml version="1.0"?>                                                     
+    <rdf:RDF xmlns="http://www.ebi.ac.uk/efo/imports/obi_import.owl#"         
+         xml:base="http://www.ebi.ac.uk/efo/imports/obi_import.owl"           
+         xmlns:dc="http://purl.org/dc/elements/1.1/"                          
+         xmlns:obo="http://purl.obolibrary.org/obo/"                          
+         xmlns:owl="http://www.w3.org/2002/07/owl#"                           
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"              
+         xmlns:xml="http://www.w3.org/XML/1998/namespace"                     
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"                        
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">                  
+        <owl:Ontology rdf:about="http://www.ebi.ac.uk/efo/imports/obi_import. 
+  owl"/>                                                                      
+                                                                              
+                                                                              
+                                                                              
+        <!--                                                                  
+                                                                              
+  ///////////////////////////////////////////////////////////////////////////////////////
+        //                                                                    
+        // Annotation properties                                              
+        //                                                                    
+                                                                              
+  ///////////////////////////////////////////////////////////////////////////////////////
+         -->                                                                  
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://purl.obolibrary.org/obo/IAO_0000111 -->                   
+                                                                              
+        <owl:AnnotationProperty rdf:about="http://purl.obolibrary.            
+  org/obo/IAO_0000111"/>                                                      
+    <exited with exit code 0>
+
+Bash: List all OBI classes in the import
+$ grep "owl:Class rdf:about"                                              
+  /home/runner/work/efo/efo/src/ontology/imports/obi_import.owl | head -30    
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/COB_0000022">        
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/COB_0000026">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000018">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000047">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000049">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000066">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000070">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000071">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000118">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000181">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000245">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000272">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000275">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000415">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000427">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000512">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000540">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000552">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000650">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000659">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000697">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000711">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000724">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000747">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000750">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000785">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000869">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000922">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000924">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000950">    
+    <exited with exit code 0>
+
+Bash: List last OBI classes in the import
+$ grep "owl:Class rdf:about"                                              
+  /home/runner/work/efo/efo/src/ontology/imports/obi_import.owl | tail -20    
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400107">        
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400108">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400109">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400110">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400111">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400112">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400113">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400114">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400115">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400116">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400117">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400118">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0400155">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0600002">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0600005">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0600015">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0600044">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_1000023">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_1110021">    
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_1110122">    
+    <exited with exit code 0>
+
+Bash: Copy downloaded OBI to mirror directory
+$ mkdir -p /home/runner/work/efo/efo/src/ontology/mirror                  
+    cp /tmp/obi_test.owl /home/runner/work/efo/efo/src/ontology/mirror/obi.owl
+    ls -la /home/runner/work/efo/efo/src/ontology/mirror/                     
+    total 9360                                                                
+    drwxrwxr-x  2 runner runner    4096 Mar 24 08:00 .                        
+    drwxr-xr-x 10 runner runner    4096 Mar 24 08:00 ..                       
+    -rw-rw-r--  1 runner runner 9575885 Mar 24 08:00 obi.owl                  
+    <exited with exit code 0>
+
+Bash: Check Makefile for obi_import target
+$ grep -A5 "obi_import" /home/runner/work/efo/efo/src/ontology/Makefile | 
+  head -20                                                                    
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check Makefile for robot and import commands
+$ grep -n "obi_import|obi_terms|ROBOT|robot"                              
+  /home/runner/work/efo/efo/src/ontology/Makefile | head -30                  
+    13:ROBOT= ../../bin/robot                                                 
+    63:	$(ROBOT) extract -i $< -T imports/$*_terms.txt --method BOT -O         
+  $(BASE)/$@ -o $@                                                            
+    65:# Use ROBOT, driven entirely by terms lists NOT from source ontology   
+    67:	$(ROBOT) filter -i $< --term-file imports/$*_terms.txt --select        
+  "annotations ontology anonymous self" --trim true --signature true -O       
+  $(BASE)/$@ -o $@                                                            
+    72:	$(ROBOT) convert -i $< -f owl -o $(TMPDIR)/normalise && mv             
+  $(TMPDIR)/normalise $<                                                      
+    78:	$(ROBOT) extract -i $< -T imports/mondo_terms.txt --method BOT -O      
+  $(BASE)/$@ -o $@.tmp.owl                                                    
+    79:	$(ROBOT) query -i $@.tmp.owl -q $(SPARQLDIR)/hgnc_terms.sparql $@.hgnc.
+  tsv 2>/dev/null || true                                                     
+    88:	$(ROBOT) remove -i $@.tmp.owl -T iri_dependencies/mondo_exclude.txt -- 
+  term rdfs:comment -o $@                                                     
+    93:	$(ROBOT) extract -i $< -T imports/hancestro_terms.txt --method BOT -O  
+  $(BASE)/$@ remove -T iri_dependencies/hancestro_exclude.txt -o $@           
+    97:	$(ROBOT) filter -i $< --term-file imports/oba_terms.txt --term         
+  RO:0000052 --select "annotations ontology anonymous self" --trim true --    
+  signature true -O $(BASE)/$@ -o $@                                          
+    104:	$(ROBOT) extract -i $< -T imports/pr_terms.txt --method BOT --copy-   
+  ontology-annotations true -O $(BASE)/$@ rename --mappings pr_efo_map.tsv    
+  remove -T iri_dependencies/pr_exclude.txt -o $@                             
+    117:	$(ROBOT) query -i $< -q $(SPARQLDIR)/$*_terms.sparql                  
+  iri_dependencies/$*_terms.txt                                               
+    120:	$(ROBOT) filter -i mirror/$*.owl -T iri_dependencies/$*_terms.txt --  
+  trim false -o $@                                                            
+    123:	$(ROBOT) remove -i $< --select imports --trim false unmerge -i        
+  build/filtered-$*-mirror.owl -o $@                                          
+    126:	$(ROBOT) filter -i $< --term-file iri_dependencies/$*_terms.txt --    
+  trim false -o $@                                                            
+    130:	$(ROBOT) query -i $< -c $(SPARQLDIR)/preserve_$*_axioms.sparql $@     
+    133:	$(ROBOT) convert -i $< -f owl -o $@                                   
+    139:	$(ROBOT) remove -i $< -T iri_dependencies/$*_terms.txt --axioms       
+  "annotation" --trim true  --preserve-structure false \                      
+    144:	$(ROBOT) convert -i $(SRC) -f ofn -o $@                               
+    154:efo_edit_robot_diff.txt: master-$(SRC) $(SRC)                         
+    155:	$(ROBOT) diff --left $(SRC) --right master-$(SRC) -o $@               
+    157:edit_diff: efo_edit_git_diff.txt efo_edit_robot_diff.txt              
+    175:	$(ROBOT) template --template $< --prefix $(MONDOPREFIX) --prefix      
+  "snap: http://www.ifomis.org/bfo/1.1/snap#" --prefix $(EFOPREFIX) --prefix  
+  $(UBERONPREFIX) --prefix $(HPPREFIX) --prefix $(ECTOPREFIX) --ontology-iri  
+  "http://www.ebi.ac.uk/efo/components/subclasses.owl" -o $@                  
+    178:	$(ROBOT) query -f ttl -i $< --query $(SPARQLDIR)/d2p-$*.ru $@         
+    181:	$(ROBOT) template --template $< --prefix $(MONDOPREFIX) --prefix      
+  "snap: http://www.ifomis.org/bfo/1.1/snap#" --prefix $(EFOPREFIX) --prefix  
+  $(UBERONPREFIX) --prefix $(HPPREFIX) --ontology-iri "http://www.ebi.ac.     
+  uk/efo/components/import_replaced_by.owl" -o $@                             
+    189:	$(ROBOT) merge --catalog catalog-v001.xml -i $< query -q              
+  $(SPARQLDIR)/efo-diseases.sparql $@.efo.txt                                 
+    190:	$(ROBOT) query -i components/disease_to_phenotype_merged.owl -q       
+  $(SPARQLDIR)/hp_terms.sparql $@.hp.txt                                      
+    196:	$(ROBOT) query -i $< -q $(SPARQLDIR)/terms.sparql $@                  
+    199:	$(ROBOT) merge $(addprefix -i , $(D2P_RAW)) \                         
+    203:	$(ROBOT) merge -i $< \                                                
+    <exited with exit code 0>
+
+Bash: Check Makefile import targets
+$ cat /home/runner/work/efo/efo/src/ontology/Makefile | grep -n "imports/%|
+  all_imports|imports/obi|obi_import" | head -20                              
+    41:all: all_imports all_gwas all_components release qc                    
+    57:IMPORTS_OWL = $(patsubst %, imports/%_import.owl,$(IMPORTS)) $(patsubst
+  %, imports/%_terms.txt,$(IMPORTS))                                          
+    60:all_imports: $(IMPORTS_OWL)                                            
+    62:imports/%_bot.owl: mirror/%.owl imports/%_terms.txt                    
+    66:imports/%_import.owl: imports/%_bot.owl imports/%_terms.txt $(SRC)     
+    68:.PRECIOUS: imports/%_import.owl                                        
+    74:imports/%_terms.txt: iri_dependencies/%_terms.txt iri_dependencies/efo-
+  relations.txt                                                               
+    98:.PRECIOUS: imports/%_import.owl                                        
+    <exited with exit code 0>
+
+Bash: View imports section of Makefile
+$ sed -n '57,100p' /home/runner/work/efo/efo/src/ontology/Makefile        
+    IMPORTS_OWL = $(patsubst %, imports/%_import.owl,$(IMPORTS)) $(patsubst %,
+  imports/%_terms.txt,$(IMPORTS))                                             
+                                                                              
+    # Make this target to regenerate ALL                                      
+    all_imports: $(IMPORTS_OWL)                                               
+                                                                              
+    imports/%_bot.owl: mirror/%.owl imports/%_terms.txt                       
+    	$(ROBOT) extract -i $< -T imports/$*_terms.txt --method BOT -O $(BASE)/$@ -
+  o $@                                                                        
+                                                                              
+    # Use ROBOT, driven entirely by terms lists NOT from source ontology      
+    imports/%_import.owl: imports/%_bot.owl imports/%_terms.txt $(SRC)        
+    	$(ROBOT) filter -i $< --term-file imports/$*_terms.txt --select           
+  "annotations ontology anonymous self" --trim true --signature true -O       
+  $(BASE)/$@ -o $@                                                            
+    .PRECIOUS: imports/%_import.owl                                           
+                                                                              
+    # Normalize source ontology                                               
+    normalize_src: $(SRC)                                                     
+    	$(ROBOT) convert -i $< -f owl -o $(TMPDIR)/normalise && mv                
+  $(TMPDIR)/normalise $<                                                      
+                                                                              
+    imports/%_terms.txt: iri_dependencies/%_terms.txt iri_dependencies/efo-   
+  relations.txt                                                               
+    	cat $^ | sort | uniq > $@                                                 
+                                                                              
+    imports/mondo_import.owl: mirror/mondo.owl imports/mondo_terms.txt        
+  iri_dependencies/mondo_exclude.txt $(SRC)                                   
+    	$(ROBOT) extract -i $< -T imports/mondo_terms.txt --method BOT -O         
+  $(BASE)/$@ -o $@.tmp.owl                                                    
+    	$(ROBOT) query -i $@.tmp.owl -q $(SPARQLDIR)/hgnc_terms.sparql $@.hgnc.   
+  tsv 2>/dev/null || true                                                     
+    	@if [ -s $@.hgnc.tsv ]; then \                                            
+    		tail -n +2 $@.hgnc.tsv | sed 's/[<>]//g' | grep -v '^$$' > $@.hgnc.txt;   
+  \                                                                           
+    		if [ -s $@.hgnc.txt ]; then \                                             
+    			echo "Auto-excluding $$(wc -l < $@.hgnc.txt | tr -d ' ') HGNC terms       
+  from mondo import"; \                                                       
+    			cat $@.hgnc.txt >> iri_dependencies/mondo_exclude.txt; \                  
+    			sort -u -o iri_dependencies/mondo_exclude.txt                             
+  iri_dependencies/mondo_exclude.txt; \                                       
+    		fi; \                                                                     
+    	fi                                                                        
+    	$(ROBOT) remove -i $@.tmp.owl -T iri_dependencies/mondo_exclude.txt --    
+  term rdfs:comment -o $@                                                     
+    	rm -f $@.tmp.owl $@.hgnc.tsv $@.hgnc.txt                                  
+    .PRECIOUS: imports/mondo_import.owl                                       
+    	                                                                          
+    imports/hancestro_import.owl: mirror/hancestro.owl imports/hancestro_terms.
+  txt iri_dependencies/hancestro_exclude.txt $(SRC)                           
+    	$(ROBOT) extract -i $< -T imports/hancestro_terms.txt --method BOT -O     
+  $(BASE)/$@ remove -T iri_dependencies/hancestro_exclude.txt -o $@           
+    .PRECIOUS: imports/hancestro_import.owl                                   
+    	                                                                          
+    imports/oba_import.owl: imports/oba_bot.owl imports/oba_terms.txt $(SRC)  
+    	$(ROBOT) filter -i $< --term-file imports/oba_terms.txt --term RO:0000052 --
+  select "annotations ontology anonymous self" --trim true --signature true -O
+  $(BASE)/$@ -o $@                                                            
+    .PRECIOUS: imports/%_import.owl                                           
+                                                                              
+    # Change the parent of imported PR terms to "protein" (ChEBI:36080) to    
+  match existing EFO terms, rather than PR:000000001                          
+    <exited with exit code 0>
+
+Bash: Check if robot is available
+$ ls /home/runner/work/efo/efo/bin/ 2>/dev/null | head -10; which robot   
+  2>/dev/null || echo "robot not in PATH"                                     
+    apply-pattern.py                                                          
+    bubastis_1_3.jar                                                          
+    efo-fixer.jar                                                             
+    efo2obo                                                                   
+    mondo-id-switch.jar                                                       
+    ontology-release-runner                                                   
+    owl2obo.jar                                                               
+    owltools                                                                  
+    owltools-oort-all.jar                                                     
+    owltools-runner-all.jar                                                   
+    /home/runner/work/efo/efo/tools/robot                                     
+    <exited with exit code 0>
+
+Bash: Check robot version and bin/robot
+$ /home/runner/work/efo/efo/tools/robot --version 2>&1 | head -3; ls      
+  /home/runner/work/efo/efo/bin/robot 2>/dev/null || echo "bin/robot not      
+  found"                                                                      
+    ROBOT version 1.9.7                                                       
+    /home/runner/work/efo/efo/bin/robot                                       
+    <exited with exit code 0>
+
+Bash: Check current obi_terms imports file
+$ cd /home/runner/work/efo/efo/src/ontology && cat imports/obi_terms.txt |
+  grep OBI | wc -l; echo "---"; cat imports/obi_terms.txt | grep OBI_0002174 ||
+  echo "not there yet"                                                        
+    80                                                                        
+    ---                                                                       
+    not there yet                                                             
+    <exited with exit code 0>
+
+Bash: Regenerate imports/obi_terms.txt from iri_dependencies
+$ cd /home/runner/work/efo/efo/src/ontology && make imports/obi_terms.txt 
+  2>&1 | tail -5; grep "OBI_0002174" imports/obi_terms.txt || echo "still not 
+  there"                                                                      
+    Makefile:229: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:95: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:387: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:229: warning: ignoring old recipe for target '.PRECIOUS'         
+    cat iri_dependencies/obi_terms.txt iri_dependencies/efo-relations.txt |   
+  sort | uniq > imports/obi_terms.txt                                         
+    http://purl.obolibrary.org/obo/OBI_0002174                                
+    <exited with exit code 0>
+
+Bash: Regenerate OBI bot import with ROBOT
+$ cd /home/runner/work/efo/efo/src/ontology && make imports/obi_bot.owl -B
+  2>&1 | tail -20                                                             
+    Makefile:95: warning: overriding recipe for target '.PRECIOUS'            
+    Makefile:91: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:229: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:95: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:387: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:229: warning: ignoring old recipe for target '.PRECIOUS'         
+    cat iri_dependencies/obi_terms.txt iri_dependencies/efo-relations.txt |   
+  sort | uniq > imports/obi_terms.txt                                         
+    ../../bin/robot extract -i mirror/obi.owl -T imports/obi_terms.txt --     
+  method BOT -O http://www.ebi.ac.uk/efo/imports/obi_bot.owl -o               
+  imports/obi_bot.owl                                                         
+    <exited with exit code 0>
+
+Bash: Check if obi_bot.owl was created
+$ ls -la /home/runner/work/efo/efo/src/ontology/imports/obi_bot.owl       
+  2>/dev/null && echo "created successfully" || echo "failed"                 
+    -rw-rw-r-- 1 runner runner 829916 Mar 24 08:01                            
+  /home/runner/work/efo/efo/src/ontology/imports/obi_bot.owl                  
+    created successfully                                                      
+    <exited with exit code 0>
+
+Bash: Regenerate OBI import from bot file
+$ cd /home/runner/work/efo/efo/src/ontology && make imports/obi_import.owl -
+  B 2>&1 | tail -20                                                           
+    Makefile:95: warning: overriding recipe for target '.PRECIOUS'            
+    Makefile:91: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:229: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:95: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:387: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:229: warning: ignoring old recipe for target '.PRECIOUS'         
+    cat iri_dependencies/obi_terms.txt iri_dependencies/efo-relations.txt |   
+  sort | uniq > imports/obi_terms.txt                                         
+    ../../bin/robot extract -i mirror/obi.owl -T imports/obi_terms.txt --     
+  method BOT -O http://www.ebi.ac.uk/efo/imports/obi_bot.owl -o               
+  imports/obi_bot.owl                                                         
+    ../../bin/robot filter -i imports/obi_bot.owl --term-file                 
+  imports/obi_terms.txt --select "annotations ontology anonymous self" --trim 
+  true --signature true -O http://www.ebi.ac.uk/efo/imports/obi_import.owl -o 
+  imports/obi_import.owl                                                      
+    <exited with exit code 0>
+
+Bash: Verify OBI:0002174 is now in the import
+$ grep "OBI_0002174"                                                      
+  /home/runner/work/efo/efo/src/ontology/imports/obi_import.owl | head -10    
+    <!-- http://purl.obolibrary.org/obo/OBI_0002174 -->                       
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0002174">    
+    <exited with exit code 0>
+
+Bash: View imported OBI:0002174 term details
+$ grep -A20 "OBI_0002174"                                                 
+  /home/runner/work/efo/efo/src/ontology/imports/obi_import.owl | head -25    
+    <!-- http://purl.obolibrary.org/obo/OBI_0002174 -->                       
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0002174">    
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0000070"/>                                                      
+            <obo:IAO_0000111>immunocytochemistry</obo:IAO_0000111>            
+            <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.            
+  org/obo/IAO_0000123"/>                                                      
+            <obo:IAO_0000115 xml:lang="en">An immuno staining assay in which  
+  samples of intact cells are examined that have had most, if not all, of     
+  their surrounding extracellular matrix removed</obo:IAO_0000115>            
+            <obo:IAO_0000117>Bjoern Peters</obo:IAO_0000117>                  
+            <rdfs:label>immunocytochemistry</rdfs:label>                      
+        </owl:Class>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://purl.obolibrary.org/obo/OBI_0002584 -->                   
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0002584">    
+            <obo:IAO_0000111>differential expression analysis                 
+  data</obo:IAO_0000111>                                                      
+            <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.            
+  org/obo/IAO_0000123"/>                                                      
+            <obo:IAO_0000115 xml:lang="en">The results of a differential      
+  expression analysis.</obo:IAO_0000115>                                      
+            <rdfs:label>differential expression analysis data</rdfs:label>    
+        </owl:Class>                                                          
+    <exited with exit code 0>
+
+
+OBI:0002174 is now imported and has OBI:0000070 as parent. Let me check if  
+  OBI:0000070 is in EFO:
+
+Bash: Check OBI_0000070 in import
+$ grep -A5 '"http://purl.obolibrary.org/obo/OBI_0000070"'                 
+  /home/runner/work/efo/efo/src/ontology/imports/obi_import.owl | head -15    
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000070">        
+            <owl:disjointWith rdf:resource="http://purl.obolibrary.           
+  org/obo/OBI_0200000"/>                                                      
+            <obo:IAO_0000111 xml:lang="en">assay</obo:IAO_0000111>            
+            <obo:IAO_0000112>Assay the wavelength of light emitted by excited 
+  Neon atoms. Count of geese flying over a house.</obo:IAO_0000112>           
+            <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.            
+  org/obo/IAO_0000122"/>                                                      
+            <obo:IAO_0000115 xml:lang="en">A planned process that has the     
+  objective to produce information about a material entity (the evaluant) by  
+  examining it.</obo:IAO_0000115>                                             
+    --                                                                        
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0000070"/>                                                      
+            <obo:IAO_0000111>Helicos sequencing assay</obo:IAO_0000111>       
+            <obo:IAO_0000112>PMID: 18388294. Single-molecule DNA sequencing of
+  a viral genome.</obo:IAO_0000112>                                           
+            <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.            
+  org/obo/IAO_0000120"/>                                                      
+            <obo:IAO_0000115 xml:lang="en">A DNA sequencing by synthesis assay
+  that identifiies the sequnece of billions of DNA molecules immobilized to a 
+  surface using DNA polymerase and fluorescently labeled nucleotides added one
+  at a time. The sequencing process does not require an amplification step and
+  is typically able to produce reads of 25 base pair length.</obo:IAO_0000115>
+            <obo:IAO_0000117>Philippe Rocca-Serra</obo:IAO_0000117>           
+    --                                                                        
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0000070"/>                                                      
+    <exited with exit code 0>
+
+Bash: Check if OBI:0000070 is used in EFO
+$ grep "OBI_0000070" /home/runner/work/efo/efo/src/ontology/efo-edit.owl |
+  head -5; grep "OBI_0000070"                                                 
+  /home/runner/work/efo/efo/src/templates/subclasses.csv | head -5            
+    <!-- http://purl.obolibrary.org/obo/OBI_0000070 -->                       
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000070">    
+            <efo:definition_citation>OBI_0000070</efo:definition_citation>    
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0000070"/>                                                      
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0000070"/>                                                      
+    <exited with exit code 0>
+
+Bash: Check subclasses.csv for OBI_0000070
+$ grep "OBI_0000070" /home/runner/work/efo/efo/src/templates/subclasses.  
+  csv | head -5                                                               
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check OBI_0000070 parent in efo-edit.owl
+$ grep -n "OBI_0000070" /home/runner/work/efo/efo/src/ontology/efo-edit.  
+  owl | grep "subClassOf|about" | head -10                                    
+    88273:    <owl:Class rdf:about="http://purl.obolibrary.                   
+  org/obo/OBI_0000070">                                                       
+    88469:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.      
+  org/obo/OBI_0000070"/>                                                      
+    88514:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.      
+  org/obo/OBI_0000070"/>                                                      
+    88752:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.      
+  org/obo/OBI_0000070"/>                                                      
+    88767:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.      
+  org/obo/OBI_0000070"/>                                                      
+    129942:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.     
+  org/obo/OBI_0000070"/>                                                      
+    130007:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.     
+  org/obo/OBI_0000070"/>                                                      
+    137337:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.     
+  org/obo/OBI_0000070"/>                                                      
+    137371:        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.     
+  org/obo/OBI_0000070"/>                                                      
+    149951:                    <rdf:Description rdf:about="http://purl.       
+  obolibrary.org/obo/OBI_0000070"/>                                           
+    <exited with exit code 0>
+
+Bash: Check OBI_0000070 in efo-edit.owl for its parent
+$ sed -n '88273,88295p' /home/runner/work/efo/efo/src/ontology/efo-edit.  
+  owl                                                                         
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000070">        
+            <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                 
+  uk/efo/EFO_0002694"/>                                                       
+            <obo:IAO_0000112>A hybridization on a microarray.                 
+  </obo:IAO_0000112>                                                          
+            <obo:IAO_0000115>A planned process with the objective to produce  
+  information about some evaluant</obo:IAO_0000115>                           
+            <obo:IAO_0000115>An assay is a process with the objective to      
+  create as an output information about a material entity (bearing evaluant   
+  role).</obo:IAO_0000115>                                                    
+            <obo:IAO_0000117>James Malone</obo:IAO_0000117>                   
+            <efo:EFO_URI>http://www.ebi.ac.uk/efo/EFO_0001455</efo:EFO_URI>   
+            <efo:definition_citation>OBI_0000070</efo:definition_citation>    
+            <efo:source_definition>A planned process with the objective to    
+  produce information about some evaluant</efo:source_definition>             
+            <oboInOwl:hasDbXref>NCIt:C60819</oboInOwl:hasDbXref>              
+            <oboInOwl:hasExactSynonym>measuring</oboInOwl:hasExactSynonym>    
+            <oboInOwl:hasExactSynonym>scientific                              
+  observation</oboInOwl:hasExactSynonym>                                      
+            <rdfs:label>assay</rdfs:label>                                    
+        </owl:Class>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://purl.obolibrary.org/obo/OBI_0000071 -->                   
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000071">    
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/IAO_0000027"/>                                                      
+            <obo:IAO_0000115>A data item which is used to indicate the degree 
+  of uncertainty about a measurement.</obo:IAO_0000115>                       
+            <efo:definition_citation>OBI</efo:definition_citation>            
+    <exited with exit code 0>
+
+
+OBI:0002174 is now in the import. The parent OBI:0000070 (assay) is already 
+  in EFO and linked to EFO:0002694 (experimental process), so the hierarchy is
+  complete. Let me verify the catalog:
+
+Bash: Check catalog and efo-edit.owl imports
+$ grep -n "obi_import|obi" /home/runner/work/efo/efo/src/ontology/catalog-
+  v001.xml 2>/dev/null | head -5                                              
+    grep -n "imports/obi_import.owl"                                          
+  /home/runner/work/efo/efo/src/ontology/efo-edit.owl | head -5               
+    13:        <uri id="obi_import" name="http://www.ebi.ac.                  
+  uk/efo/imports/obi_import.owl" uri="imports/obi_import.owl"/>               
+    55:        <owl:imports rdf:resource="http://www.ebi.ac.                  
+  uk/efo/imports/obi_import.owl"/>                                            
+    <exited with exit code 0>
+
+
+The OBI import is properly linked. Now let me also check whether we need to 
+  add the term to the subclasses.csv for any extra parent assertion:
+
+Bash: Check OBI_0002174 in the import for parent assertions
+$ grep -A15 '"http://purl.obolibrary.org/obo/OBI_0002174"'                
+  /home/runner/work/efo/efo/src/ontology/imports/obi_import.owl | head -15    
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0002174">        
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBI_0000070"/>                                                      
+            <obo:IAO_0000111>immunocytochemistry</obo:IAO_0000111>            
+            <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.            
+  org/obo/IAO_0000123"/>                                                      
+            <obo:IAO_0000115 xml:lang="en">An immuno staining assay in which  
+  samples of intact cells are examined that have had most, if not all, of     
+  their surrounding extracellular matrix removed</obo:IAO_0000115>            
+            <obo:IAO_0000117>Bjoern Peters</obo:IAO_0000117>                  
+            <rdfs:label>immunocytochemistry</rdfs:label>                      
+        </owl:Class>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://purl.obolibrary.org/obo/OBI_0002584 -->                   
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0002584">    
+            <obo:IAO_0000111>differential expression analysis                 
+  data</obo:IAO_0000111>                                                      
+    <exited with exit code 0>
+
+Bash: Check git status
+$ cd /home/runner/work/efo/efo && git status --short | head -20           
+    M src/ontology/imports/obi_import.owl                                     
+     M src/ontology/imports/obi_terms.txt                                     
+     M src/ontology/iri_dependencies/obi_terms.txt                            
+    ?? src/ontology/imports/obi_bot.owl                                       
+    <exited with exit code 0>
+
+Bash: Check .gitignore for bot files
+$ cd /home/runner/work/efo/efo && cat .gitignore | grep -i bot|mirror |   
+  head -10; grep "obi_bot" .gitignore 2>/dev/null || echo "not in gitignore"  
+    not in gitignore                                                          
+    <exited with exit code 0>
+
+Bash: Check if obi_bot.owl is tracked or ignored
+$ cd /home/runner/work/efo/efo && git ls-files                            
+  src/ontology/imports/obi_bot.owl | head -5; git ls-files --others --ignored --
+  exclude-standard src/ontology/imports/ | head -5                            
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check existing bot.owl files in git
+$ cd /home/runner/work/efo/efo && ls src/ontology/imports/*_bot.owl       
+  2>/dev/null | head -5; git ls-files src/ontology/imports/ | grep bot | head -
+  5                                                                           
+    src/ontology/imports/obi_bot.owl                                          
+    <exited with exit code 0>
+
+Bash: Check if any bot.owl files are tracked in git
+$ cd /home/runner/work/efo/efo && git ls-files src/ontology/imports/ |    
+  grep bot | head -10                                                         
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check .gitignore contents
+$ cat /home/runner/work/efo/efo/.gitignore | grep -v "^#" | grep -v "^$"  
+    *.tmp                                                                     
+    build                                                                     
+    src/ontology/mirror                                                       
+    src/ontology/mirror/*                                                     
+    src/ontology/efo.obo                                                      
+    src/ontology/efo_full.obo                                                 
+    src/ontology/efo.owl                                                      
+    src/ontology/efo_inferred.owl                                             
+    src/ontology/efo_inferred_all.owl                                         
+    src/ontology/efo-obo.tmp.owl                                              
+    src/ontology/reports/*.csv                                                
+    semantic.cache                                                            
+    .DS_Store                                                                 
+    .idea                                                                     
+    *~                                                                        
+    deprecated_modules                                                        
+    src/ontology/efo_no_uberon.owl                                            
+    src/ontology/uberon_terms.txt                                             
+    src/ontology/imports/OTAR_terms.txt                                       
+    src/ontology/imports/mondo_remove.owl                                     
+    src/ontology/log.txt                                                      
+    src/ontology/diff.txt                                                     
+    src/ontology/qc/diff_efo-*.txt                                            
+    src/ontology/qc/efo_no_*.owl                                              
+    src/ontology/efo-edit-copy.owl                                            
+    src/ontology/cp-efo-edit.owl                                              
+    src/ontology/efo-edit-diff.txt                                            
+    src/ontology/efo-edit-fixed.owl                                           
+    src/ontology/imports/hancestro_terms.txt                                  
+    src/ontology/imports/uberon_bot.owl                                       
+    src/ontology/migration2019/efo-edit-fixed.owl                             
+    efo.json                                                                  
+    efo.obo                                                                   
+    efo.owl                                                                   
+    src/ontology/imports/hp_bot.owl                                           
+    src/ontology/qc/latest_efo.owl_entities.txt                               
+    src/ontology/qc/current_efo.owl_entities.txt                              
+    src/scripts/efo.ipynb                                                     
+    src/scripts/.ipynb_checkpoints                                            
+    src/ontology/components/efo-rename.csv                                    
+    src/ontology/components/disease_to_phenotype_merged.owl                   
+    src/ontology/components/legal_diseases.txt                                
+    src/ontology/components/d2p_*.ttl                                         
+    src/ontology/components/disease_to_phenotype_merged_signature.tsv         
+    src/ontology/components/efo-rename.tsv                                    
+    src/ontology/reports/diff_diff.txt                                        
+    src/ontology/reports/report-measurement-biomarker.tsv                     
+    src/ontology/reports/robot_diff.txt                                       
+    src/ontology/reports/robot_diff_same_commit.txt                           
+    src/ontology/tmp/efo-main.owl                                             
+    src/ontology/tmp/efo-quick.owl                                            
+    src/ontology/tmp/efo-master.owl                                           
+    src/ontology/tmp/efo-master-reasoned.owl                                  
+    src/ontology/tmp/efo-branch.owl                                           
+    src/ontology/tmp/efo-branch-reasoned.owl                                  
+    src/ontology/reports/robot_reasoned_diff.txt                              
+    src/ontology/components/anatomogram_kidney.owl                            
+    src/ontology/components/anatomogram_liver.owl                             
+    src/ontology/components/anatomogram_lung.owl                              
+    src/ontology/components/anatomogram_pancreas.owl                          
+    src/ontology/components/anatomogram_placenta.owl                          
+    src/ontology/efo_edit_git_diff.txt                                        
+    src/ontology/efo_edit_robot_diff.txt                                      
+    src/ontology/imports/cl_bot.owl                                           
+    src/ontology/iri_dependencies/ncbitaxon_terms.txt                         
+    src/ontology/master-efo-edit.owl                                          
+    src/ontology/mondo.owl                                                    
+    src/sparql/925.sparql                                                     
+    src/sparql/preserve_go_axioms.sparql                                      
+    src/sparql/preserve_ncbitaxon_axioms.sparql                               
+    src/sparql/remove-fbbt-xrefs.ru                                           
+    src/sparql/remove-self-xrefs.sparql                                       
+    src/templates/phewas.owl                                                  
+    src/ontology/tmp                                                          
+    src/ontology/efo-edit-tmp.owl                                             
+    src/ontology/reclassify.owl                                               
+    src/ontology/reclassify_merged.owl                                        
+    src/ontology/o1_merged.owl                                                
+    src/ontology/unmerged.owl                                                 
+    src/ontology/migration2019/lost_illegal.owl                               
+    src/ontology/efo-edit.properties                                          
+    src/ontology/components/mondo_efo_mappings.template.tsv                   
+    src/ontology/components/mondo_efo_mappings.owl                            
+    tools/                                                                    
+    src/ontology/imports/oba_bot.owl                                          
+    src/ontology/components/mondo_efo_import.owl                              
+    src/ontology/imports/mondo_import.owl                                     
+    <exited with exit code 0>
+
+
+I need to add obi_bot.owl to .gitignore as it's a build artifact:
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "src/ontology/imports/oba_bot.                               
+  owl\nsrc/ontology/imports/obi_bot.owl",                                     
+      "old_str": "src/ontology/imports/oba_bot.owl",                          
+      "path": "/home/runner/work/efo/efo/.gitignore"                          
+    }
+
+Bash: Check git status after gitignore update
+$ cd /home/runner/work/efo/efo && git status --short | head -20           
+    M .gitignore                                                              
+     M src/ontology/imports/obi_import.owl                                    
+     M src/ontology/imports/obi_terms.txt                                     
+     M src/ontology/iri_dependencies/obi_terms.txt                            
+    <exited with exit code 0>
+
+
+The obi_bot.owl is now properly ignored. Let me also run a quick code review
+  before committing:
+
+Bash: Review changes to obi_terms.txt
+$ cd /home/runner/work/efo/efo && git diff                                
+  src/ontology/iri_dependencies/obi_terms.txt                                 
+    diff --git a/src/ontology/iri_dependencies/obi_terms.txt                  
+  b/src/ontology/iri_dependencies/obi_terms.txt                               
+    index 16fa550..669e9d8 100644                                             
+    --- a/src/ontology/iri_dependencies/obi_terms.txt                         
+    +++ b/src/ontology/iri_dependencies/obi_terms.txt                         
+    @@ -84,3 +84,4 @@ http://purl.obolibrary.org/obo/OBI_0000968              
+     http://purl.obolibrary.org/obo/COB_0000022                               
+     http://purl.obolibrary.org/obo/COB_0000026                               
+                                                                              
+    +http://purl.obolibrary.org/obo/OBI_0002174                               
+    <exited with exit code 0>
+
+Bash: Review changes to obi_import.owl
+$ cd /home/runner/work/efo/efo && git diff --stat                         
+  src/ontology/imports/obi_import.owl                                         
+    src/ontology/imports/obi_import.owl | 13 +++++++++++++                    
+     1 file changed, 13 insertions(+)                                         
+    <exited with exit code 0>
+
+Call to code_review
+
+Input:
+
+{                                                                         
+      "prDescription": "This PR adds the term \"immunocytochemistry\"         
+  (OBI:0002174) to EFO by importing it from OBI, in response to issue #NTR.   
+  \n\nThe term was found to already exist in OBI as OBI:0002174, so it was    
+  imported rather than creating a new EFO term. The import correctly connects 
+  immunocytochemistry to the EFO hierarchy through its parent OBI:0000070     
+  (assay), which is already a subclass of EFO:0002694 (experimental process). 
+  \n\nChanges:\n- Added OBI:0002174 to                                        
+  `src/ontology/iri_dependencies/obi_terms.txt`\n- Regenerated                
+  `src/ontology/imports/obi_import.owl` to include the new term\n- Added      
+  `obi_bot.owl` to `.gitignore` as a build artifact",                         
+      "prTitle": "Import OBI:0002174 (immunocytochemistry) into EFO"          
+    }
+
+Run CodeQL analysis
+
+Input:
+
+{                                                                         
+      "trivialChangeDeclaration": {                                           
+        "isTrivial": true,                                                    
+        "reason": "This is an ontology data file change - adding a term IRI to
+  a text file and updating a generated OWL XML file. There is no executable   
+  code involved."                                                             
+      }                                                                       
+    }
+
+Progress update: Import OBI:0002174 (immunocytochemistry) into EFO
+
+- Add OBI:0002174 to src/ontology/iri_dependencies/obi_terms.txt
+- Regenerate src/ontology/imports/obi_import.owl to include the new term
+- Add obi_bot.owl to .gitignore as a build artifact
+
+The term immunocytochemistry (OBI:0002174) was found to already exist in OBI
+so it's imported rather than creating a new EFO term. The import connects
+immunocytochemistry to the EFO hierarchy through OBI:0000070 (assay), which
+is a subclass of EFO:0002694 (experimental process).
+
+[x] Check OLS for existing immunocytochemistry term (found: OBI:0002174)    
+  [x] Add OBI:0002174 to src/ontology/iri_dependencies/obi_terms.txt          
+  [x] Download OBI mirror and regenerate src/ontology/imports/obi_import.owl  
+  [x] Verify term has proper parent chain: OBI:0002174 → OBI:0000070 (assay) →
+  EFO:0002694 (experimental process)                                          
+  [x] Add obi_bot.owl to .gitignore as build artifact                         
+  [x] Code review passed
+
+
+The changes have been committed and pushed. Here's a summary of what was    
+  done:                                                                       
+                                                                              
+  ## Summary                                                                  
+                                                                              
+  The issue requested adding a new term **"immunocytochemistry"** to EFO.     
+                                                                              
+  **Key finding**: The term already exists in OBI (Ontology for Biomedical    
+  Investigations) as **OBI:0002174**, so following EFO policy, it was imported
+  rather than creating a duplicate EFO-native term.                           
+                                                                              
+  ### Changes made:                                                           
+                                                                              
+  1. src/ontology/iri_dependencies/obi_terms.txt — Added http://purl.         
+  obolibrary.org/obo/OBI_0002174 to import this term from OBI                 
+  2. src/ontology/imports/obi_import.owl — Regenerated to include OBI:0002174 
+  with:                                                                       
+      • Label: immunocytochemistry                                            
+      • Definition: *"An immuno staining assay in which samples of intact     
+      cells are examined that have had most, if not all, of their surrounding 
+      extracellular matrix removed"*                                          
+      • Parent: OBI:0000070 (assay) → EFO:0002694 (experimental process)      
+  3. .gitignore — Added src/ontology/imports/obi_bot.owl (build artifact)     
+                                                                              
+  ### Hierarchy:                                                              
+                                                                              
+  immunocytochemistry (OBI:0002174) → assay (OBI:0000070) → experimental      
+  process (EFO:0002694)                                                       
+                                                                              
+  This correctly places immunocytochemistry under the requested parent        
+  (EFO:0002694 experimental process) via the OBI assay hierarchy.
+

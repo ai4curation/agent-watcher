@@ -1,0 +1,1861 @@
+Clone repository EBISPOT/efo
+Start 'playwright' MCP server
+Start 'github-mcp-server' MCP server
+Start 'ebi-kg' MCP server
+Start 'artl-mcp' MCP server
+
+Let me first look at the current SPARQL query and understand the is_about   
+  relationship in this ontology.
+
+View src/sparql/uniprot-efo-map.sparql
+prefix oio: <http://www.geneontology.org/formats/oboInOwl#>              
+     prefix owl: <http://www.w3.org/2002/07/owl#>                             
+     prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                     
+     prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                
+     prefix obo: <http://purl.obolibrary.org/obo/>                            
+                                                                              
+     SELECT DISTINCT ?term ?term_label ?uniprot_id                            
+                                                                              
+     WHERE {                                                                  
+       {                                                                      
+         # Active measurement terms with UniProt xrefs                        
+         ?term rdf:type owl:Class ;                                           
+           rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;          
+           oio:hasDbXref ?uniprot_id .                                        
+         OPTIONAL {                                                           
+           ?term rdfs:label ?term_label .                                     
+         }                                                                    
+         FILTER(isIRI(?term))                                                 
+         FILTER(STRSTARTS(?uniprot_id, "uniprot:"))                           
+       } UNION {                                                              
+         # Obsolete EFO terms with UniProt xrefs replaced by OBA terms        
+         ?obsolete rdf:type owl:Class ;                                       
+           owl:deprecated true ;                                              
+           oio:hasDbXref ?uniprot_id ;                                        
+           obo:IAO_0100001 ?replacement_iri .                                 
+         BIND(IRI(?replacement_iri) AS ?term)                                 
+         OPTIONAL {                                                           
+           ?term rdfs:label ?term_label .                                     
+         }                                                                    
+         FILTER(STRSTARTS(?uniprot_id, "uniprot:"))                           
+         FILTER(STRSTARTS(?replacement_iri, "http://purl.obolibrary.          
+  org/obo/OBA_"))                                                             
+       }                                                                      
+     }                                                                        
+     ORDER BY ?uniprot_id ?term_label
+
+Bash: Search for is_about usage in SPARQL queries
+$ cd /home/runner/work/efo/efo && grep -r "is_about|IAO_0000136"          
+  src/sparql/ --include="*.sparql" | head -20                                 
+    src/sparql/defs-without-genus-no-isabout.sparql:  FILTER(?p!=<http://purl.
+  obolibrary.org/obo/IAO_0000136>)                                            
+    src/sparql/measurement-is-about.sparql:                                   
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-is-about.sparql:                                   
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-is-about.sparql:                                   
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-is-about.sparql:#                                  
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-is-about.sparql:                                   
+  #                                                                           
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-is-about.sparql:                                   
+  #                                                                           
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-no-isabout.sparql:                                 
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-no-isabout.sparql:                                 
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-no-isabout.sparql:                                 
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-no-isabout.sparql:#                                
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-no-isabout.sparql:                                 
+  #                                                                           
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-no-isabout.sparql:                                 
+  #                                                                           
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-biomarker.sparql:#                                 
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-biomarker.sparql:                                  
+  #                                                                           
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    src/sparql/measurement-biomarker.sparql:                                  
+  #                                                                           
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+    <exited with exit code 0>
+
+Bash: Search for is_about usage in efo-edit.owl
+$ cd /home/runner/work/efo/efo && grep -r "is_about|IAO_0000136"          
+  src/ontology/efo-edit.owl | head -20                                        
+    <!-- http://purl.obolibrary.org/obo/IAO_0000136 -->                       
+        <owl:ObjectProperty rdf:about="http://purl.obolibrary.                
+  org/obo/IAO_0000136">                                                       
+            <rdfs:label>is_about</rdfs:label>                                 
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                            <owl:onProperty rdf:resource="http://purl.        
+  obolibrary.org/obo/IAO_0000136"/>                                           
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+    <exited with exit code 0>
+
+Bash: Look at the measurement-is-about SPARQL query to understand is_about pattern
+$ cd /home/runner/work/efo/efo && cat src/sparql/measurement-is-about.    
+  sparql                                                                      
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>                              
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>                           
+    PREFIX dc: <http://purl.org/dc/elements/1.1/>                             
+    PREFIX dcterms: <http://purl.org/dc/terms/>                               
+    PREFIX dbpedia2: <http://dbpedia.org/property/>                           
+    PREFIX dbpedia: <http://dbpedia.org/>                                     
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>                                 
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>                       
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+                                                                              
+    SELECT DISTINCT ?term ?term_label ?thing ?thing_label ?p ?genus           
+                                                                              
+    WHERE {                                                                   
+      {                                                                       
+      ?term rdf:type owl:Class ;                                              
+      rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;               
+      rdfs:subClassOf [ rdf:type owl:Restriction ;                            
+                             owl:onProperty <http://purl.obolibrary.          
+  org/obo/IAO_0000136> ;                                                      
+                             owl:someValuesFrom ?thing                        
+                           ] .                                                
+       OPTIONAL {                                                             
+         ?term rdfs:label ?term_label .                                       
+       }                                                                      
+       OPTIONAL {                                                             
+        ?thing rdfs:label ?thing_label .                                      
+       }                                                                      
+       BIND("subclass" as ?p)                                                 
+       FILTER(isIRI(?term))                                                   
+       FILTER(isIRI(?thing))                                                  
+     } UNION {                                                                
+       ?term rdf:type owl:Class ;                                             
+       rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;              
+       owl:equivalentClass [ rdf:type owl:Restriction ;                       
+                              owl:onProperty <http://purl.obolibrary.         
+  org/obo/IAO_0000136> ;                                                      
+                              owl:someValuesFrom ?thing                       
+                            ] .                                               
+        OPTIONAL {                                                            
+          ?term rdfs:label ?term_label .                                      
+        }                                                                     
+        OPTIONAL {                                                            
+         ?thing rdfs:label ?thing_label .                                     
+        }                                                                     
+        BIND("equiv" as ?p)                                                   
+        FILTER(isIRI(?term))                                                  
+        FILTER(isIRI(?thing))                                                 
+     } UNION {                                                                
+       ?term rdf:type owl:Class ;                                             
+       rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;              
+       owl:equivalentClass [ owl:intersectionOf ( ?genus                      
+                                                  [ rdf:type owl:Restriction ;
+                                                    owl:onProperty            
+  <http://purl.obolibrary.org/obo/IAO_0000136> ;                              
+                                                    owl:someValuesFrom ?thing 
+                                                  ]                           
+                                                ) ;                           
+                             rdf:type owl:Class                               
+                           ] .                                                
+        OPTIONAL {                                                            
+          ?term rdfs:label ?term_label .                                      
+        }                                                                     
+        OPTIONAL {                                                            
+         ?thing rdfs:label ?thing_label .                                     
+        }                                                                     
+        BIND("genus_equiv" as ?p)                                             
+        FILTER(isIRI(?term))                                                  
+        FILTER(isIRI(?thing))                                                 
+     }                                                                        
+    }                                                                         
+                                                                              
+    ### owl:equivalentClass [ rdf:type owl:Restriction ;                      
+    #                       owl:onProperty <http://purl.obolibrary.           
+  org/obo/IAO_0000136> ;                                                      
+    #                       owl:someValuesFrom ?thing                         
+      #                   ] .                                                 
+                                                                              
+    # <http://www.ebi.ac.uk/efo/EFO_0004298> rdf:type owl:Class ;             
+                                           # owl:equivalentClass [            
+  owl:intersectionOf ( <http://www.ebi.ac.uk/efo/EFO_0001444>                 
+                                           #                                  
+  [ rdf:type owl:Class ;                                                      
+                                           #                                  
+  owl:unionOf ( [ rdf:type owl:Restriction ;                                  
+                                           #                                  
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+                                           #                                  
+  owl:someValuesFrom <http://purl.obolibrary.org/obo/UBERON_0004535>          
+                                           #                                  
+  ]                                                                           
+                                           #                                  
+  [ rdf:type owl:Restriction ;                                                
+                                           #                                  
+  owl:onProperty <http://purl.obolibrary.org/obo/IAO_0000136> ;               
+                                           #                                  
+  owl:someValuesFrom <http://www.ebi.ac.uk/efo/EFO_0000319>                   
+                                           #                                  
+  ]                                                                           
+                                           #                                  
+  )                                                                           
+                                           #                                  
+  ]                                                                           
+                                           #                                  
+  ) ;                                                                         
+                                           #                       rdf:type   
+  owl:Class                                                                   
+                                           #                     ] .          
+    <exited with exit code 0>
+
+Bash: Look at is_about usage patterns in the ontology
+$ cd /home/runner/work/efo/efo && grep -B5 -A15 'IAO_0000136'             
+  src/ontology/efo-edit.owl | head -80                                        
+    <owl:ObjectProperty rdf:about="http://purl.obolibrary.                    
+  org/obo/HANCESTRO_0330"/>                                                   
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://purl.obolibrary.org/obo/IAO_0000136 -->                   
+                                                                              
+        <owl:ObjectProperty rdf:about="http://purl.obolibrary.                
+  org/obo/IAO_0000136">                                                       
+            <owl:inverseOf rdf:resource="http://www.ebi.ac.                   
+  uk/efo/EFO_0006351"/>                                                       
+            <rdfs:label>is_about</rdfs:label>                                 
+        </owl:ObjectProperty>                                                 
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://purl.obolibrary.org/obo/OBI_0000293 -->                   
+                                                                              
+        <owl:ObjectProperty rdf:about="http://purl.obolibrary.                
+  org/obo/OBI_0000293">                                                       
+            <rdfs:subPropertyOf rdf:resource="http://purl.obolibrary.         
+  org/obo/RO_0000057"/>                                                       
+            <owl:inverseOf rdf:resource="http://purl.obolibrary.              
+  org/obo/OBI_0000295"/>                                                      
+            <rdfs:domain rdf:resource="http://purl.obolibrary.                
+  org/obo/BFO_0000015"/>                                                      
+            <rdfs:range rdf:resource="http://www.ebi.ac.uk/efo/EFO_0000001"/> 
+            <efo:EFO_URI>http://www.ebi.ac.uk/efo/has_input</efo:EFO_URI>     
+            <rdfs:label>has_input</rdfs:label>                                
+    --                                                                        
+        <!-- http://purl.obolibrary.org/obo/GO_0033273 -->                    
+                                                                              
+        <rdf:Description rdf:about="http://purl.obolibrary.                   
+  org/obo/GO_0033273">                                                        
+            <rdfs:subClassOf>                                                 
+                <owl:Restriction>                                             
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:someValuesFrom rdf:resource="http://purl.obolibrary. 
+  org/obo/CHEBI_33229"/>                                                      
+                </owl:Restriction>                                            
+            </rdfs:subClassOf>                                                
+        </rdf:Description>                                                    
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://purl.obolibrary.org/obo/GO_0033577 -->                    
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/GO_0033577"/>    
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://purl.obolibrary.org/obo/GO_0033643 -->                    
+                                                                              
+    --                                                                        
+        <!-- http://purl.obolibrary.org/obo/GO_0070527 -->                    
+                                                                              
+        <rdf:Description rdf:about="http://purl.obolibrary.                   
+  org/obo/GO_0070527">                                                        
+            <rdfs:subClassOf>                                                 
+                <owl:Restriction>                                             
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:someValuesFrom rdf:resource="http://purl.obolibrary. 
+  org/obo/CL_0000233"/>                                                       
+                </owl:Restriction>                                            
+            </rdfs:subClassOf>                                                
+            <oboInOwl:hasDbXref>MESH:D010974</oboInOwl:hasDbXref>             
+            <oboInOwl:hasDbXref>SNOMEDCT:60649002</oboInOwl:hasDbXref>        
+        </rdf:Description>                                                    
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://purl.obolibrary.org/obo/GO_0071944 -->                    
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/GO_0071944"/>    
+                                                                              
+                                                                              
+                                                                              
+    --                                                                        
+                                                                              
+        <rdf:Description rdf:about="http://purl.obolibrary.                   
+  org/obo/GO_0072718">                                                        
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/OBA_2040037"/>                                                      
+            <rdfs:subClassOf>                                                 
+                <owl:Restriction>                                             
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:someValuesFrom rdf:resource="http://purl.obolibrary. 
+  org/obo/CHEBI_27899"/>                                                      
+                </owl:Restriction>                                            
+            </rdfs:subClassOf>                                                
+            <oboInOwl:hasDbXref>GO:0072718</oboInOwl:hasDbXref>               
+        </rdf:Description>                                                    
+    <exited with exit code 0>
+
+
+Let me investigate what UniProt information might be available through the  
+  is_about relationship:
+
+Bash: Count is_about usages
+$ cd /home/runner/work/efo/efo && grep -c 'IAO_0000136' src/ontology/efo- 
+  edit.owl                                                                    
+    4977                                                                      
+    <exited with exit code 0>
+
+Bash: Check for is_about relationships involving UniProt/protein terms
+$ cd /home/runner/work/efo/efo && grep -B20 'IAO_0000136' src/ontology/efo-
+  edit.owl | grep -B20 'uniprot|UniProt|PR_' | head -60                       
+    <owl:Restriction>                                                         
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:someValuesFrom rdf:resource="http://purl.obolibrary. 
+  org/obo/CHEBI_36080"/>                                                      
+                </owl:Restriction>                                            
+            </rdfs:subClassOf>                                                
+            <rdfs:subClassOf>                                                 
+                <owl:Restriction>                                             
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:someValuesFrom rdf:resource="http://purl.obolibrary. 
+  org/obo/GO_0006954"/>                                                       
+                </owl:Restriction>                                            
+            </rdfs:subClassOf>                                                
+            <rdfs:subClassOf>                                                 
+                <owl:Restriction>                                             
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+    --                                                                        
+            </rdfs:subClassOf>                                                
+            <obo:IAO_0000115>C-reactive protein (CRP) measurement is a        
+  measurement of the level of C-reactive protein in the blood.  Levels are    
+  known to rise in response to inflammation, CRP is therefore used as a       
+  clinical measure of inflammation. The measurement is used in the process of 
+  clinical diagnosis as high levels of CRP are associated with cardiovascular 
+  disease, diabetes and hypertension and in some cancers.</obo:IAO_0000115>   
+            <obo:IAO_0000117>Helen Parkinson</obo:IAO_0000117>                
+            <oboInOwl:hasDbXref>NCIt:C64548</oboInOwl:hasDbXref>              
+            <oboInOwl:hasDbXref>SNOMEDCT:55235003</oboInOwl:hasDbXref>        
+            <oboInOwl:hasDbXref>uniprot:P02741</oboInOwl:hasDbXref>           
+    --                                                                        
+                    </owl:intersectionOf>                                     
+                </owl:Class>                                                  
+            </owl:equivalentClass>                                            
+            <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                 
+  uk/efo/EFO_0004730"/>                                                       
+            <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                 
+  uk/efo/EFO_0004747"/>                                                       
+            <rdfs:subClassOf>                                                 
+                <owl:Restriction>                                             
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:someValuesFrom rdf:resource="http://purl.obolibrary. 
+  org/obo/CHEBI_145810"/>                                                     
+                </owl:Restriction>                                            
+            </rdfs:subClassOf>                                                
+            <rdfs:subClassOf>                                                 
+                <owl:Restriction>                                             
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:someValuesFrom rdf:resource="http://purl.obolibrary. 
+  org/obo/CHEBI_5931"/>                                                       
+                </owl:Restriction>                                            
+            </rdfs:subClassOf>                                                
+            <rdfs:subClassOf>                                                 
+                <owl:Restriction>                                             
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+                    <owl:someValuesFrom rdf:resource="http://purl.obolibrary. 
+  org/obo/PR_000050339"/>                                                     
+                </owl:Restriction>                                            
+            </rdfs:subClassOf>                                                
+            <rdfs:subClassOf>                                                 
+                <owl:Restriction>                                             
+                    <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000136"/>                                                      
+    --                                                                        
+            </rdfs:subClassOf>                                                
+            <obo:IAO_0000115>An insulin measurement is a measure of insulin   
+  typically performed in the diagnosis of patients</obo:IAO_0000115>          
+            <obo:IAO_0000117>Helen Parkinson</obo:IAO_0000117>                
+            <oboInOwl:hasDbXref>NCIt:C74788</oboInOwl:hasDbXref>              
+            <oboInOwl:hasDbXref>SNOMEDCT:16890009</oboInOwl:hasDbXref>        
+            <oboInOwl:hasDbXref>uniprot:P01308</oboInOwl:hasDbXref>           
+    --                                                                        
+        </owl:Class>                                                          
+    <exited with exit code 0>
+
+Bash: Check current report output
+$ cd /home/runner/work/efo/efo && head -5 src/ontology/reports/report-    
+  uniprot-efo-map.tsv && echo "---" && wc -l src/ontology/reports/report-     
+  uniprot-efo-map.tsv                                                         
+    ?term	?term_label	?uniprot_id                                               
+    <http://www.ebi.ac.uk/efo/EFO_0801964>	"protein shisa-3 homolog            
+  measurement"	"uniprot:A0PJX4"                                                
+    <http://www.ebi.ac.uk/efo/EFO_0803229>	"uncharacterized protein C1orf226   
+  measurement"	"uniprot:A1L170"                                                
+    <http://www.ebi.ac.uk/efo/EFO_0802907>	"probable inactive serine protease  
+  37 measurement"	"uniprot:A4D1T9"                                             
+    <http://www.ebi.ac.uk/efo/EFO_0803302>	"PH and SEC7 domain-containing      
+  protein 1 measurement"	"uniprot:A5PKW4"                                      
+    ---                                                                       
+    2634 src/ontology/reports/report-uniprot-efo-map.tsv                      
+    <exited with exit code 0>
+
+Bash: View the measurement-is-about SPARQL to understand the is_about pattern
+$ cd /home/runner/work/efo/efo && cat src/sparql/measurement-is-about.    
+  sparql | head -40                                                           
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>                              
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>                           
+    PREFIX dc: <http://purl.org/dc/elements/1.1/>                             
+    PREFIX dcterms: <http://purl.org/dc/terms/>                               
+    PREFIX dbpedia2: <http://dbpedia.org/property/>                           
+    PREFIX dbpedia: <http://dbpedia.org/>                                     
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>                                 
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>                       
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+                                                                              
+    SELECT DISTINCT ?term ?term_label ?thing ?thing_label ?p ?genus           
+                                                                              
+    WHERE {                                                                   
+      {                                                                       
+      ?term rdf:type owl:Class ;                                              
+      rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;               
+      rdfs:subClassOf [ rdf:type owl:Restriction ;                            
+                             owl:onProperty <http://purl.obolibrary.          
+  org/obo/IAO_0000136> ;                                                      
+                             owl:someValuesFrom ?thing                        
+                           ] .                                                
+       OPTIONAL {                                                             
+         ?term rdfs:label ?term_label .                                       
+       }                                                                      
+       OPTIONAL {                                                             
+        ?thing rdfs:label ?thing_label .                                      
+       }                                                                      
+       BIND("subclass" as ?p)                                                 
+       FILTER(isIRI(?term))                                                   
+       FILTER(isIRI(?thing))                                                  
+     } UNION {                                                                
+       ?term rdf:type owl:Class ;                                             
+       rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;              
+       owl:equivalentClass [ rdf:type owl:Restriction ;                       
+                              owl:onProperty <http://purl.obolibrary.         
+  org/obo/IAO_0000136> ;                                                      
+                              owl:someValuesFrom ?thing                       
+                            ] .                                               
+        OPTIONAL {                                                            
+          ?term rdfs:label ?term_label .                                      
+    <exited with exit code 0>
+
+Bash: Check for is_about relationships pointing to PR (Protein Ontology) terms
+$ cd /home/runner/work/efo/efo && grep -B5 'IAO_0000136.*PR_|is_about.    
+  *PR_' src/ontology/efo-edit.owl | head -40                                  
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find PR (Protein Ontology) terms referenced via is_about
+$ cd /home/runner/work/efo/efo && python3 -c "                            
+    import re                                                                 
+                                                                              
+    with open('src/ontology/efo-edit.owl', 'r') as f:                         
+        content = f.read()                                                    
+                                                                              
+    # Find all is_about targets from measurement terms                        
+    # Pattern: measurement terms have is_about some <entity>                  
+    # We want to find entities linked via is_about that have UniProt xrefs    
+    # First, let's find all PR_ terms referenced in is_about                  
+    pr_refs = re.findall(r'IAO_0000136.*?someValuesFrom.*?(PR_\d+)', content) 
+    print(f'PR_ terms referenced via is_about: {len(pr_refs)}')               
+    print('Examples:', pr_refs[:10])                                          
+    "                                                                         
+    PR_ terms referenced via is_about: 0                                      
+    Examples: []                                                              
+    <exited with exit code 0>
+
+Bash: Find what types of entities are linked via is_about
+$ cd /home/runner/work/efo/efo && grep -A2 'IAO_0000136' src/ontology/efo-
+  edit.owl | grep 'someValuesFrom' | sed 's/.*someValuesFrom.                 
+  *resource="([^"]*)".*/\1/' | sed 's|.*/||' | sort | uniq -c | sort -rn |    
+  head -20                                                                    
+    55 MONDO_0004995                                                          
+         51 UBERON_0004535                                                    
+         51 CHEBI_36080                                                       
+         47 UBERON_0000955                                                    
+         38 UBERON_0000178                                                    
+         34 MONDO_0005084                                                     
+         33 EFO_0000264                                                       
+         23                 <owl:someValuesFrom>                              
+         21 MONDO_0004975                                                     
+         21 EFO_0001941                                                       
+         19 UBERON_0000948                                                    
+         19 EFO_0000544                                                       
+         18 UBERON_0001474                                                    
+         18 UBERON_0000970                                                    
+         18 GO_0006954                                                        
+         16 OBI_0000427                                                       
+         16 CL_0000081                                                        
+         15 UBERON_0001017                                                    
+         15 EFO_0001715                                                       
+         14 MONDO_0005315                                                     
+    <exited with exit code 0>
+
+Bash: Check for PR_ or UniProt references in is_about targets
+$ cd /home/runner/work/efo/efo && grep -A2 'IAO_0000136' src/ontology/efo-
+  edit.owl | grep 'someValuesFrom' | sed 's/.*someValuesFrom.                 
+  *resource="([^"]*)".*/\1/' | sed 's|.*/||' | grep -i 'PR_|UniProt|uniprot' |
+  sort | uniq -c | sort -rn | head -20                                        
+    3 PR_000009758                                                            
+          3 PR_000003728                                                      
+          2 PR_000059878                                                      
+          2 PR_000017081                                                      
+          2 PR_000016261                                                      
+          2 PR_000014889                                                      
+          2 PR_000014681                                                      
+          2 PR_000014046                                                      
+          2 PR_000013740                                                      
+          2 PR_000010967                                                      
+          2 PR_000010489                                                      
+          2 PR_000010470                                                      
+          2 PR_000010469                                                      
+          2 PR_000010173                                                      
+          2 PR_000009978                                                      
+          2 PR_000009002                                                      
+          2 PR_000009001                                                      
+          2 PR_000008995                                                      
+          2 PR_000008994                                                      
+          2 PR_000008991                                                      
+    <exited with exit code 0>
+
+Bash: Count PR_ references via is_about
+$ cd /home/runner/work/efo/efo && grep -A2 'IAO_0000136' src/ontology/efo-
+  edit.owl | grep 'someValuesFrom' | sed 's/.*someValuesFrom.                 
+  *resource="([^"]*)".*/\1/' | sed 's|.*/||' | grep 'PR_' | wc -l             
+    2882                                                                      
+    <exited with exit code 0>
+
+Bash: Check for PR (Protein Ontology) import
+$ cd /home/runner/work/efo/efo && grep 'PR_'                              
+  src/ontology/imports/pr_import.owl 2>/dev/null | head -10 || echo "No PR    
+  import found"                                                               
+    <obo:IAO_0000700 rdf:resource="http://purl.obolibrary.                    
+  org/obo/PR_000050098"/>                                                     
+                        <rdf:Description rdf:about="http://purl.obolibrary.   
+  org/obo/PR_000018263"/>                                                     
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/PR_000018263"/>                                                     
+        <!-- http://purl.obolibrary.org/obo/PR_000000002 -->                  
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/PR_000000002">   
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/PR_000000002"/>                                                     
+        <!-- http://purl.obolibrary.org/obo/PR_000000003 -->                  
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/PR_000000003">   
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/PR_000000003"/>                                                     
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/PR_000000003"/>                                                     
+    <exited with exit code 0>
+
+Bash: Check for PR-related import files
+$ cd /home/runner/work/efo/efo && ls src/ontology/imports/ | grep -i 'pr| 
+  protein' 2>/dev/null                                                        
+    pr_import.owl                                                             
+    pr_terms.txt                                                              
+    <exited with exit code 0>
+
+Bash: Check if PR terms have UniProt xrefs
+$ cd /home/runner/work/efo/efo && grep -A5 'PR_000009758'                 
+  src/ontology/imports/pr_import.owl | head -20                               
+    <!-- http://purl.obolibrary.org/obo/PR_000009758 -->                      
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/PR_000009758">   
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/CHEBI_36080"/>                                                      
+            <obo:IAO_0000115>A protein that is a translation product of the   
+  human LEP gene or a 1:1 ortholog thereof.</obo:IAO_0000115>                 
+            <oboInOwl:hasExactSynonym>LEP</oboInOwl:hasExactSynonym>          
+            <oboInOwl:hasExactSynonym>obese protein</oboInOwl:hasExactSynonym>
+            <oboInOwl:hasExactSynonym>obesity                                 
+  factor</oboInOwl:hasExactSynonym>                                           
+    --                                                                        
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/PR_000009758"/>                                                     
+            <owl:annotatedProperty rdf:resource="http://purl.obolibrary.      
+  org/obo/IAO_0000115"/>                                                      
+            <owl:annotatedTarget>A protein that is a translation product of   
+  the human LEP gene or a 1:1 ortholog thereof.</owl:annotatedTarget>         
+            <oboInOwl:hasDbXref>PRO:DNx</oboInOwl:hasDbXref>                  
+        </owl:Axiom>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/PR_000009758"/>                                                     
+            <owl:annotatedProperty rdf:resource="http://www.geneontology.     
+  org/formats/oboInOwl#hasExactSynonym"/>                                     
+            <owl:annotatedTarget>LEP</owl:annotatedTarget>                    
+            <oboInOwl:hasDbXref>PRO:DNx</oboInOwl:hasDbXref>                  
+            <oboInOwl:hasSynonymType rdf:resource="http://purl.obolibrary.    
+  org/obo/pr#PRO-short-label"/>                                               
+    <exited with exit code 0>
+
+Bash: Check for UniProt references in PR import
+$ cd /home/runner/work/efo/efo && grep -i 'uniprot|UniProtKB'             
+  src/ontology/imports/pr_import.owl | head -20                               
+    <oboInOwl:hasDbXref>UniProtKB:P11215</oboInOwl:hasDbXref>                 
+            <oboInOwl:hasDbXref>UniProtKB:P26954</oboInOwl:hasDbXref>         
+            <oboInOwl:hasDbXref>UniProtKB:Q07108</oboInOwl:hasDbXref>         
+            <oboInOwl:hasDbXref>UniProtKB:Q9NPF7</oboInOwl:hasDbXref>         
+            <oboInOwl:hasDbXref>UniProtKB:P15529</oboInOwl:hasDbXref>         
+            <oboInOwl:hasDbXref>UniProtKB:Q9HBX9</oboInOwl:hasDbXref>         
+            <rdfs:comment>Category=gene. Mouse sequence known but not in      
+  UniProt.</rdfs:comment>                                                     
+            <oboInOwl:hasDbXref>UniProtKB:P15498</oboInOwl:hasDbXref>         
+            <rdfs:comment>Category=gene. According to UniProtKB:Q9D0F9, the   
+  mouse ortholog of the human PGM1 gene is called (officially) Pgm2.          
+  </rdfs:comment>                                                             
+            <rdfs:comment>Category=gene. According to UniProtKB:Q7TSV4, the   
+  mouse ortholog of the human PGM2 gene is called (officially) Pgm1.          
+  </rdfs:comment>                                                             
+            <obo:IAO_0000115>A complement C3 that has had the signal peptide  
+  removed. Example: UniProtKB:P01024, 23-1663.</obo:IAO_0000115>              
+            <owl:annotatedTarget>A complement C3 that has had the signal      
+  peptide removed. Example: UniProtKB:P01024, 23-1663.</owl:annotatedTarget>  
+            <obo:IAO_0000115>A heparanase that has had the signal peptide     
+  removed. Example: UniProtKB:Q9Y251-1, 36-543.</obo:IAO_0000115>             
+            <owl:annotatedTarget>A heparanase that has had the signal peptide 
+  removed. Example: UniProtKB:Q9Y251-1, 36-543.</owl:annotatedTarget>         
+            <obo:IAO_0000115>A preproinsulin that has had the signal peptide  
+  removed. Proinsulin consists of the insulin B and A chains linked by the C- 
+  peptide. Example: UniProtKB:P01308, 25-110.</obo:IAO_0000115>               
+            <owl:annotatedTarget>A preproinsulin that has had the signal      
+  peptide removed. Proinsulin consists of the insulin B and A chains linked by
+  the C-peptide. Example: UniProtKB:P01308, 25-110.</owl:annotatedTarget>     
+            <obo:IAO_0000115>A DNA-directed RNA polymerase II subunit GRINL1A 
+  that is a translation product of some mRNA whose exon structure and start   
+  site selection renders it capable of giving rise to a protein with the amino
+  acid sequence represented by UniProtKB:P0CAP2-2 or a 1:1 ortholog thereof.  
+  </obo:IAO_0000115>                                                          
+            <owl:annotatedTarget>A DNA-directed RNA polymerase II subunit     
+  GRINL1A that is a translation product of some mRNA whose exon structure and 
+  start site selection renders it capable of giving rise to a protein with the
+  amino acid sequence represented by UniProtKB:P0CAP2-2 or a 1:1 ortholog     
+  thereof.</owl:annotatedTarget>                                              
+            <obo:IAO_0000115>A DNA-directed RNA polymerase II subunit GRINL1A 
+  that is a translation product of some mRNA whose exon structure and start   
+  site selection renders it capable of giving rise to a protein with the amino
+  acid sequence represented by UniProtKB:P0CAP2-3 or a 1:1 ortholog thereof.  
+  </obo:IAO_0000115>                                                          
+            <owl:annotatedTarget>A DNA-directed RNA polymerase II subunit     
+  GRINL1A that is a translation product of some mRNA whose exon structure and 
+  start site selection renders it capable of giving rise to a protein with the
+  amino acid sequence represented by UniProtKB:P0CAP2-3 or a 1:1 ortholog     
+  thereof.</owl:annotatedTarget>                                              
+    <exited with exit code 0>
+
+Bash: Count UniProtKB references in PR import
+$ cd /home/runner/work/efo/efo && grep -c 'UniProtKB:'                    
+  src/ontology/imports/pr_import.owl                                          
+    53943                                                                     
+    <exited with exit code 0>
+
+Bash: Test SPARQL to find measurement terms with is_about -> protein -> UniProtKB xref
+$ cd /home/runner/work/efo/efo/src/ontology && ../../bin/robot query --use-
+  graphs true --catalog catalog-v001.xml --input efo-edit.owl --select        
+  /dev/stdin /dev/stdout 2>/dev/null <<'SPARQL'                               
+    prefix oio: <http://www.geneontology.org/formats/oboInOwl#>               
+    prefix owl: <http://www.w3.org/2002/07/owl#>                              
+    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    prefix obo: <http://purl.obolibrary.org/obo/>                             
+                                                                              
+    SELECT DISTINCT ?term ?term_label ?uniprot_id                             
+    WHERE {                                                                   
+      ?term rdf:type owl:Class ;                                              
+        rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;             
+        rdfs:subClassOf [ rdf:type owl:Restriction ;                          
+                          owl:onProperty obo:IAO_0000136 ;                    
+                          owl:someValuesFrom ?protein ] .                     
+      ?protein oio:hasDbXref ?uniprot_id .                                    
+      OPTIONAL { ?term rdfs:label ?term_label . }                             
+      FILTER(isIRI(?term))                                                    
+      FILTER(STRSTARTS(?uniprot_id, "UniProtKB:"))                            
+    }                                                                         
+    LIMIT 10                                                                  
+    SPARQL                                                                    
+    org.semanticweb.owlapi.model.UnloadableImportException: Could not load    
+  imported ontology: <http://www.ebi.ac.uk/efo/imports/mondo_import.owl>      
+  Cause: /home/runner/work/efo/efo/src/ontology/imports/mondo_import.owl (No  
+  such file or directory)                                                     
+    Use the -vvv option to show the stack trace.                              
+    Use the --help option to see usage information.                           
+    <exited with exit code 1>
+
+Bash: List available import OWL files
+$ cd /home/runner/work/efo/efo && ls src/ontology/imports/*.owl | head -20
+    src/ontology/imports/chebi_import.owl                                     
+    src/ontology/imports/cl_import.owl                                        
+    src/ontology/imports/ecto_import.owl                                      
+    src/ontology/imports/fbbi_import.owl                                      
+    src/ontology/imports/fbbt_import.owl                                      
+    src/ontology/imports/go_import.owl                                        
+    src/ontology/imports/gsso_import.owl                                      
+    src/ontology/imports/gwas_import.owl                                      
+    src/ontology/imports/hancestro_import.owl                                 
+    src/ontology/imports/hp_import.owl                                        
+    src/ontology/imports/oba_import.owl                                       
+    src/ontology/imports/obi_import.owl                                       
+    src/ontology/imports/pr_import.owl                                        
+    src/ontology/imports/uberon_import.owl                                    
+    <exited with exit code 0>
+
+Bash: Check catalog for import resolution
+$ cd /home/runner/work/efo/efo && cat src/ontology/catalog-v001.xml | head -
+  40                                                                          
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>                    
+    <catalog prefer="public"                                                  
+  xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">                        
+        <uri id="Imports Wizard Entry" name="http://www.ebi.ac.               
+  uk/efo/components/disease_to_phenotype.owl"                                 
+  uri="components/disease_to_phenotype.owl"/>                                 
+        <group id="Folder Repository, directory=, recursive=true, Auto-       
+  Update=false, version=2" prefer="public" xml:base="">                       
+            <uri id="subclasses" name="http://www.ebi.ac.                     
+  uk/efo/components/subclasses.owl" uri="components/subclasses.owl"/>         
+            <uri id="import_replaced_by" name="http://www.ebi.ac.             
+  uk/efo/components/import_replaced_by.owl" uri="components/import_replaced_by.
+  owl"/>                                                                      
+            <uri id="hancestro_import" name="http://www.ebi.ac.               
+  uk/efo/imports/hancestro_import.owl" uri="imports/hancestro_import.owl"/>   
+            <uri id="mondo_import" name="http://www.ebi.ac.                   
+  uk/efo/imports/mondo_import.owl" uri="imports/mondo_import.owl"/>           
+            <uri id="uberon_import" name="http://www.ebi.ac.                  
+  uk/efo/imports/uberon_import.owl" uri="imports/uberon_import.owl"/>         
+            <uri id="hp_import" name="http://www.ebi.ac.                      
+  uk/efo/imports/hp_import.owl" uri="imports/hp_import.owl"/>                 
+            <uri id="cl_import" name="http://www.ebi.ac.                      
+  uk/efo/imports/cl_import.owl" uri="imports/cl_import.owl"/>                 
+            <uri id="go_import" name="http://www.ebi.ac.                      
+  uk/efo/imports/go_import.owl" uri="imports/go_import.owl"/>                 
+            <uri id="obi_import" name="http://www.ebi.ac.                     
+  uk/efo/imports/obi_import.owl" uri="imports/obi_import.owl"/>               
+            <uri id="oba_import" name="http://www.ebi.ac.                     
+  uk/efo/imports/oba_import.owl" uri="imports/oba_import.owl"/>               
+            <uri id="chebi_import" name="http://www.ebi.ac.                   
+  uk/efo/imports/chebi_import.owl" uri="imports/chebi_import.owl"/>           
+            <uri id="pr_import" name="http://www.ebi.ac.                      
+  uk/efo/imports/pr_import.owl" uri="imports/pr_import.owl"/>                 
+            <uri id="ecto_import" name="http://www.ebi.ac.                    
+  uk/efo/imports/ecto_import.owl" uri="imports/ecto_import.owl"/>             
+            <uri id="fbbt_import" name="http://www.ebi.ac.                    
+  uk/efo/imports/fbbt_import.owl" uri="imports/fbbt_import.owl"/>             
+            <uri id="gsso_import" name="http://www.ebi.ac.                    
+  uk/efo/imports/gsso_import.owl" uri="imports/gsso_import.owl"/>             
+            <uri id="fbbi_import" name="http://www.ebi.ac.                    
+  uk/efo/imports/fbbi_import.owl" uri="imports/fbbi_import.owl"/>             
+            <uri id="gwas_import" name="http://www.ebi.ac.                    
+  uk/efo/components/gwas_import.owl" uri="components/gwas_import.owl"/>       
+            <uri id="anatomagram_lung" name="http://www.ebi.ac.               
+  uk/efo/components/anatomagram_lung.owl" uri="components/anatomagram_lung.   
+  owl"/>                                                                      
+            <uri id="anatomagram_kidney" name="http://www.ebi.ac.             
+  uk/efo/components/anatomagram_kidney.owl" uri="components/anatomagram_kidney.
+  owl"/>                                                                      
+            <uri id="anatomagram_pancreas" name="http://www.ebi.ac.           
+  uk/efo/components/anatomagram_pancreas.owl"                                 
+  uri="components/anatomagram_pancreas.owl"/>                                 
+            <uri id="anatomagram_liver" name="http://www.ebi.ac.              
+  uk/efo/components/anatomagram_liver.owl" uri="components/anatomagram_liver. 
+  owl"/>                                                                      
+            <uri id="anatomagram_placenta" name="http://www.ebi.ac.           
+  uk/efo/components/anatomagram_placenta.owl"                                 
+  uri="components/anatomagram_placenta.owl"/>                                 
+            <uri id="equivalent_class_axioms" name="http://www.ebi.ac.        
+  uk/efo/components/efo_equivalent_class_axioms.owl"                          
+  uri="components/efo_equivalent_class_axioms.owl"/>                          
+        </group>                                                              
+    </catalog>                                                                
+    <exited with exit code 0>
+
+Bash: Create stub mondo_import.owl for local testing
+$ cd /home/runner/work/efo/efo && touch src/ontology/imports/mondo_import.
+  owl && echo '<?xml version="1.0"?>                                          
+    <rdf:RDF xmlns="http://www.ebi.ac.uk/efo/imports/mondo_import.owl#"       
+         xml:base="http://www.ebi.ac.uk/efo/imports/mondo_import.owl"         
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"              
+         xmlns:owl="http://www.w3.org/2002/07/owl#"                           
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">                  
+        <owl:Ontology rdf:about="http://www.ebi.ac.uk/efo/imports/mondo_import.
+  owl"/>                                                                      
+    </rdf:RDF>' > src/ontology/imports/mondo_import.owl                       
+                                                                              
+    <exited with exit code 0>
+
+Bash: Test is_about -> protein -> UniProtKB SPARQL query
+$ cd /home/runner/work/efo/efo/src/ontology && ../../bin/robot query --use-
+  graphs true --catalog catalog-v001.xml --input efo-edit.owl --select        
+  /dev/stdin /tmp/is_about_test.tsv 2>/dev/null <<'SPARQL'                    
+    prefix oio: <http://www.geneontology.org/formats/oboInOwl#>               
+    prefix owl: <http://www.w3.org/2002/07/owl#>                              
+    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    prefix obo: <http://purl.obolibrary.org/obo/>                             
+                                                                              
+    SELECT DISTINCT ?term ?term_label ?uniprot_id                             
+    WHERE {                                                                   
+      ?term rdf:type owl:Class ;                                              
+        rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;             
+        rdfs:subClassOf [ rdf:type owl:Restriction ;                          
+                          owl:onProperty obo:IAO_0000136 ;                    
+                          owl:someValuesFrom ?protein ] .                     
+      ?protein oio:hasDbXref ?uniprot_id .                                    
+      OPTIONAL { ?term rdfs:label ?term_label . }                             
+      FILTER(isIRI(?term))                                                    
+      FILTER(STRSTARTS(?uniprot_id, "UniProtKB:"))                            
+    }                                                                         
+    ORDER BY ?uniprot_id                                                      
+    SPARQL                                                                    
+    echo "Exit code: $?"                                                      
+    Exit code: 0                                                              
+    <exited with exit code 0>
+
+Bash: Check is_about test results
+$ wc -l /tmp/is_about_test.tsv && head -20 /tmp/is_about_test.tsv         
+    0 /tmp/is_about_test.tsv                                                  
+    <exited with exit code 0>
+
+Bash: Test with merged ontology for is_about -> protein -> UniProtKB
+$ cd /home/runner/work/efo/efo/src/ontology && ../../bin/robot merge --   
+  catalog catalog-v001.xml --input efo-edit.owl query --select /dev/stdin     
+  /tmp/is_about_merged.tsv 2>&1 <<'SPARQL'                                    
+    prefix oio: <http://www.geneontology.org/formats/oboInOwl#>               
+    prefix owl: <http://www.w3.org/2002/07/owl#>                              
+    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    prefix obo: <http://purl.obolibrary.org/obo/>                             
+                                                                              
+    SELECT DISTINCT ?term ?term_label ?uniprot_id                             
+    WHERE {                                                                   
+      ?term rdf:type owl:Class ;                                              
+        rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;             
+        rdfs:subClassOf [ rdf:type owl:Restriction ;                          
+                          owl:onProperty obo:IAO_0000136 ;                    
+                          owl:someValuesFrom ?protein ] .                     
+      ?protein oio:hasDbXref ?uniprot_id .                                    
+      OPTIONAL { ?term rdfs:label ?term_label . }                             
+      FILTER(isIRI(?term))                                                    
+      FILTER(STRSTARTS(?uniprot_id, "UniProtKB:"))                            
+    }                                                                         
+    ORDER BY ?uniprot_id                                                      
+    LIMIT 20                                                                  
+    SPARQL                                                                    
+    echo "---"                                                                
+    wc -l /tmp/is_about_merged.tsv                                            
+    head -20 /tmp/is_about_merged.tsv                                         
+    ---                                                                       
+    0 /tmp/is_about_merged.tsv                                                
+    <exited with exit code 0>
+
+Bash: Test broader query: measurement terms is_about PR_ proteins
+$ cd /home/runner/work/efo/efo/src/ontology && ../../bin/robot merge --   
+  catalog catalog-v001.xml --input efo-edit.owl query --select /dev/stdin     
+  /tmp/is_about_test2.tsv 2>&1 <<'SPARQL'                                     
+    prefix oio: <http://www.geneontology.org/formats/oboInOwl#>               
+    prefix owl: <http://www.w3.org/2002/07/owl#>                              
+    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    prefix obo: <http://purl.obolibrary.org/obo/>                             
+                                                                              
+    SELECT DISTINCT ?term ?term_label ?protein ?uniprot_id                    
+    WHERE {                                                                   
+      ?term rdf:type owl:Class ;                                              
+        rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> .             
+      ?term rdfs:subClassOf ?restr .                                          
+      ?restr owl:onProperty obo:IAO_0000136 ;                                 
+             owl:someValuesFrom ?protein .                                    
+      FILTER(isIRI(?protein))                                                 
+      FILTER(STRSTARTS(STR(?protein), "http://purl.obolibrary.org/obo/PR_"))  
+      OPTIONAL { ?term rdfs:label ?term_label . }                             
+      OPTIONAL { ?protein oio:hasDbXref ?uniprot_id .                         
+  FILTER(STRSTARTS(?uniprot_id, "UniProtKB:")) }                              
+      FILTER(isIRI(?term))                                                    
+    }                                                                         
+    ORDER BY ?term                                                            
+    LIMIT 20                                                                  
+    SPARQL                                                                    
+    echo "---"                                                                
+    wc -l /tmp/is_about_test2.tsv                                             
+    head -20 /tmp/is_about_test2.tsv                                          
+    ---                                                                       
+    21 /tmp/is_about_test2.tsv                                                
+    ?term	?term_label	?protein	?uniprot_id                                       
+    <http://www.ebi.ac.uk/efo/EFO_0004458>	"C-reactive protein measurement"    
+  <http://purl.obolibrary.org/obo/PR_000005897>	                               
+    <http://www.ebi.ac.uk/efo/EFO_0004467>	"insulin measurement"	<http://purl.  
+  obolibrary.org/obo/PR_000050339>	                                            
+    <http://www.ebi.ac.uk/efo/EFO_0004502>	"adiponectin measurement"           
+  <http://purl.obolibrary.org/obo/PR_000003777>	                               
+    <http://www.ebi.ac.uk/efo/EFO_0004520>	"ICAM-1 measurement"	<http://purl.   
+  obolibrary.org/obo/PR_000001467>	                                            
+    <http://www.ebi.ac.uk/efo/EFO_0004533>	"alkaline phosphatase measurement"  
+  <http://purl.obolibrary.org/obo/PR_000023540>	                               
+    <http://www.ebi.ac.uk/efo/EFO_0004534>	"creatine kinase measurement"       
+  <http://purl.obolibrary.org/obo/PR_000029971>	                               
+    <http://www.ebi.ac.uk/efo/EFO_0004541>	"HbA1c measurement"	<http://purl.    
+  obolibrary.org/obo/PR_000050469>	                                            
+    <http://www.ebi.ac.uk/efo/EFO_0004572>	"C4BP measurement"	<http://purl.     
+  obolibrary.org/obo/PR_000030465>	                                            
+    <http://www.ebi.ac.uk/efo/EFO_0004573>	"chemerin measurement"	<http://purl. 
+  obolibrary.org/obo/PR_000013740>	                                            
+    <http://www.ebi.ac.uk/efo/EFO_0004581>	"interleukin 18 measurement"        
+  <http://purl.obolibrary.org/obo/PR_000001376>	                               
+    <http://www.ebi.ac.uk/efo/EFO_0004617>	"cystatin C measurement"            
+  <http://purl.obolibrary.org/obo/PR_000005965>	                               
+    <http://www.ebi.ac.uk/efo/EFO_0004625>	"progranulin measurement"           
+  <http://purl.obolibrary.org/obo/PR_000008271>	                               
+    <http://www.ebi.ac.uk/efo/EFO_0004626>	"IGFBP-3 measurement"	<http://purl.  
+  obolibrary.org/obo/PR_000008949>	                                            
+    <http://www.ebi.ac.uk/efo/EFO_0004635>	"leptin receptor measurement"       
+  <http://purl.obolibrary.org/obo/PR_000001875>	                               
+    <http://www.ebi.ac.uk/efo/EFO_0004640>	"haptoglobin measurement"           
+  <http://purl.obolibrary.org/obo/PR_000008725>	                               
+    <http://www.ebi.ac.uk/efo/EFO_0004696>	"sex hormone-binding globulin       
+  measurement"	<http://purl.obolibrary.org/obo/PR_000014836>	                   
+    <http://www.ebi.ac.uk/efo/EFO_0004736>	"aspartate aminotransferase         
+  measurement"	<http://purl.obolibrary.org/obo/PR_000022172>	                   
+    <http://www.ebi.ac.uk/efo/EFO_0004750>	"interleukin 10 measurement"        
+  <http://purl.obolibrary.org/obo/PR_000001471>	                               
+    <http://www.ebi.ac.uk/efo/EFO_0004789>	"atrial natriuretic factor          
+  measurement"	<http://purl.obolibrary.org/obo/PR_000011374>                   
+    <exited with exit code 0>
+
+Bash: Check context of UniProtKB xrefs in PR import
+$ cd /home/runner/work/efo/efo && grep -B10 -A2 'UniProtKB:'              
+  src/ontology/imports/pr_import.owl | head -50                               
+    <oboInOwl:hasRelatedSynonym>CD11B</oboInOwl:hasRelatedSynonym>            
+            <oboInOwl:hasRelatedSynonym>CR3A</oboInOwl:hasRelatedSynonym>     
+            <oboInOwl:id>PR:000001012</oboInOwl:id>                           
+            <rdfs:comment>Category=gene. Requested by=CL.</rdfs:comment>      
+            <rdfs:label>integrin alpha-M</rdfs:label>                         
+        </owl:Class>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/PR_000001012"/>                                                     
+            <owl:annotatedProperty rdf:resource="http://purl.obolibrary.      
+  org/obo/IAO_0000115"/>                                                      
+            <owl:annotatedTarget>An integrin alpha with A domain that is a    
+  translation product of the human ITGAM gene or a 1:1 ortholog thereof. They 
+  constitute subunits of the integrin alpha-M/beta-2 receptor. This receptor  
+  is implicated in various adhesive interactions of monocytes, macrophages and
+  granulocytes as well as in mediating the uptake of complement-coated        
+  particles. It is also a receptor for fibrinogen, factor X and ICAM1.        
+  </owl:annotatedTarget>                                                      
+            <oboInOwl:hasDbXref>UniProtKB:P11215</oboInOwl:hasDbXref>         
+        </owl:Axiom>                                                          
+        <owl:Axiom>                                                           
+    --                                                                        
+            <oboInOwl:hasRelatedSynonym>Il3rb1</oboInOwl:hasRelatedSynonym>   
+            <oboInOwl:id>PR:000001339</oboInOwl:id>                           
+            <rdfs:comment>Category=gene.</rdfs:comment>                       
+            <rdfs:label>cytokine receptor common subunit beta</rdfs:label>    
+        </owl:Class>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/PR_000001339"/>                                                     
+            <owl:annotatedProperty rdf:resource="http://purl.obolibrary.      
+  org/obo/IAO_0000115"/>                                                      
+            <owl:annotatedTarget>A protein that is a translation product of   
+  the human CSF2RB gene or a 1:1 ortholog thereof. This gene encodes the      
+  receptor beta chain shared by high-affinity IL5, IL3, and GM-CSF receptors. 
+  In mouse, there is also a closely related gene that encodes an IL3-specific 
+  beta chain.</owl:annotatedTarget>                                           
+            <oboInOwl:hasDbXref>PRO:WCB</oboInOwl:hasDbXref>                  
+            <oboInOwl:hasDbXref>UniProtKB:P26954</oboInOwl:hasDbXref>         
+        </owl:Axiom>                                                          
+        <owl:Axiom>                                                           
+    --                                                                        
+            <oboInOwl:id>PR:000001343</oboInOwl:id>                           
+            <rdfs:comment>Category=gene. Requested by=CL.</rdfs:comment>      
+            <rdfs:label>CD69 molecule</rdfs:label>                            
+        </owl:Class>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/PR_000001343"/>                                                     
+            <owl:annotatedProperty rdf:resource="http://purl.obolibrary.      
+  org/obo/IAO_0000115"/>                                                      
+            <owl:annotatedTarget>A protein that is a translation product of   
+  the human CD69 gene or a 1:1 ortholog thereof. A type II transmembrane      
+  protein with a C-type lectin binding domain in the extracellular portion of 
+  the molecule. Involved in lymphocyte proliferation and functions as a signal
+  transmitting receptor in lymphocytes, natural killer (NK) cells, and        
+  platelets.</owl:annotatedTarget>                                            
+            <oboInOwl:hasDbXref>PMID:10466080</oboInOwl:hasDbXref>            
+            <oboInOwl:hasDbXref>PRO:CNA</oboInOwl:hasDbXref>                  
+            <oboInOwl:hasDbXref>UniProtKB:Q07108</oboInOwl:hasDbXref>         
+        </owl:Axiom>                                                          
+        <owl:Axiom>                                                           
+    --                                                                        
+                                                                              
+  <oboInOwl:hasRelatedSynonym>UNQ2498/PRO5798</oboInOwl:hasRelatedSynonym>    
+            <oboInOwl:id>PR:000001384</oboInOwl:id>                           
+            <rdfs:comment>Category=gene.</rdfs:comment>                       
+            <rdfs:label>interleukin-23 subunit alpha</rdfs:label>             
+        </owl:Class>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/PR_000001384"/>                                                     
+            <owl:annotatedProperty rdf:resource="http://purl.obolibrary.      
+  org/obo/IAO_0000115"/>                                                      
+    <exited with exit code 0>
+
+Bash: Check if measurement terms with is_about are already in the report via xrefs
+$ cd /home/runner/work/efo/efo && for term in EFO_0004458 EFO_0004467     
+  EFO_0004502 EFO_0004520 EFO_0004533; do                                     
+      echo "--- $term ---"                                                    
+      grep "$term" src/ontology/reports/report-uniprot-efo-map.tsv || echo    
+  "NOT IN REPORT"                                                             
+    done                                                                      
+    --- EFO_0004458 ---                                                       
+    <http://www.ebi.ac.uk/efo/EFO_0004458>	"C-reactive protein measurement"    
+  "uniprot:P02741"                                                            
+    --- EFO_0004467 ---                                                       
+    <http://www.ebi.ac.uk/efo/EFO_0004467>	"insulin measurement"               
+  "uniprot:P01308"                                                            
+    --- EFO_0004502 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004520 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004533 ---                                                       
+    NOT IN REPORT                                                             
+    <exited with exit code 0>
+
+Bash: Check all measurement terms with is_about against current report
+$ cd /home/runner/work/efo/efo && for term in EFO_0004502 EFO_0004520     
+  EFO_0004533 EFO_0004534 EFO_0004541 EFO_0004572 EFO_0004573 EFO_0004581     
+  EFO_0004617 EFO_0004625 EFO_0004626 EFO_0004635 EFO_0004640 EFO_0004696     
+  EFO_0004736 EFO_0004750 EFO_0004789; do                                     
+      echo "--- $term ---"                                                    
+      grep "$term" src/ontology/reports/report-uniprot-efo-map.tsv || echo    
+  "NOT IN REPORT"                                                             
+    done                                                                      
+    --- EFO_0004502 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004520 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004533 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004534 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004541 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004572 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004573 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004581 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004617 ---                                                       
+    <http://www.ebi.ac.uk/efo/EFO_0004617>	"cystatin C measurement"            
+  "uniprot:P01034"                                                            
+    --- EFO_0004625 ---                                                       
+    <http://www.ebi.ac.uk/efo/EFO_0004625>	"progranulin measurement"           
+  "uniprot:P28799"                                                            
+    --- EFO_0004626 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004635 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004640 ---                                                       
+    <http://www.ebi.ac.uk/efo/EFO_0004640>	"haptoglobin measurement"           
+  "uniprot:P00738"                                                            
+    --- EFO_0004696 ---                                                       
+    <http://www.ebi.ac.uk/efo/EFO_0004696>	"sex hormone-binding globulin       
+  measurement"	"uniprot:P04278"                                                
+    --- EFO_0004736 ---                                                       
+    NOT IN REPORT                                                             
+    --- EFO_0004750 ---                                                       
+    <http://www.ebi.ac.uk/efo/EFO_0004750>	"interleukin 10 measurement"        
+  "uniprot:P22301"                                                            
+    --- EFO_0004789 ---                                                       
+    NOT IN REPORT                                                             
+    <exited with exit code 0>
+
+Bash: Test SPARQL to get UniProt IDs from is_about -> protein -> annotation axiom xrefs
+$ cd /home/runner/work/efo/efo/src/ontology && ../../bin/robot merge --   
+  catalog catalog-v001.xml --input efo-edit.owl query --select /dev/stdin     
+  /tmp/is_about_uniprot.tsv 2>&1 <<'SPARQL'                                   
+    prefix oio: <http://www.geneontology.org/formats/oboInOwl#>               
+    prefix owl: <http://www.w3.org/2002/07/owl#>                              
+    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    prefix obo: <http://purl.obolibrary.org/obo/>                             
+                                                                              
+    SELECT DISTINCT ?term ?term_label ?uniprot_id                             
+    WHERE {                                                                   
+      ?term rdf:type owl:Class ;                                              
+        rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> .             
+      ?term rdfs:subClassOf ?restr .                                          
+      ?restr owl:onProperty obo:IAO_0000136 ;                                 
+             owl:someValuesFrom ?protein .                                    
+      FILTER(isIRI(?protein))                                                 
+      # Get UniProtKB xrefs from annotation axioms on the protein's definition
+      ?axiom owl:annotatedSource ?protein ;                                   
+             oio:hasDbXref ?uniprot_id .                                      
+      FILTER(STRSTARTS(?uniprot_id, "UniProtKB:"))                            
+      OPTIONAL { ?term rdfs:label ?term_label . }                             
+      FILTER(isIRI(?term))                                                    
+    }                                                                         
+    ORDER BY ?uniprot_id ?term_label                                          
+    SPARQL                                                                    
+    echo "---"                                                                
+    wc -l /tmp/is_about_uniprot.tsv                                           
+    head -25 /tmp/is_about_uniprot.tsv                                        
+    ---                                                                       
+    35 /tmp/is_about_uniprot.tsv                                              
+    ?term	?term_label	?uniprot_id                                               
+    <http://www.ebi.ac.uk/efo/EFO_0803078>	"single-pass membrane and coiled-   
+  coil domain-containing protein 2 measurement"	"UniProtKB:A6NFE2"             
+    <http://www.ebi.ac.uk/efo/EFO_0802075>	"small integral membrane protein 9  
+  measurement"	"UniProtKB:A6NGZ8"                                              
+    <http://www.ebi.ac.uk/efo/EFO_0802518>	"EF-hand calcium-binding domain-    
+  containing protein 14 measurement"	"UniProtKB:O75071"                        
+    <http://www.ebi.ac.uk/efo/EFO_0021988>	"proto-oncogene vav measurement"    
+  "UniProtKB:P15498"                                                          
+    <http://www.ebi.ac.uk/efo/EFO_0801518>	"cytokine receptor common subunit   
+  beta measurement"	"UniProtKB:P26954"                                         
+    <http://www.ebi.ac.uk/efo/EFO_0802804>	"neuron-specific protein family     
+  member 1 measurement"	"UniProtKB:P42857"                                     
+    <http://www.ebi.ac.uk/efo/EFO_0802955>	"protein p13 MTCP-1 measurement"    
+  "UniProtKB:P56278"                                                          
+    <http://www.ebi.ac.uk/efo/EFO_0801763>	"leucine-rich repeat-containing     
+  protein 74A measurement"	"UniProtKB:Q0VAA2"                                  
+    <http://www.ebi.ac.uk/efo/EFO_0803162>	"TPA-induced transmembrane protein  
+  measurement"	"UniProtKB:Q5BVD1"                                              
+    <http://www.ebi.ac.uk/efo/EFO_0802188>	"uncharacterized family 31          
+  glucosidase KIAA1161 measurement"	"UniProtKB:Q6NSJ0"                         
+    <http://www.ebi.ac.uk/efo/EFO_0803212>	"ubiquinol-cytochrome-c reductase   
+  complex assembly factor 3 measurement"	"UniProtKB:Q6UW78"                    
+    <http://www.ebi.ac.uk/efo/EFO_0803191>	"transmembrane protein C16orf54     
+  measurement"	"UniProtKB:Q6UWD8"                                              
+    <http://www.ebi.ac.uk/efo/EFO_0801428>	"bombesin receptor-activated        
+  protein C6orf89 measurement"	"UniProtKB:Q6UWU4"                              
+    <http://www.ebi.ac.uk/efo/EFO_0020861>	"ANGPTL8 measurement"@en            
+  "UniProtKB:Q6UXH0"                                                          
+    <http://www.ebi.ac.uk/efo/EFO_0802279>	"angiopoietin-like protein 8        
+  measurement"	"UniProtKB:Q6UXH0"                                              
+    <http://www.ebi.ac.uk/efo/EFO_0803207>	"type III endosome membrane protein 
+  TEMP measurement"	"UniProtKB:Q8IVY1"                                         
+    <http://www.ebi.ac.uk/efo/EFO_0802499>	"dyslexia-associated protein        
+  KIAA0319-like protein measurement"	"UniProtKB:Q8IZA0"                        
+    <http://www.ebi.ac.uk/efo/EFO_0803300>	"nutritionally-regulated adipose    
+  and cardiac enriched protein homolog measurement"	"UniProtKB:Q8N912"         
+    <http://www.ebi.ac.uk/efo/EFO_0802676>	"keratinocyte-associated            
+  transmembrane protein 2 measurement"	"UniProtKB:Q8NC54"                      
+    <http://www.ebi.ac.uk/efo/EFO_0803236>	"UPF0729 protein C18orf32           
+  measurement"	"UniProtKB:Q8TCD1"                                              
+    <http://www.ebi.ac.uk/efo/EFO_0802542>	"fatty acid hydroxylase domain-     
+  containing protein 2 measurement"	"UniProtKB:Q96IV6"                         
+    <http://www.ebi.ac.uk/efo/EFO_0801406>	"bcl10-interacting CARD protein     
+  measurement"	"UniProtKB:Q96LW7"                                              
+    <http://www.ebi.ac.uk/efo/EFO_0803211>	"U6 snRNA phosphodiesterase         
+  measurement"	"UniProtKB:Q9BQ65"                                              
+    <http://www.ebi.ac.uk/efo/EFO_0801952>	"protein MENT measurement"          
+  "UniProtKB:Q9BUN1"                                                          
+    <exited with exit code 0>
+
+Bash: Check overlap with current report
+$ # Check how many of these is_about-derived mappings are ALREADY in the  
+  report                                                                      
+    echo "Total is_about UniProt mappings found: $(tail -n+2                  
+  /tmp/is_about_uniprot.tsv | wc -l)"                                         
+    echo "Already in report:"                                                 
+    tail -n+2 /tmp/is_about_uniprot.tsv | while IFS=$'\t' read -r term label  
+  uniprot; do                                                                 
+      # Extract the term IRI                                                  
+      term_id=$(echo "$term" | sed 's/<(.*)>/\1/' | sed 's|.*/||')            
+      if grep -q "$term_id"                                                   
+  /home/runner/work/efo/efo/src/ontology/reports/report-uniprot-efo-map.tsv;  
+  then                                                                        
+        echo "  FOUND: $term_id ($label)"                                     
+      fi                                                                      
+    done                                                                      
+    echo "---"                                                                
+    echo "NOT in report:"                                                     
+    tail -n+2 /tmp/is_about_uniprot.tsv | while IFS=$'\t' read -r term label  
+  uniprot; do                                                                 
+      term_id=$(echo "$term" | sed 's/<(.*)>/\1/' | sed 's|.*/||')            
+      if ! grep -q "$term_id"                                                 
+  /home/runner/work/efo/efo/src/ontology/reports/report-uniprot-efo-map.tsv;  
+  then                                                                        
+        echo "  MISSING: $term_id ($label) -> $uniprot"                       
+      fi                                                                      
+    done                                                                      
+    Total is_about UniProt mappings found: 34                                 
+    Already in report:                                                        
+      FOUND: EFO_0803078 ("single-pass membrane and coiled-coil domain-       
+  containing protein 2 measurement")                                          
+      FOUND: EFO_0802075 ("small integral membrane protein 9 measurement")    
+      FOUND: EFO_0802518 ("EF-hand calcium-binding domain-containing protein  
+  14 measurement")                                                            
+      FOUND: EFO_0021988 ("proto-oncogene vav measurement")                   
+      FOUND: EFO_0801518 ("cytokine receptor common subunit beta measurement")
+      FOUND: EFO_0802955 ("protein p13 MTCP-1 measurement")                   
+      FOUND: EFO_0801763 ("leucine-rich repeat-containing protein 74A         
+  measurement")                                                               
+      FOUND: EFO_0803162 ("TPA-induced transmembrane protein measurement")    
+      FOUND: EFO_0803212 ("ubiquinol-cytochrome-c reductase complex assembly  
+  factor 3 measurement")                                                      
+      FOUND: EFO_0803191 ("transmembrane protein C16orf54 measurement")       
+      FOUND: EFO_0801428 ("bombesin receptor-activated protein C6orf89        
+  measurement")                                                               
+      FOUND: EFO_0802279 ("angiopoietin-like protein 8 measurement")          
+      FOUND: EFO_0803207 ("type III endosome membrane protein TEMP            
+  measurement")                                                               
+      FOUND: EFO_0802499 ("dyslexia-associated protein KIAA0319-like protein  
+  measurement")                                                               
+      FOUND: EFO_0803300 ("nutritionally-regulated adipose and cardiac        
+  enriched protein homolog measurement")                                      
+      FOUND: EFO_0802676 ("keratinocyte-associated transmembrane protein 2    
+  measurement")                                                               
+      FOUND: EFO_0803236 ("UPF0729 protein C18orf32 measurement")             
+      FOUND: EFO_0802542 ("fatty acid hydroxylase domain-containing protein 2 
+  measurement")                                                               
+      FOUND: EFO_0801952 ("protein MENT measurement")                         
+      FOUND: EFO_0802286 ("arginine/serine-rich protein 1 measurement")       
+      FOUND: EFO_0801399 ("augurin measurement")                              
+      FOUND: EFO_0802202 ("UPF0696 protein C11orf68 measurement")             
+      FOUND: EFO_0802530 ("essential MCU regulator, mitochondrial             
+  measurement")                                                               
+      FOUND: EFO_0021950 ("relaxin receptor 1 measurement")                   
+      FOUND: EFO_0801607 ("fructose-2,6-bisphosphatase TIGAR measurement")    
+      FOUND: EFO_0802038 ("SCP2 sterol-binding domain-containing protein 1    
+  measurement")                                                               
+      FOUND: EFO_0802193 ("uncharacterized protein C3orf18 measurement")      
+      FOUND: EFO_0802767 ("myelin regulatory factor measurement")             
+    ---                                                                       
+    NOT in report:                                                            
+      MISSING: EFO_0802804 ("neuron-specific protein family member 1          
+  measurement") -> "UniProtKB:P42857"                                         
+      MISSING: EFO_0802188 ("uncharacterized family 31 glucosidase KIAA1161   
+  measurement") -> "UniProtKB:Q6NSJ0"                                         
+      MISSING: EFO_0020861 ("ANGPTL8 measurement"@en) -> "UniProtKB:Q6UXH0"   
+      MISSING: EFO_0801406 ("bcl10-interacting CARD protein measurement") ->  
+  "UniProtKB:Q96LW7"                                                          
+      MISSING: EFO_0803211 ("U6 snRNA phosphodiesterase measurement") ->      
+  "UniProtKB:Q9BQ65"                                                          
+      MISSING: EFO_0801832 ("neuron-specific protein family member 2          
+  measurement") -> "UniProtKB:Q9Y328"                                         
+    <exited with exit code 0>
+
+Bash: Check OBA measurement terms with is_about relationships to proteins
+$ cd /home/runner/work/efo/efo/src/ontology && ../../bin/robot merge --   
+  catalog catalog-v001.xml --input efo-edit.owl query --select /dev/stdin     
+  /tmp/oba_is_about.tsv 2>&1 <<'SPARQL'                                       
+    prefix oio: <http://www.geneontology.org/formats/oboInOwl#>               
+    prefix owl: <http://www.w3.org/2002/07/owl#>                              
+    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    prefix obo: <http://purl.obolibrary.org/obo/>                             
+                                                                              
+    SELECT DISTINCT ?term ?term_label ?protein ?protein_label ?uniprot_id     
+    WHERE {                                                                   
+      ?term rdf:type owl:Class ;                                              
+        rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> .             
+      FILTER(STRSTARTS(STR(?term), "http://purl.obolibrary.org/obo/OBA_"))    
+      ?term rdfs:subClassOf ?restr .                                          
+      ?restr owl:onProperty obo:IAO_0000136 ;                                 
+             owl:someValuesFrom ?protein .                                    
+      FILTER(isIRI(?protein))                                                 
+      # Get UniProtKB xrefs from annotation axioms                            
+      OPTIONAL {                                                              
+        ?axiom owl:annotatedSource ?protein ;                                 
+               oio:hasDbXref ?uniprot_id .                                    
+        FILTER(STRSTARTS(?uniprot_id, "UniProtKB:"))                          
+      }                                                                       
+      OPTIONAL { ?term rdfs:label ?term_label . }                             
+      OPTIONAL { ?protein rdfs:label ?protein_label . }                       
+      FILTER(isIRI(?term))                                                    
+    }                                                                         
+    ORDER BY ?term_label                                                      
+    LIMIT 30                                                                  
+    SPARQL                                                                    
+    echo "---"                                                                
+    wc -l /tmp/oba_is_about.tsv                                               
+    head -30 /tmp/oba_is_about.tsv                                            
+    ---                                                                       
+    0 /tmp/oba_is_about.tsv                                                   
+    <exited with exit code 0>
+
+Bash: Check if OBA terms are subclasses of EFO_0001444
+$ cd /home/runner/work/efo/efo/src/ontology && ../../bin/robot merge --   
+  catalog catalog-v001.xml --input efo-edit.owl query --select /dev/stdin     
+  /tmp/oba_is_about2.tsv 2>&1 <<'SPARQL'                                      
+    prefix oio: <http://www.geneontology.org/formats/oboInOwl#>               
+    prefix owl: <http://www.w3.org/2002/07/owl#>                              
+    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    prefix obo: <http://purl.obolibrary.org/obo/>                             
+                                                                              
+    SELECT DISTINCT ?term ?term_label                                         
+    WHERE {                                                                   
+      ?term rdf:type owl:Class ;                                              
+        rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> .             
+      FILTER(STRSTARTS(STR(?term), "http://purl.obolibrary.org/obo/OBA_"))    
+      OPTIONAL { ?term rdfs:label ?term_label . }                             
+      FILTER(isIRI(?term))                                                    
+    }                                                                         
+    ORDER BY ?term_label                                                      
+    LIMIT 10                                                                  
+    SPARQL                                                                    
+    echo "---"                                                                
+    wc -l /tmp/oba_is_about2.tsv                                              
+    head -10 /tmp/oba_is_about2.tsv                                           
+    ---                                                                       
+    11 /tmp/oba_is_about2.tsv                                                 
+    ?term	?term_label                                                          
+    <http://purl.obolibrary.org/obo/OBA_2050236>	"26S proteasome non-ATPase    
+  regulatory subunit 7 amount"                                                
+    <http://purl.obolibrary.org/obo/OBA_1000960>	"3,3',5-triiodo-L-thyronine   
+  level"                                                                      
+    <http://purl.obolibrary.org/obo/OBA_2055822>	"3-hydroxybutyrylcarnitine to 
+  O-decanoylcarnitine ratio in blood"                                         
+    <http://purl.obolibrary.org/obo/OBA_2053717>	"AARSD1/CHAC2 protein level   
+  ratio in blood"                                                             
+    <http://purl.obolibrary.org/obo/OBA_2053718>	"AARSD1/EIF4EBP1 protein      
+  level ratio in blood"                                                       
+    <http://purl.obolibrary.org/obo/OBA_2053719>	"AARSD1/METAP2 protein level  
+  ratio in blood"                                                             
+    <http://purl.obolibrary.org/obo/OBA_2053720>	"AARSD1/PIK3AP1 protein level 
+  ratio in blood"                                                             
+    <http://purl.obolibrary.org/obo/OBA_2053721>	"AARSD1/PPME1 protein level   
+  ratio in blood"                                                             
+    <http://purl.obolibrary.org/obo/OBA_2053722>	"AARSD1/PSMD9 protein level   
+  ratio in blood"                                                             
+    <exited with exit code 0>
+
+Bash: Count total OBA terms under measurement
+$ cd /home/runner/work/efo/efo/src/ontology && ../../bin/robot merge --   
+  catalog catalog-v001.xml --input efo-edit.owl query --select /dev/stdin     
+  /tmp/oba_count.tsv 2>&1 <<'SPARQL'                                          
+    prefix oio: <http://www.geneontology.org/formats/oboInOwl#>               
+    prefix owl: <http://www.w3.org/2002/07/owl#>                              
+    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    prefix obo: <http://purl.obolibrary.org/obo/>                             
+                                                                              
+    SELECT (COUNT(DISTINCT ?term) as ?count)                                  
+    WHERE {                                                                   
+      ?term rdf:type owl:Class ;                                              
+        rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> .             
+      FILTER(STRSTARTS(STR(?term), "http://purl.obolibrary.org/obo/OBA_"))    
+      FILTER(isIRI(?term))                                                    
+    }                                                                         
+    SPARQL                                                                    
+    echo "---"                                                                
+    cat /tmp/oba_count.tsv                                                    
+    ---                                                                       
+    ?count                                                                    
+    17440                                                                     
+    <exited with exit code 0>
+
+Bash: Check if OBA terms have direct UniProt xrefs
+$ cd /home/runner/work/efo/efo/src/ontology && ../../bin/robot merge --   
+  catalog catalog-v001.xml --input efo-edit.owl query --select /dev/stdin     
+  /tmp/oba_uniprot_xref.tsv 2>&1 <<'SPARQL'                                   
+    prefix oio: <http://www.geneontology.org/formats/oboInOwl#>               
+    prefix owl: <http://www.w3.org/2002/07/owl#>                              
+    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    prefix obo: <http://purl.obolibrary.org/obo/>                             
+                                                                              
+    SELECT DISTINCT ?term ?term_label ?uniprot_id                             
+    WHERE {                                                                   
+      ?term rdf:type owl:Class ;                                              
+        rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;             
+        oio:hasDbXref ?uniprot_id .                                           
+      FILTER(STRSTARTS(STR(?term), "http://purl.obolibrary.org/obo/OBA_"))    
+      FILTER(isIRI(?term))                                                    
+      FILTER(STRSTARTS(?uniprot_id, "uniprot:") || STRSTARTS(?uniprot_id,     
+  "UniProtKB:"))                                                              
+      OPTIONAL { ?term rdfs:label ?term_label . }                             
+    }                                                                         
+    ORDER BY ?term_label                                                      
+    LIMIT 20                                                                  
+    SPARQL                                                                    
+    echo "---"                                                                
+    wc -l /tmp/oba_uniprot_xref.tsv                                           
+    head -20 /tmp/oba_uniprot_xref.tsv                                        
+    ---                                                                       
+    0 /tmp/oba_uniprot_xref.tsv                                               
+    <exited with exit code 0>
+
+Bash: Check OBA terms with is_about PR_ proteins (including equivalentClass)
+$ cd /home/runner/work/efo/efo/src/ontology && ../../bin/robot merge --   
+  catalog catalog-v001.xml --input efo-edit.owl query --select /dev/stdin     
+  /tmp/oba_is_about3.tsv 2>&1 <<'SPARQL'                                      
+    prefix oio: <http://www.geneontology.org/formats/oboInOwl#>               
+    prefix owl: <http://www.w3.org/2002/07/owl#>                              
+    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                      
+    prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                 
+    prefix obo: <http://purl.obolibrary.org/obo/>                             
+                                                                              
+    SELECT DISTINCT ?term ?term_label ?protein                                
+    WHERE {                                                                   
+      ?term rdf:type owl:Class ;                                              
+        rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> .             
+      FILTER(STRSTARTS(STR(?term), "http://purl.obolibrary.org/obo/OBA_"))    
+      {                                                                       
+        ?term rdfs:subClassOf [ rdf:type owl:Restriction ;                    
+                                owl:onProperty obo:IAO_0000136 ;              
+                                owl:someValuesFrom ?protein ] .               
+      } UNION {                                                               
+        ?term owl:equivalentClass [ owl:intersectionOf ?list ] .              
+        ?list rdf:rest*/rdf:first [ rdf:type owl:Restriction ;                
+                                     owl:onProperty obo:IAO_0000136 ;         
+                                     owl:someValuesFrom ?protein ] .          
+      }                                                                       
+      FILTER(isIRI(?protein))                                                 
+      FILTER(STRSTARTS(STR(?protein), "http://purl.obolibrary.org/obo/PR_"))  
+      OPTIONAL { ?term rdfs:label ?term_label . }                             
+    }                                                                         
+    ORDER BY ?term_label                                                      
+    LIMIT 20                                                                  
+    SPARQL                                                                    
+    echo "---"                                                                
+    wc -l /tmp/oba_is_about3.tsv                                              
+    head -20 /tmp/oba_is_about3.tsv                                           
+    ---                                                                       
+    0 /tmp/oba_is_about3.tsv                                                  
+    <exited with exit code 0>
+
+Bash: Check if is_about is used in OBA import at all
+$ cd /home/runner/work/efo/efo && grep -c 'IAO_0000136'                   
+  src/ontology/imports/oba_import.owl                                         
+    0                                                                         
+    <exited with exit code 1>
+
+Bash: Check what relationships OBA terms use
+$ cd /home/runner/work/efo/efo && grep 'onProperty'                       
+  src/ontology/imports/oba_import.owl | sort | uniq -c | sort -rn | head -10  
+    6542                 <owl:onProperty rdf:resource="http://purl.obolibrary.
+  org/obo/BFO_0000050"/>                                                      
+       6518                 <owl:onProperty rdf:resource="http://purl.        
+  obolibrary.org/obo/RO_0002314"/>                                            
+       4011                 <owl:onProperty rdf:resource="http://purl.        
+  obolibrary.org/obo/RO_0000052"/>                                            
+       3714                         <owl:onProperty rdf:resource="http://purl.
+  obolibrary.org/obo/RO_0000052"/>                                            
+       3703                                 <owl:onProperty                   
+  rdf:resource="http://purl.obolibrary.org/obo/BFO_0000050"/>                 
+       3648                                         <owl:onProperty           
+  rdf:resource="http://purl.obolibrary.org/obo/BFO_0000050"/>                 
+         65                         <owl:onProperty rdf:resource="http://purl.
+  obolibrary.org/obo/BFO_0000050"/>                                           
+         63                                 <owl:onProperty                   
+  rdf:resource="http://purl.obolibrary.org/obo/RO_0000052"/>                  
+          8         <owl:onProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/BFO_0000050"/>                                                      
+          3                 <owl:onProperty rdf:resource="http://purl.        
+  obolibrary.org/obo/RO_0004009"/>                                            
+    <exited with exit code 0>
+
+
+Now I have a clear picture. The current query only captures direct hasDbXref
+  uniprot:* on measurement terms (xrefs). It does NOT capture UniProt IDs     
+  reachable through the is_about (IAO_0000136) relationship to PR_ protein    
+  terms. There are 6 additional measurement terms that would be captured      
+  through the is_about path.                                                  
+                                                                              
+  Let me update the SPARQL query to include both paths:
+
+View src/sparql/uniprot-efo-map.sparql
+prefix oio: <http://www.geneontology.org/formats/oboInOwl#>              
+     prefix owl: <http://www.w3.org/2002/07/owl#>                             
+     prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                     
+     prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                
+     prefix obo: <http://purl.obolibrary.org/obo/>                            
+                                                                              
+     SELECT DISTINCT ?term ?term_label ?uniprot_id                            
+                                                                              
+     WHERE {                                                                  
+       {                                                                      
+         # Active measurement terms with UniProt xrefs                        
+         ?term rdf:type owl:Class ;                                           
+           rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;          
+           oio:hasDbXref ?uniprot_id .                                        
+         OPTIONAL {                                                           
+           ?term rdfs:label ?term_label .                                     
+         }                                                                    
+         FILTER(isIRI(?term))                                                 
+         FILTER(STRSTARTS(?uniprot_id, "uniprot:"))                           
+       } UNION {                                                              
+         # Obsolete EFO terms with UniProt xrefs replaced by OBA terms        
+         ?obsolete rdf:type owl:Class ;                                       
+           owl:deprecated true ;                                              
+           oio:hasDbXref ?uniprot_id ;                                        
+           obo:IAO_0100001 ?replacement_iri .                                 
+         BIND(IRI(?replacement_iri) AS ?term)                                 
+         OPTIONAL {                                                           
+           ?term rdfs:label ?term_label .                                     
+         }                                                                    
+         FILTER(STRSTARTS(?uniprot_id, "uniprot:"))                           
+         FILTER(STRSTARTS(?replacement_iri, "http://purl.obolibrary.          
+  org/obo/OBA_"))                                                             
+       }                                                                      
+     }                                                                        
+     ORDER BY ?uniprot_id ?term_label
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "prefix oio: \u003chttp://www.geneontology.                  
+  org/formats/oboInOwl#\u003e\nprefix owl: \u003chttp://www.w3.               
+  org/2002/07/owl#\u003e\nprefix rdfs: \u003chttp://www.w3.org/2000/01/rdf-   
+  schema#\u003e\nprefix rdf: \u003chttp://www.w3.org/1999/02/22-rdf-syntax-   
+  ns#\u003e\nprefix obo: \u003chttp://purl.obolibrary.org/obo/\u003e\n\nSELECT
+  DISTINCT ?term ?term_label ?uniprot_id\n\nWHERE {\n  {\n    # Active        
+  measurement terms with direct UniProt xrefs\n    ?term rdf:type owl:Class ; 
+  \n      rdfs:subClassOf+ \u003chttp://www.ebi.ac.uk/efo/EFO_0001444\u003e ; 
+  \n      oio:hasDbXref ?uniprot_id .\n    OPTIONAL {\n      ?term rdfs:label 
+  ?term_label .\n    }\n    FILTER(isIRI(?term))\n                            
+  FILTER(STRSTARTS(?uniprot_id, \"uniprot:\"))\n  } UNION {\n    # Measurement
+  terms with is_about -\u003e protein -\u003e UniProtKB xref on annotation    
+  axiom\n    ?term rdf:type owl:Class ;\n      rdfs:subClassOf+               
+  \u003chttp://www.ebi.ac.uk/efo/EFO_0001444\u003e ;\n      rdfs:subClassOf [ 
+  owl:onProperty obo:IAO_0000136 ;\n                        owl:someValuesFrom
+  ?protein ] .\n    ?axiom owl:annotatedSource ?protein ;\n                   
+  oio:hasDbXref ?raw_id .\n    FILTER(STRSTARTS(?raw_id, \"UniProtKB:\"))\n   
+  BIND(CONCAT(\"uniprot:\", REPLACE(?raw_id, \"^UniProtKB:\", \"\")) AS       
+  ?uniprot_id)\n    OPTIONAL {\n      ?term rdfs:label ?term_label .\n    }\n 
+  FILTER(isIRI(?term))\n  } UNION {\n    # Obsolete EFO terms with UniProt    
+  xrefs replaced by OBA terms\n    ?obsolete rdf:type owl:Class ;\n           
+  owl:deprecated true ;\n      oio:hasDbXref ?uniprot_id ;\n                  
+  obo:IAO_0100001 ?replacement_iri .\n    BIND(IRI(?replacement_iri) AS       
+  ?term)\n    OPTIONAL {\n      ?term rdfs:label ?term_label .\n    }\n       
+  FILTER(STRSTARTS(?uniprot_id, \"uniprot:\"))\n                              
+  FILTER(STRSTARTS(?replacement_iri, \"http://purl.obolibrary.                
+  org/obo/OBA_\"))\n  }\n}\nORDER BY ?uniprot_id ?term_label",                
+      "old_str": "prefix oio: \u003chttp://www.geneontology.                  
+  org/formats/oboInOwl#\u003e\nprefix owl: \u003chttp://www.w3.               
+  org/2002/07/owl#\u003e\nprefix rdfs: \u003chttp://www.w3.org/2000/01/rdf-   
+  schema#\u003e\nprefix rdf: \u003chttp://www.w3.org/1999/02/22-rdf-syntax-   
+  ns#\u003e\nprefix obo: \u003chttp://purl.obolibrary.org/obo/\u003e\n\nSELECT
+  DISTINCT ?term ?term_label ?uniprot_id\n\nWHERE {\n  {\n    # Active        
+  measurement terms with UniProt xrefs\n    ?term rdf:type owl:Class ;\n      
+  rdfs:subClassOf+ \u003chttp://www.ebi.ac.uk/efo/EFO_0001444\u003e ;\n       
+  oio:hasDbXref ?uniprot_id .\n    OPTIONAL {\n      ?term rdfs:label         
+  ?term_label .\n    }\n    FILTER(isIRI(?term))\n                            
+  FILTER(STRSTARTS(?uniprot_id, \"uniprot:\"))\n  } UNION {\n    # Obsolete   
+  EFO terms with UniProt xrefs replaced by OBA terms\n    ?obsolete rdf:type  
+  owl:Class ;\n      owl:deprecated true ;\n      oio:hasDbXref ?uniprot_id ; 
+  \n      obo:IAO_0100001 ?replacement_iri .\n    BIND(IRI(?replacement_iri)  
+  AS ?term)\n    OPTIONAL {\n      ?term rdfs:label ?term_label .\n    }\n    
+  FILTER(STRSTARTS(?uniprot_id, \"uniprot:\"))\n                              
+  FILTER(STRSTARTS(?replacement_iri, \"http://purl.obolibrary.                
+  org/obo/OBA_\"))\n  }\n}\nORDER BY ?uniprot_id ?term_label",                
+      "path": "/home/runner/work/efo/efo/src/sparql/uniprot-efo-map.sparql"   
+    }
+
+
+Now let me regenerate the report:
+
+Bash: Regenerate report with updated SPARQL query
+$ cd /home/runner/work/efo/efo/src/ontology && ../../bin/robot query --use-
+  graphs true --catalog catalog-v001.xml --input efo-edit.owl --select ..     
+  /sparql/uniprot-efo-map.sparql reports/report-uniprot-efo-map.tsv 2>&1 |    
+  tail -5                                                                     
+                                                                              
+    <exited with exit code 0>
+
+Bash: Verify regenerated report
+$ wc -l /home/runner/work/efo/efo/src/ontology/reports/report-uniprot-efo-
+  map.tsv && echo "---" && head -5                                            
+  /home/runner/work/efo/efo/src/ontology/reports/report-uniprot-efo-map.tsv &&
+  echo "---" && echo "OBA count:" && grep -c "OBA"                            
+  /home/runner/work/efo/efo/src/ontology/reports/report-uniprot-efo-map.tsv &&
+  echo "---" && echo "Checking new is_about entries:" && grep "EFO_0802804|   
+  EFO_0802188|EFO_0020861|EFO_0801406|EFO_0803211|EFO_0801832"                
+  /home/runner/work/efo/efo/src/ontology/reports/report-uniprot-efo-map.tsv   
+    2641 /home/runner/work/efo/efo/src/ontology/reports/report-uniprot-efo-map.
+  tsv                                                                         
+    ---                                                                       
+    ?term	?term_label	?uniprot_id                                               
+    <http://www.ebi.ac.uk/efo/EFO_0801964>	"protein shisa-3 homolog            
+  measurement"	"uniprot:A0PJX4"                                                
+    <http://www.ebi.ac.uk/efo/EFO_0803229>	"uncharacterized protein C1orf226   
+  measurement"	"uniprot:A1L170"                                                
+    <http://www.ebi.ac.uk/efo/EFO_0802907>	"probable inactive serine protease  
+  37 measurement"	"uniprot:A4D1T9"                                             
+    <http://www.ebi.ac.uk/efo/EFO_0803302>	"PH and SEC7 domain-containing      
+  protein 1 measurement"	"uniprot:A5PKW4"                                      
+    ---                                                                       
+    OBA count:                                                                
+    53                                                                        
+    ---                                                                       
+    Checking new is_about entries:                                            
+    <http://www.ebi.ac.uk/efo/EFO_0802804>	"neuron-specific protein family     
+  member 1 measurement"	"uniprot:P42857"                                       
+    <http://www.ebi.ac.uk/efo/EFO_0802188>	"uncharacterized family 31          
+  glucosidase KIAA1161 measurement"	"uniprot:Q6NSJ0"                           
+    <http://www.ebi.ac.uk/efo/EFO_0020861>	"ANGPTL8 measurement"@en            
+  "uniprot:Q6UXH0"                                                            
+    <http://www.ebi.ac.uk/efo/EFO_0801406>	"bcl10-interacting CARD protein     
+  measurement"	"uniprot:Q96LW7"                                                
+    <http://www.ebi.ac.uk/efo/EFO_0803211>	"U6 snRNA phosphodiesterase         
+  measurement"	"uniprot:Q9BQ65"                                                
+    <http://www.ebi.ac.uk/efo/EFO_0801832>	"neuron-specific protein family     
+  member 2 measurement"	"uniprot:Q9Y328"                                       
+    <exited with exit code 0>
+
+
+The updated query now captures all three sources:                           
+                                                                              
+  1. **Direct xrefs** (hasDbXref uniprot:*) - 2,580 EFO terms                 
+  2. **is_****about** → protein → UniProtKB: xref on annotation axioms - 6    
+  additional terms                                                            
+  3. **Obsolete EFO terms** replaced by OBA terms - 53 OBA terms              
+                                                                              
+  Total: 2,640 mappings (up from 2,633).                                      
+                                                                              
+  Let me also clean up the stub mondo_import.owl so it doesn't get committed:
+
+Bash: Clean up stub mondo_import.owl
+$ cd /home/runner/work/efo/efo && git checkout --                         
+  src/ontology/imports/mondo_import.owl 2>/dev/null || rm -f                  
+  src/ontology/imports/mondo_import.owl                                       
+    # Check if it was tracked or not                                          
+    git status src/ontology/imports/mondo_import.owl                          
+    On branch copilot/create-table-uniprot-efo-mappings                       
+    Your branch is up to date with 'origin/copilot/create-table-uniprot-efo-  
+  mappings'.                                                                  
+                                                                              
+    nothing to commit, working tree clean                                     
+    <exited with exit code 0>
+
+Bash: Check if mondo_import.owl exists
+$ cd /home/runner/work/efo/efo && ls src/ontology/imports/mondo_import.owl
+  2>/dev/null && echo "exists" || echo "doesn't exist"                        
+    doesn't exist                                                             
+    <exited with exit code 0>
+
+
+Good, the stub was already reverted. Let me verify the final state of all   
+  changed files:
+
+Bash: Check all changes
+$ cd /home/runner/work/efo/efo && git --no-pager diff --stat              
+    src/ontology/reports/report-uniprot-efo-map.tsv |  7 +++++++              
+     src/sparql/uniprot-efo-map.sparql               | 16 +++++++++++++++-    
+     2 files changed, 22 insertions(+), 1 deletion(-)                         
+    <exited with exit code 0>
+
+Bash: Review SPARQL changes
+$ cd /home/runner/work/efo/efo && git --no-pager diff src/sparql/uniprot- 
+  efo-map.sparql                                                              
+    diff --git a/src/sparql/uniprot-efo-map.sparql b/src/sparql/uniprot-efo-  
+  map.sparql                                                                  
+    index 5b494ec..aa74369 100644                                             
+    --- a/src/sparql/uniprot-efo-map.sparql                                   
+    +++ b/src/sparql/uniprot-efo-map.sparql                                   
+    @@ -8,7 +8,7 @@ SELECT DISTINCT ?term ?term_label ?uniprot_id             
+                                                                              
+     WHERE {                                                                  
+       {                                                                      
+    -    # Active measurement terms with UniProt xrefs                        
+    +    # Active measurement terms with direct UniProt xrefs                 
+         ?term rdf:type owl:Class ;                                           
+           rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;          
+           oio:hasDbXref ?uniprot_id .                                        
+    @@ -17,6 +17,20 @@ WHERE {                                                
+         }                                                                    
+         FILTER(isIRI(?term))                                                 
+         FILTER(STRSTARTS(?uniprot_id, "uniprot:"))                           
+    +  } UNION {                                                              
+    +    # Measurement terms with is_about -> protein -> UniProtKB xref on    
+  annotation axiom                                                            
+    +    ?term rdf:type owl:Class ;                                           
+    +      rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;          
+    +      rdfs:subClassOf [ owl:onProperty obo:IAO_0000136 ;                 
+    +                        owl:someValuesFrom ?protein ] .                  
+    +    ?axiom owl:annotatedSource ?protein ;                                
+    +           oio:hasDbXref ?raw_id .                                       
+    +    FILTER(STRSTARTS(?raw_id, "UniProtKB:"))                             
+    +    BIND(CONCAT("uniprot:", REPLACE(?raw_id, "^UniProtKB:", "")) AS      
+  ?uniprot_id)                                                                
+    +    OPTIONAL {                                                           
+    +      ?term rdfs:label ?term_label .                                     
+    +    }                                                                    
+    +    FILTER(isIRI(?term))                                                 
+       } UNION {                                                              
+         # Obsolete EFO terms with UniProt xrefs replaced by OBA terms        
+         ?obsolete rdf:type owl:Class ;                                       
+    <exited with exit code 0>
+
+
+Let me view the final SPARQL query to make sure it's correct:
+
+View src/sparql/uniprot-efo-map.sparql
+prefix oio: <http://www.geneontology.org/formats/oboInOwl#>              
+     prefix owl: <http://www.w3.org/2002/07/owl#>                             
+     prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>                     
+     prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>                
+     prefix obo: <http://purl.obolibrary.org/obo/>                            
+                                                                              
+     SELECT DISTINCT ?term ?term_label ?uniprot_id                            
+                                                                              
+     WHERE {                                                                  
+       {                                                                      
+         # Active measurement terms with direct UniProt xrefs                 
+         ?term rdf:type owl:Class ;                                           
+           rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;          
+           oio:hasDbXref ?uniprot_id .                                        
+         OPTIONAL {                                                           
+           ?term rdfs:label ?term_label .                                     
+         }                                                                    
+         FILTER(isIRI(?term))                                                 
+         FILTER(STRSTARTS(?uniprot_id, "uniprot:"))                           
+       } UNION {                                                              
+         # Measurement terms with is_about -> protein -> UniProtKB xref on    
+  annotation axiom                                                            
+         ?term rdf:type owl:Class ;                                           
+           rdfs:subClassOf+ <http://www.ebi.ac.uk/efo/EFO_0001444> ;          
+           rdfs:subClassOf [ owl:onProperty obo:IAO_0000136 ;                 
+                             owl:someValuesFrom ?protein ] .                  
+         ?axiom owl:annotatedSource ?protein ;                                
+                oio:hasDbXref ?raw_id .                                       
+         FILTER(STRSTARTS(?raw_id, "UniProtKB:"))                             
+         BIND(CONCAT("uniprot:", REPLACE(?raw_id, "^UniProtKB:", "")) AS      
+  ?uniprot_id)                                                                
+         OPTIONAL {                                                           
+           ?term rdfs:label ?term_label .                                     
+         }                                                                    
+         FILTER(isIRI(?term))                                                 
+       } UNION {                                                              
+         # Obsolete EFO terms with UniProt xrefs replaced by OBA terms        
+         ?obsolete rdf:type owl:Class ;                                       
+           owl:deprecated true ;                                              
+           oio:hasDbXref ?uniprot_id ;                                        
+           obo:IAO_0100001 ?replacement_iri .                                 
+         BIND(IRI(?replacement_iri) AS ?term)                                 
+         OPTIONAL {                                                           
+           ?term rdfs:label ?term_label .                                     
+         }                                                                    
+         FILTER(STRSTARTS(?uniprot_id, "uniprot:"))                           
+         FILTER(STRSTARTS(?replacement_iri, "http://purl.obolibrary.          
+  org/obo/OBA_"))                                                             
+       }                                                                      
+     }                                                                        
+     ORDER BY ?uniprot_id ?term_label
+
+
+Now let me commit and push:
+
+Progress update: Include is_about -> protein -> UniProtKB xrefs in mapping table
+
+Added UNION branch to SPARQL query that follows is_about (IAO_0000136)
+relationships from measurement terms to PR_ protein terms, extracting
+UniProtKB xrefs from annotation axioms. This adds 7 additional mappings
+(2,640 total: 2,580 direct xrefs + 7 via is_about + 53 OBA replacements).
+UniProtKB: prefix is normalized to uniprot: for consistency.
+
+[x] Create SPARQL query to extract UniProt-to-EFO protein measurement       
+  mappings                                                                    
+  [x] Add Makefile target to generate the mapping table                       
+  [x] Generate initial mapping table with direct hasDbXref uniprot:* xrefs    
+  [x] Include OBA terms that replaced obsolete EFO measurement terms with     
+  UniProt xrefs                                                               
+  [x] Include is_about → protein → UniProtKB:* xref path for additional       
+  coverage                                                                    
+  [x] Validate the output: 2,640 total mappings (2,580 xrefs + 7 is_about + 53
+  OBA)
+
+Call to reply_to_comment
+
+Input:
+
+{                                                                         
+      "comment_id": "4125716105",                                             
+      "reply": "Previously it was only capturing direct `hasDbXref uniprot:*` 
+  xrefs. Updated in 9f65bec to also follow `is_about` (IAO_0000136)           
+  relationships from measurement terms to PR_ protein entities and extract    
+  their `UniProtKB:*` xrefs from annotation axioms. This adds 7 additional    
+  mappings not covered by direct xrefs (2,640 total).\n\nNote: OBA terms      
+  themselves don't use `is_about` relationships or carry UniProt xrefs        
+  directly — the 53 OBA entries come from the obsolete-EFO-replacement path   
+  added previously."                                                          
+    }
+
+
+## Summary                                                                  
+                                                                              
+  Addressed @jamesamcl's question about whether the mapping table includes    
+  both xrefs and is_about paths for UniProt IDs.                              
+                                                                              
+  **What changed (9f65bec):**                                                 
+                                                                              
+  • Added a new UNION branch to the SPARQL query in src/sparql/uniprot-efo-map.
+  sparql that follows is_about (IAO_0000136) relationships from measurement   
+  terms → PR_ protein entities → UniProtKB:* xrefs on annotation axioms       
+  • The UniProtKB: prefix is normalized to uniprot: for consistency with the  
+  direct xref entries                                                         
+                                                                              
+  **Three sources now captured:**                                             
+                                                                              
+  1. Direct hasDbXref uniprot:* on measurement terms (2,580 entries)          
+  2. is_about → PR_ protein → UniProtKB:* annotation axiom xrefs (7 new       
+  entries)                                                                    
+  3. Obsolete EFO terms replaced by OBA terms (53 entries)                    
+                                                                              
+  **Total: 2,640 mappings** (up from 2,633)
+

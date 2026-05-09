@@ -1,0 +1,1255 @@
+Clone repository geneontology/go-ontology
+Start 'playwright' MCP server
+Start 'github-mcp-server' MCP server
+Call to skill
+
+Input:
+
+{                                                                         
+      "skill": "design-pattern"                                               
+    }
+
+Progress update: Initialize plan for membrane-membrane adaptor parent migration
+
+[x] PLAN: Analyze issue request and identify all listed GO terms to update  
+  [ ] PRE-VALIDATION: Run ontology validation before edits and record baseline
+  [ ] RESEARCH: N/A (no new literature/PMID additions expected)               
+  [ ] TERM-SEARCH: Confirm current parents/definitions for all listed terms in
+  go-edit.obo                                                                 
+  [ ] DESIGN-PATTERNS: Review relevant membrane adaptor/tether term patterns  
+  and precedent                                                               
+  [ ] EDITS: Checkout listed terms, update parentage and targeted definition  
+  wording in terms/, then check in                                            
+  [ ] RELATIONSHIPS: Ensure is_a/relationship assertions remain consistent and
+  not over-specified                                                          
+  [ ] SPECIALIZED-EDITS: N/A (no obsoletion, CHEBI, reaction, or taxon-       
+  constraint edits)                                                           
+  [ ] METADATA: Verify no inappropriate metadata changes for existing terms   
+  [ ] AUTOMATED-VALIDATION: Run ontology validation after edits               
+  [ ] REFERENCE-VALIDATION: N/A (no new references introduced)                
+  [ ] CHANGES-COMMITTED: Commit focused ontology updates and keep PR checklist
+  current
+
+Call to glob
+
+Input:
+
+{                                                                         
+      "path": "/home/runner/work/go-ontology/go-ontology/src/patterns",       
+      "pattern": "*.yaml"                                                     
+    }
+
+Call to rg
+
+Input:
+
+{                                                                         
+      "-n": true,                                                             
+      "output_mode": "content",                                               
+      "path": "/home/runner/work/go-ontology/go-ontology/src/ontology/go-edit.
+  obo",                                                                       
+      "pattern": "GO:0043495|GO:0140177|GO:0160190|GO:0160214|GO:0160204|     
+  GO:0180050|GO:0140443|GO:0160183|GO:0140580|GO:0140506|GO:0140474|GO:0170016|
+  GO:0160229|GO:0170009"                                                      
+    }
+
+
+I found the listed IDs in go-edit.obo, and confirmed many still have is_a:  
+  GO:0043495. I also saw GO:0170009 itself still under GO:0043495, so         
+  descendants already under GO:0170009 may move indirectly once that parent is
+  corrected.                                                                  
+                                                                              
+  I’ll now locate the design pattern files and run pre-validation before edits.
+
+Call to glob
+
+Input:
+
+{                                                                         
+      "path": "/home/runner/work/go-ontology/go-ontology/src",                
+      "pattern": "**/*.yaml"                                                  
+    }
+
+Bash: Check working tree status
+$ cd /home/runner/work/go-ontology/go-ontology && git --no-pager status --
+  short                                                                       
+                                                                              
+    <exited with exit code 0>
+
+Bash: Run pre-edit ontology validation
+$ cd /home/runner/work/go-ontology/go-ontology/src/ontology && make       
+  travis_build                                                                
+    grep -v '^import: http://purl.obolibrary.                                 
+  org/obo/go/imports/reactome_xrefs_import.owl' go-edit.obo |\                
+    grep -v '^import: http://purl.obolibrary.                                 
+  org/obo/go/imports/go_taxon_constraints.owl' >go-edit-trimmed-imports.obo   
+                                                                              
+    real	0m0.079s                                                              
+    user	0m0.077s                                                              
+    sys	0m0.060s                                                               
+    gunzip ../resources/rhea.rdf.gz -c > ../resources/rhea.rdf                
+                                                                              
+    real	0m0.678s                                                              
+    user	0m0.627s                                                              
+    sys	0m0.049s                                                               
+    JAVA_OPTS=-Xmx6G amm --silent ../util/filter-rhea-xrefs.sc go-edit-trimmed-
+  imports.obo catalog-v001.xml ../resources/rhea.rdf go-edit-filtered-xrefs.  
+  ofn                                                                         
+    sh: 1: amm: not found                                                     
+                                                                              
+    real	0m0.001s                                                              
+    user	0m0.000s                                                              
+    sys	0m0.001s                                                               
+    make: *** [Makefile:218: go-edit-filtered-xrefs.ofn] Error 127            
+    <exited with exit code 2>
+
+Bash: Inspect Makefile around failing target
+$ cd /home/runner/work/go-ontology/go-ontology/src/ontology && awk        
+  'NR>=180 && NR<=280 {print NR":"$0}' Makefile | cat                         
+    180:	$(ROBOT) diff --left $(PREVIOUS_PLUS) --right $(GO_PLUS).ofn --format 
+  markdown -o $@                                                              
+    181:                                                                      
+    182:go-obo-txt-diff.md: $(PREVIOUS_OBO) go.obo                            
+    183:	{ echo "# Textual diff for go.obo\n"; echo "```diff"; diff -u         
+  $(PREVIOUS_OBO) go.obo; echo "```"; } >$@                                   
+    184:                                                                      
+    185:go-obo-status.md: $(PREVIOUS_OBO) go.obo ../gh_pages_templates/go-obo-
+  status.md                                                                   
+    186:	{ echo "---"; runoak -i simpleobo:go.obo statistics --group-by-obo-   
+  namespace --compare-with simpleobo:$(PREVIOUS_OBO); echo "---"; cat ..      
+  /gh_pages_templates/go-obo-status.md; } >$@                                 
+    187:                                                                      
+    188:# ----------------------------------------                            
+    189:# OWL                                                                 
+    190:# ----------------------------------------                            
+    191:                                                                      
+    192:#Uses file provided by Reactome to generate xrefs for import          
+    193:                                                                      
+    194:../resources/Reactions2GoTerms_human.txt:                             
+    195:	wget -O $@ --no-check-certificate https://reactome.                   
+  org/download/current/Reactions2GoTerms_human.txt                            
+    196:                                                                      
+    197:../resources/Pathways2GoTerms_human.txt:                              
+    198:	wget -O $@ --no-check-certificate https://reactome.                   
+  org/download/current/Pathways2GoTerms_human.txt                             
+    199:                                                                      
+    200:imports/reactome_xrefs_import.owl: ..                                 
+  /resources/Reactions2GoTerms_human.txt ../resources/Pathways2GoTerms_human. 
+  txt                                                                         
+    201:	mkdir -p reactome-tmp                                                 
+    202:	sed -i '1s/.*/Identifier\tName\tdefined_class/' ..                    
+  /resources/Reactions2GoTerms_human.txt                                      
+    203:	sed -i '1d' ../resources/Pathways2GoTerms_human.txt                   
+    204:	perl -i.bak -pe 's/[^[:ascii:]]//g' ..                                
+  /resources/Reactions2GoTerms_human.txt                                      
+    205:	perl -i.bak -pe 's/[^[:ascii:]]//g' ..                                
+  /resources/Pathways2GoTerms_human.txt                                       
+    206:	cat ../resources/Reactions2GoTerms_human.txt ..                       
+  /resources/Pathways2GoTerms_human.txt >reactome-tmp/combined.txt            
+    207:	rm ../resources/Reactions2GoTerms_human.txt.bak                       
+    208:	rm ../resources/Pathways2GoTerms_human.txt.bak                        
+    209:	$(DOSDP_TOOLS) generate --template=xref_dosdp_yaml/reactome_xref.yaml --
+  infile=reactome-tmp/combined.txt --outfile=reactome-tmp/reactome_xrefs.ofn --
+  obo-prefixes=true                                                           
+    210:	$(ROBOT) convert --input reactome-tmp/reactome_xrefs.ofn --output     
+  imports/reactome_xrefs_import.owl annotate --ontology-iri                   
+  $(BASE)/imports/reactome_xrefs_import.owl -V $(RELEASE_URIBASE)/$@ -o $@    
+    211:                                                                      
+    212:# Remove reactome_xrefs_import.owl and go_taxon_constraints.owl from  
+  imports. These are merged in directly in enhanced.ofn                       
+    213:go-edit-trimmed-imports.obo: $(SRC)                                   
+    214:	grep -v '^import: http://purl.obolibrary.                             
+  org/obo/go/imports/reactome_xrefs_import.owl' $< |\                         
+    215:	grep -v '^import: http://purl.obolibrary.                             
+  org/obo/go/imports/go_taxon_constraints.owl' >$@                            
+    216:                                                                      
+    217:go-edit-filtered-xrefs.ofn: go-edit-trimmed-imports.obo ../util/filter-
+  rhea-xrefs.sc ../resources/rhea.rdf                                         
+    218:	$(AMM) ../util/filter-rhea-xrefs.sc $< catalog-v001.xml ..            
+  /resources/rhea.rdf $@                                                      
+    219:                                                                      
+    220:# merge in some imported GO modules                                   
+    221:# remove editor-only annotations                                      
+    222:# convert some xrefs to skos properties - only for prefixes defined in
+  the SPARQL update file                                                      
+    223:# NOTE - the beginning 'annotate' command is used only to work around 
+  this ROBOT bug when merge is the first command:                             
+    224:# https://github.com/ontodev/robot/issues/1250                        
+    225:# NOTE - 'convert --add-prefixes prefixes.jsonld' is necessary until  
+  ROBOT issue https://github.com/ontodev/robot/issues/1266 is fixed           
+    226:enhanced.ofn: go-edit-filtered-xrefs.ofn ../sparql/add-skos-xrefs.ru ..
+  /sparql/remove-broad-xrefs.ru ../sparql/remove-related-xrefs.ru             
+    227:	$(ROBOT) annotate -i go-edit-filtered-xrefs.ofn --annotation          
+  owl:versionInfo $(RELEASEDATE) merge --collapse-import-closure false -i     
+  imports/go_taxon_constraints.owl -i imports/reactome_xrefs_import.owl -i    
+  imports/go-catalytic-activities-participants.owl remove --term 'IAO:0000116' --
+  axioms annotation --signature true query --update ../sparql/add-skos-xrefs. 
+  ru --update ../sparql/remove-broad-xrefs.ru --update ../sparql/remove-      
+  related-xrefs.ru remove --select 'complement' --drop-axiom-annotations      
+  'oboInOwl:source' annotate --annotation owl:versionInfo $(RELEASEDATE)      
+  convert --add-prefixes prefixes.jsonld -o $@                                
+    228:                                                                      
+    229:# reasoned.ofn is equivalent to editors source, after materialize-    
+  reason-relax-reduce pipeline                                                
+    230:# note: we keep this as a distinct intermediate target as the ontology
+  IRI needs to be 'go' for Oort to work...                                    
+    231:reasoned.ofn: enhanced.ofn $(SRC)-check                               
+    232:	$(ROBOT) materialize -i $< -r ELK --term BFO:0000050 reason -r ELK -e 
+  asserted-only --exclude-duplicate-axioms true --exclude-tautologies         
+  structural relax reduce annotate -V $(RELEASE_URIBASE)/$(ONT).owl -o $@     
+    233:                                                                      
+    234:present_in_taxon_check.ofn: enhanced.ofn ..                           
+  /taxon_constraints/present_in_taxon.ofn                                     
+    235:	$(ROBOT) merge --collapse-import-closure false -i $< -i ..            
+  /taxon_constraints/present_in_taxon.ofn reason -r ELK -e asserted-only --   
+  exclude-duplicate-axioms true --exclude-tautologies structural -o $@        
+    236:                                                                      
+    237:# equivalent to reasoned, but we rename                               
+    238:# TODO cleanup redundancies with merge here and with go-base          
+    239:# note: do not run 'reason' after go-computed-taxon-constraints.owl is
+  merged; some desired logical redundancy may be lost                         
+    240:$(GO_PLUS).ofn: reasoned.ofn imports/go-computed-taxon-constraints.owl
+    241:	$(ROBOT) unmerge -i $< -i imports/go_taxon_constraints.owl merge --   
+  collapse-import-closure true --include-annotations false merge -i imports/go-
+  computed-taxon-constraints.owl annotate -O $(BASE)/$@ -V                    
+  $(RELEASE_URIBASE)/$@ -o $@                                                 
+    242:                                                                      
+    243:$(GO_PLUS).owl: $(GO_PLUS).ofn                                        
+    244:	$(ROBOT) convert -i $< -o $@                                          
+    245:.PRECIOUS: $(GO_PLUS).owl                                             
+    246:                                                                      
+    247:# Create release file containing GO-asserted axioms, no external      
+  axioms.                                                                     
+    248:# GO artifacts to merge are hardcoded here.                           
+    249:go-base.owl: $(GO_PLUS).ofn                                           
+    250:	$(ROBOT) remove -i $< --select imports --trim false remove --base-iri 
+  'http://purl.obolibrary.org/obo/GO_' --base-iri 'http://purl.obolibrary.    
+  org/obo/GOREL_' --base-iri 'http://purl.obolibrary.org/obo/GOCHE_' --base-  
+  iri 'http://purl.obolibrary.org/obo/NCBITaxon_Union_' --axioms external --  
+  preserve-structure false --trim false merge -i extensions/go-gci.owl -i     
+  extensions/go-bridge.owl -i extensions/ro_pending.owl -i imports/x-disjoint.
+  ofn annotate -O $(BASE)/$@ -V $(RELEASE_URIBASE)/$@ -o $@                   
+    251:                                                                      
+    252:$(GO_GAF).owl: extensions/go-gaf-edit.ofn $(GO_PLUS).owl              
+  extensions/gorel.owl mirror/cl.owl mirror/taxslim.owl mirror/taxslim-       
+  disjoint-over-in-taxon.owl                                                  
+    253:	$(ROBOT) merge -i $< --collapse-import-closure true --include-        
+  annotations false reason -r ELK --exclude-duplicate-axioms true --remove-   
+  redundant-subclass-axioms true --exclude-tautologies structural annotate -O 
+  $(BASE)/$@ -V $(RELEASE_URIBASE)/$@ -o $@                                   
+    254:                                                                      
+    255:$(GO_AMIGO).owl: extensions/go-amigo-edit.ofn $(GO_GAF).owl           
+  extensions/go-modules-annotations.owl extensions/go-taxon-subsets.owl       
+  mirror/eco.owl mirror/pato.owl mirror/po.owl mirror/chebi.owl mirror/uberon.
+  owl mirror/wbbt.owl                                                         
+    256:	$(ROBOT) merge -i $< --collapse-import-closure true --include-        
+  annotations false reason -r ELK --exclude-duplicate-axioms true --remove-   
+  redundant-subclass-axioms true --exclude-tautologies structural annotate -O 
+  $(BASE)/$@ -V $(RELEASE_URIBASE)/$@ -o $@                                   
+    257:                                                                      
+    258:# Not all imports are being pre-mirrored; the ones that are should be 
+  dependencies                                                                
+    259:$(GO_LEGO).owl: extensions/go-lego-edit.ofn $(GO_PLUS).owl mirror/ro. 
+  owl extensions/legorel.owl extensions/go-bfo-bridge.owl mirror/taxslim.owl  
+  mirror/taxslim-disjoint-over-in-taxon.owl mirror/cl.owl mirror/uberon.owl   
+  mirror/users.ttl mirror/groups.ttl imports/go-lego-chebi-import.owl         
+  mirror/wbbt.owl mirror/eco.owl                                              
+    260:	$(ROBOT) merge -i $< --collapse-import-closure true --include-        
+  annotations false reason -r ELK --exclude-duplicate-axioms true --remove-   
+  redundant-subclass-axioms true --exclude-tautologies structural relax reduce --
+  named-classes-only true annotate -O $(BASE)/$@ -V $(RELEASE_URIBASE)/$@ -o  
+  $@                                                                          
+    261:                                                                      
+    262:extensions/reacto.owl: $(GO_LEGO).owl mirror/chebi.owl                
+    263:	mkdir -p reacto-tmp                                                   
+    264:	wget -O ./reacto-tmp/biopax2go.jar --no-check-certificate             
+  https://github.com/geneontology/pathways2GO/releases/download/v1.1.         
+  4/biopax2go.jar                                                             
+    265:	wget -O ./reacto-tmp/biopax.zip --no-check-certificate                
+  https://reactome.org/download/current/biopax.zip                            
+    266:	unzip -o ./reacto-tmp/biopax.zip -d ./reacto-tmp/                     
+    267:	java -jar -Xmx8G ./reacto-tmp/biopax2go.jar -b ./reacto-              
+  tmp/Homo_sapiens.owl -reacto ./extensions/reacto -lego $(GO_LEGO).owl -chebi .
+  /mirror/chebi.owl                                                           
+    268:	$(ROBOT) convert -i extensions/reacto.ttl -o extensions/reacto.owl    
+    269:	rm ./reacto-tmp/*                                                     
+    270:	rmdir ./reacto-tmp                                                    
+    271:                                                                      
+    272:$(GO_LEGO_REACTO).owl: extensions/go-lego-reacto-edit.ofn $(GO_LEGO). 
+  owl extensions/reacto.owl                                                   
+    273:	$(ROBOT) merge -i $< --collapse-import-closure true --include-        
+  annotations false reason -r ELK --exclude-duplicate-axioms true --remove-   
+  redundant-subclass-axioms true --exclude-tautologies structural relax reduce --
+  named-classes-only true annotate -O $(BASE)/$@ -V $(RELEASE_URIBASE)/$@ -o  
+  $@                                                                          
+    274:                                                                      
+    275:# ----------------------------------------                            
+    276:# OBO and subsets                                                     
+    277:# ----------------------------------------                            
+    278:                                                                      
+    279:# while go-plus is the full version, the successive releases eliminate
+  various things to simplify the                                              
+    280:# file, including                                                     
+    <exited with exit code 0>
+
+Call to rg
+
+Input:
+
+{                                                                         
+      "-n": true,                                                             
+      "output_mode": "content",                                               
+      "path": "/home/runner/work/go-ontology/go-                              
+  ontology/src/ontology/Makefile",                                            
+      "pattern": "^travis_build:|^\$\(SRC\)-check:|^check:|go-edit\.obo-check|
+  ^qc:|^test:"                                                                
+    }
+
+Bash: Inspect validation targets
+$ cd /home/runner/work/go-ontology/go-ontology/src/ontology && awk 'NR>=70
+  && NR<=175 {print NR":"$0}' Makefile | cat                                  
+    70:GO_LEGO = extensions/go-lego                                           
+    71:GO_LEGO_REACTO = extensions/go-lego-reacto                             
+    72:                                                                       
+    73:SPARQLDIR = ../sparql                                                  
+    74:REPORTDIR = $(RELEASEDIR)/reports                                      
+    75:                                                                       
+    76:# ----------------------------------------                             
+    77:# TOP LEVEL TARGETS                                                    
+    78:# ----------------------------------------                             
+    79:                                                                       
+    80:stage_release: imports/reactome_xrefs_import.owl test $(ONT).owl $(ONT).
+  obo $(ONT).json.gz $(GO_PLUS).owl $(GO_PLUS).json.gz go-base.owl $(GO_GAF). 
+  owl $(GO_AMIGO).owl $(GO_LEGO).owl $(GO_LEGO_REACTO).owl go-basic.obo go-   
+  basic.json.gz extensions/rhea-reactions.ttl imports/go-computed-taxon-      
+  constraints.obo subset-owls subset-reports generate-mappings                
+    81:                                                                       
+    82:test: datalog-violations.tsv $(SRC)-check basic-cycles.tsv sparql_test 
+  check_all_taxon_constraints_columns change-report.txt reasoned.ofn          
+  unsatisfiable present_in_taxon_check.ofn chebi_pH_7_3_check                 
+    83:                                                                       
+    84:travis_test: check_all_taxon_constraints_columns datalog-violations.tsv
+  chebi_pH_7_3_check $(SRC)-check travis_build change-report.txt              
+    85:                                                                       
+    86:# This target combines features from reasoned.ofn, enhanced.ofn,       
+  sparql_test into a faster mode for Travis/GitHub Actions.                   
+    87:# These must be kept in sync.                                          
+    88:# The convert step is here only to work around https://github.         
+  com/ontodev/robot/issues/1250                                               
+    89:travis_build: go-edit-filtered-xrefs.ofn                               
+    90:	$(ROBOT) convert -i go-edit-filtered-xrefs.ofn -o                      
+  travis_build_dummy_out.ofn verify --queries $(VARGS) -O reports/ merge --   
+  collapse-import-closure false -i imports/go_taxon_constraints.owl -i        
+  imports/reactome_xrefs_import.owl -i ../taxon_constraints/present_in_taxon. 
+  ofn -i imports/go-catalytic-activities-participants.owl remove --term       
+  'IAO:0000116' --axioms annotation --signature true query --update ..        
+  /sparql/add-skos-xrefs.ru --update ../sparql/remove-broad-xrefs.ru --update ..
+  /sparql/remove-related-xrefs.ru remove --select 'complement' --drop-axiom-  
+  annotations 'oboInOwl:source' reason -r ELK -e asserted-only --exclude-     
+  duplicate-axioms true --exclude-tautologies structural relax reduce annotate -
+  V $(RELEASE_URIBASE)/$(ONT).owl --annotation owl:versionInfo $(RELEASEDATE) 
+  convert --add-prefixes prefixes.jsonld -o travis_build_dummy_out.ofn verify --
+  queries $(SPARQLDIR)/multiple-class-links-violation.sparql                  
+  $(SPARQLDIR)/obsolete-reference-violation.sparql                            
+  $(SPARQLDIR)/missing_superclass-violation.sparql $(SPARQLDIR)/different-    
+  namespace-violation.sparql -O reports/                                      
+    91:                                                                       
+    92:unsatisfiable: $(GO_GAF).owl                                           
+    93:	$(ROBOT) reason --reasoner ELK --input extensions/go-gaf.owl -D        
+  $(RELEASEDIR)/core_dump.owl || true                                         
+    94:                                                                       
+    95:full_test: test $(ONT).obo                                             
+    96:                                                                       
+    97:# note that most derived files are kept separate from source files, in 
+  $(RELEASEDIR)                                                               
+    98:clean: clean_target clean_imports                                      
+    99:clean_target:                                                          
+    100:	rm -rf $(RELEASEDIR)/*                                                
+    101:                                                                      
+    102:# copies from staged area to target                                   
+    103:prepare_release:                                                      
+    104:	echo "Base Version IRI: $(RELEASE_URIBASE)"                           
+    105:	mkdir -p $(RELEASEDIR)/extensions &&\                                 
+    106:	mkdir -p $(RELEASEDIR)/subsets &&\                                    
+    107:	mkdir -p $(RELEASEDIR)/reports &&\                                    
+    108:	mkdir -p $(RELEASEDIR)/external2go &&\                                
+    109:	mkdir -p $(RELEASEDIR_IMPORTS) &&\                                    
+    110:	cp $(ONT).owl $(ONT).obo $(ONT).json $(RELEASEDIR) &&\                
+    111:	cp imports/*.owl $(RELEASEDIR_IMPORTS) &&\                            
+    112:	cp imports/*.obo $(RELEASEDIR_IMPORTS) &&\                            
+    113:	cp extensions/* $(RELEASEDIR)/extensions &&\                          
+    114:	cp external2go/* $(RELEASEDIR)/external2go &&\                        
+    115:	cp go-basic.* $(RELEASEDIR) &&\                                       
+    116:	cp go-base.owl $(RELEASEDIR) &&\                                      
+    117:	find subsets/ -maxdepth 1 -type f ! -name '*.tmp' -exec cp {}         
+  $(RELEASEDIR)/subsets/ \; &&\                                               
+    118:	cp reports/* $(RELEASEDIR)/reports &&\                                
+    119:	echo "Release files are now in $(RELEASEDIR)"                         
+    120:                                                                      
+    121:# deploy to S3                                                        
+    122:# URLs will be of the form https://s3.amazonaws.com/go-data-product-  
+  current/ontology/subsets/go-basic.json.gz                                   
+    123:S3CFG = ~/.s3cfg.go-pipeline-push-agent                               
+    124:# https://build.berkeleybop.org/job/release-go-ontology-daily-        
+  snapshot/                                                                   
+    125:deploy-snapshot:                                                      
+    126:	cd $(RELEASEDIR) &&\                                                  
+    127:	s3cmd -c $(S3CFG) --acl-public --mime-type=application/rdf+xml sync . 
+  /  s3://go-data-product-snapshot/ontology/                                  
+    128:                                                                      
+    129:deploy-release:                                                       
+    130:	cd $(RELEASEDIR) &&\                                                  
+    131:	s3cmd -c $(S3CFG) --acl-public --mime-type=application/rdf+xml sync . 
+  /  s3://go-data-product-current/ontology/                                   
+    132:	s3cmd -c $(S3CFG) --acl-public --mime-type=application/rdf+xml sync . 
+  /  s3://go-data-product-release/$(RELEASEDATE)/ontology/                    
+    133:                                                                      
+    134:                                                                      
+    135:# ----------------------------------------                            
+    136:# GENERIC TRANSFORMS                                                  
+    137:# ----------------------------------------                            
+    138:                                                                      
+    139:%.gz: %                                                               
+    140:	gzip -c $< > $@.tmp && mv $@.tmp $@                                   
+    141:                                                                      
+    142:%.json: %.ofn                                                         
+    143:	$(ROBOT) convert --input $< -f json -o $@                             
+    144:.PRECIOUS: %.json                                                     
+    145:                                                                      
+    146:# ----------------------------------------                            
+    147:# CHECKS AND BALANCES                                                 
+    148:# ----------------------------------------                            
+    149:                                                                      
+    150:# TODO: use json form of this file                                    
+    151:# See also: https://github.com/geneontology/go-ontology/issues/13837  
+    152:# See also: https://github.com/geneontology/go-ontology/issues/18870  
+    153:GO.xrf_abbs: $(SRC)                                                   
+    154:	wget http://snapshot.geneontology.org/metadata/db-xrefs.legacy -O $@. 
+  tmp && mv $@.tmp $@ && touch $@                                             
+    155:                                                                      
+    156:$(SRC)-check: $(SRC) GO.xrf_abbs                                      
+    157:	$(PERLCHECK) --disable-isa-incomplete --disable-whitespace-check --   
+  xref-abbs GO.xrf_abbs $< > $@.tmp && mv $@.tmp $@                           
+    158:                                                                      
+    159:# consider using snapshot release                                     
+    160:PREVIOUS=go-lastrelease.owl                                           
+    161:PREVIOUS_OBO=go-lastrelease.obo                                       
+    162:PREVIOUS_PLUS=go-plus-lastrelease.owl                                 
+    163:$(PREVIOUS): $(SRC)                                                   
+    164:	wget $(OBO)/go.owl -O $@ && touch $@                                  
+    165:                                                                      
+    166:$(PREVIOUS_OBO): $(SRC)                                               
+    167:	wget $(OBO)/go.obo -O $@ && touch $@                                  
+    168:                                                                      
+    169:$(PREVIOUS_PLUS): $(SRC)                                              
+    170:	wget $(OBO)/go/extensions/go-plus.owl -O $@ && touch $@               
+    171:                                                                      
+    172:# ensure no IDs are lost                                              
+    173:change-report.txt: $(SRC) $(PREVIOUS)                                 
+    174:	$(OWLTOOLS) $(USECAT) $< --verify-changes -p $(PREVIOUS) -o $@ --id-  
+  prefix-filter GO: --check-missing-labels && touch $@                        
+    175:                                                                      
+    <exited with exit code 0>
+
+Bash: Run baseline syntax/xref check before edits
+$ cd /home/runner/work/go-ontology/go-ontology/src/ontology && make go-   
+  edit.obo-check                                                              
+    wget http://snapshot.geneontology.org/metadata/db-xrefs.legacy -O GO.     
+  xrf_abbs.tmp && mv GO.xrf_abbs.tmp GO.xrf_abbs && touch GO.xrf_abbs         
+    --2026-04-15 23:38:54--  http://snapshot.geneontology.org/metadata/db-    
+  xrefs.legacy                                                                
+    Resolving snapshot.geneontology.org (snapshot.geneontology.org)... failed:
+  No address associated with hostname.                                        
+    wget: unable to resolve host address ‘snapshot.geneontology.org’          
+                                                                              
+    real	0m0.021s                                                              
+    user	0m0.002s                                                              
+    sys	0m0.003s                                                               
+    make: *** [Makefile:154: GO.xrf_abbs] Error 4                             
+    <exited with exit code 2>
+
+Bash: Run baseline ROBOT convert syntax check
+$ cd /home/runner/work/go-ontology/go-ontology/src/ontology && robot      
+  convert -i go-edit.obo -f obo -o /tmp/go-edit.precheck.obo                  
+    bash: robot: command not found                                            
+    <exited with exit code 127>
+
+Bash: Extract stanzas for target and parent terms
+$ cd /home/runner/work/go-ontology/go-ontology && obo-grep.pl --noheader -
+  r 'id: GO:(0043495|0140177|0160190|0160214|0160204|0180050|0140443|0160183| 
+  0140580|0140506|0140474|0170016|0160229|0170009)' src/ontology/go-edit.obo |
+  cat                                                                         
+    bash: obo-grep.pl: command not found                                      
+    <exited with exit code 0>
+
+Call to glob
+
+Input:
+
+{                                                                         
+      "path": "/home/runner/work/go-ontology/go-ontology",                    
+      "pattern": "**/obo-checkout.pl"                                         
+    }
+
+Call to glob
+
+Input:
+
+{                                                                         
+      "path": "/home/runner/work/go-ontology/go-ontology",                    
+      "pattern": "**/obo-grep.pl"                                             
+    }
+
+Bash: Print relevant GO term stanzas for analysis
+$ python - <<'PY'                                                         
+    from pathlib import Path                                                  
+    p=Path('/home/runner/work/go-ontology/go-ontology/src/ontology/go-edit.   
+  obo')                                                                       
+    text=p.read_text()                                                        
+    ids={'GO:0043495','GO:0140177','GO:0160190','GO:0160214','GO:0160204',    
+  'GO:0180050','GO:0140443','GO:0160183','GO:0140580','GO:0140506',           
+  'GO:0140474','GO:0170016','GO:0160229','GO:0170009'}                        
+    for block in text.split('\n\n'):                                          
+        if any(f'id: {i}\n' in block+'\n' for i in ids):                      
+            idline=[ln for ln in block.splitlines() if ln.startswith('id:     
+  GO:')]                                                                      
+            if idline:                                                        
+                print('\n'.join(block.splitlines()[:20]))                     
+                print('\n---\n')                                              
+    PY                                                                        
+    [Term]                                                                    
+    id: GO:0043495                                                            
+    name: protein-membrane adaptor activity                                   
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together a protein or
+  a protein complex with a membrane, either via membrane lipid binding or by  
+  interacting with a membrane protein, to establish or maintain the           
+  localization of the protein, protein complex or organelle." [GOC:curators]  
+    synonym: "anchoring" RELATED []                                           
+    synonym: "protein membrane adaptor" EXACT []                              
+    synonym: "protein membrane adaptor activity" EXACT []                     
+    synonym: "protein membrane anchor" RELATED []                             
+    is_a: GO:0030674 ! protein-macromolecule adaptor activity                 
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/19090" xsd:anyURI                                           
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/24964" xsd:anyURI                                           
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0140177                                                            
+    name: membrane-membrane adaptor activity                                  
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together two         
+  membranes, either via membrane lipid binding or by interacting with a       
+  membrane protein, to establish or maintain the localization of the protein, 
+  protein complex, vesicle or organelle." [GOC:curators]                      
+    is_a: GO:0060090 ! molecular adaptor activity                             
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/24964" xsd:anyURI                                           
+    created_by: pg                                                            
+    creation_date: 2025-06-04T08:36:30Z                                       
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0140443                                                            
+    name: mitochondrion-plasma membrane adaptor activity                      
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together a           
+  mitochondrion and a plasma membrane either via membrane lipid binding or by 
+  interacting with a mitochondrial outer membrane protein, to establish or    
+  maintain the localization of the mitochondrion." [PMID:31582398]            
+    synonym: "mitochondrion plasma membrane adaptor activity" EXACT []        
+    synonym: "mitochondrion plasma membrane tether activity" EXACT []         
+    synonym: "plasma membrane-mitochondrion adaptor activity" EXACT []        
+    synonym: "plasma membrane-mitochondrion tether activity" EXACT []         
+    is_a: GO:0043495 ! protein-membrane adaptor activity                      
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/19090" xsd:anyURI                                           
+    created_by: pg                                                            
+    creation_date: 2020-03-24T13:11:20Z                                       
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0140474                                                            
+    name: mitochondrion-endoplasmic reticulum membrane tether activity        
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together a           
+  mitochondrion and an ER membrane either via membrane lipid binding or by    
+  interacting with a mitochondrial outer membrane protein, to establish or    
+  maintain the localization of the mitochondrion." [PMID:19556461,            
+  PMID:27875684]                                                              
+    synonym: "endoplasmic reticulum-mitochondrion membrane adaptor activity"  
+  EXACT []                                                                    
+    synonym: "endoplasmic reticulum-mitochondrion membrane tether activity"   
+  EXACT []                                                                    
+    synonym: "ER-mitochondrion membrane adaptor activity" EXACT []            
+    synonym: "ER-mitochondrion membrane tether activity" EXACT []             
+    synonym: "mitochondrion-endoplasmic reticulum membrane adaptor activity"  
+  EXACT []                                                                    
+    synonym: "mitochondrion-ER membrane adaptor activity" EXACT []            
+    synonym: "mitochondrion-ER membrane tether activity" EXACT []             
+    is_a: GO:0170009 ! endoplasmic reticulum-organelle membrane tether        
+  activity                                                                    
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/19634" xsd:anyURI                                           
+    created_by: pg                                                            
+    creation_date: 2020-06-22T07:01:14Z                                       
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0140506                                                            
+    name: endoplasmic reticulum-autophagosome adaptor activity                
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together an ER       
+  membrane and an autophagosome during reticulophagy." [PMID:32735772]        
+    synonym: "autophagosome-endoplasmic reticulum anchor" EXACT []            
+    synonym: "autophagosome-ER anchor" EXACT []                               
+    synonym: "ER- autophagosome anchor" EXACT []                              
+    is_a: GO:0160183 ! autophagosome-membrane adaptor activity                
+    is_a: GO:0170009 ! endoplasmic reticulum-organelle membrane tether        
+  activity                                                                    
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/19873" xsd:anyURI                                           
+    created_by: pg                                                            
+    creation_date: 2020-08-27T11:04:43Z                                       
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0140580                                                            
+    name: mitochondrion autophagosome adaptor activity                        
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together a           
+  mitochondrial membrane and an autophagosome during mitophagy."              
+  [PMID:33138913]                                                             
+    synonym: "mitophagy receptor" EXACT []                                    
+    is_a: GO:0160183 ! autophagosome-membrane adaptor activity                
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/20668" xsd:anyURI                                           
+    created_by: pg                                                            
+    creation_date: 2021-01-18T11:03:49Z                                       
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0160183                                                            
+    name: autophagosome-membrane adaptor activity                             
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together a target    
+  membrane and an autophagosome during autophagy." [PMID:30544615,            
+  PMID:36635405]                                                              
+    is_a: GO:0043495 ! protein-membrane adaptor activity                      
+    is_a: GO:0160247 ! autophagy cargo adaptor activity                       
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/27704" xsd:anyURI                                           
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/28285" xsd:anyURI                                           
+    created_by: rynl                                                          
+    creation_date: 2024-04-25T00:20:20Z                                       
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0160190                                                            
+    name: peroxisome-mitochondrion membrane tether activity                   
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together the         
+  peroxisome and the mitochondrial outer membrane, establishing the           
+  localization of the peroxisome close to the mitochondrion." [PMID:29720625, 
+  PMID:38669296]                                                              
+    is_a: GO:0043495 ! protein-membrane adaptor activity                      
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/28255" xsd:anyURI                                           
+    created_by: rynl                                                          
+    creation_date: 2024-06-24T22:53:31Z                                       
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0160204                                                            
+    name: mitochondrion-mitochondrion outer membrane tether activity          
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together two         
+  mitochondrion membranes via membrane lipid binding or by interacting with a 
+  mitochondrial outer membrane protein, to establish or maintain the          
+  localization of the mitochondrion." [PMID:38843396]                         
+    synonym: "mitochondrion membrane tether activity" RELATED []              
+    synonym: "mitochondrion outer membrane tether activity" RELATED []        
+    is_a: GO:0043495 ! protein-membrane adaptor activity                      
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/28694" xsd:anyURI                                           
+    created_by: rynl                                                          
+    creation_date: 2024-08-15T17:06:16Z                                       
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0160214                                                            
+    name: endoplasmic reticulum-plasma membrane adaptor activity              
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together a plasma    
+  membrane with an endoplasmic reticulum membrane, via membrane lipid binding,
+  to establish membrane contact sites and mediate exchange and communication."
+  [PMID:23041194, PMID:39239853]                                              
+    is_a: GO:0043495 ! protein-membrane adaptor activity                      
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/28899" xsd:anyURI                                           
+    created_by: rynl                                                          
+    creation_date: 2024-09-12T20:22:40Z                                       
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0160229                                                            
+    name: peroxisome-endoplasmic reticulum membrane tether activity           
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together a peroxisome
+  and an ER membrane, either via membrane lipid binding or by interacting with
+  a membrane protein." [PMID:39271061]                                        
+    is_a: GO:0170009 ! endoplasmic reticulum-organelle membrane tether        
+  activity                                                                    
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/29432" xsd:anyURI                                           
+    created_by: rynl                                                          
+    creation_date: 2024-12-17T01:17:43Z                                       
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0170009                                                            
+    name: endoplasmic reticulum-organelle membrane tether activity            
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together two         
+  membranes, either via membrane lipid binding or by interacting with a       
+  membrane protein, to establish or maintain membrane contact sites and       
+  mediate organelle exchange and communication." [PMID:29858488]              
+    is_a: GO:0043495 ! protein-membrane adaptor activity                      
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/25429" xsd:anyURI                                           
+    created_by: ew                                                            
+    creation_date: 2023-06-29T16:28:28Z                                       
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0170016                                                            
+    name: endoplasmic reticulum-endosome tether activity                      
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together an endosome 
+  and an ER membrane either via membrane lipid binding or by interacting with 
+  an endosome protein, to establish and facilitate organelle exchange."       
+  [PMID:33124732]                                                             
+    is_a: GO:0170009 ! endoplasmic reticulum-organelle membrane tether        
+  activity                                                                    
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/25429" xsd:anyURI                                           
+    created_by: ew                                                            
+    creation_date: 2023-06-29T16:31:41Z                                       
+                                                                              
+    ---                                                                       
+                                                                              
+    [Term]                                                                    
+    id: GO:0180050                                                            
+    name: protein-mitochondrial outer membrane tethering activity             
+    namespace: molecular_function                                             
+    def: "The binding activity of a molecule that brings together a protein or
+  protein complex and a mitochondrial outer membrane lipid or membrane-       
+  associated protein, in order to maintain the localization of the protein, or
+  protein complex at a specific mitochondrial outer membrane location."       
+  [GOC:vw]                                                                    
+    is_a: GO:0043495 ! protein-membrane adaptor activity                      
+    property_value: term_tracker_item "https://github.com/geneontology/go-    
+  ontology/issues/29131" xsd:anyURI                                           
+    created_by: vw                                                            
+    creation_date: 2024-12-02T13:24:07Z                                       
+                                                                              
+    ---                                                                       
+    <exited with exit code 0>
+
+
+Pre-validation in this environment is blocked by missing tooling/network    
+  (amm, robot, and unresolved snapshot.geneontology.org), so I can’t run the  
+  full ontology checks here. I’ll proceed with focused, surgical ontology     
+  edits and then verify by inspecting exact diffs/term stanzas.               
+                                                                              
+  I’m now applying only the requested parent migration (to GO:0140177) for the
+  listed branch points/direct terms and the definition wording fix for        
+  GO:0160190.
+
+Bash: Apply targeted parent and definition updates in go-edit.obo
+$ python - <<'PY'                                                         
+    from pathlib import Path                                                  
+    path=Path('/home/runner/work/go-ontology/go-ontology/src/ontology/go-edit.
+  obo')                                                                       
+    text=path.read_text()                                                     
+    blocks=text.split('\n\n')                                                 
+    move_ids={                                                                
+     'GO:0140443','GO:0160183','GO:0160190','GO:0160204','GO:0160214',        
+  'GO:0170009','GO:0180050'                                                   
+    }                                                                         
+    updated=[]                                                                
+    for i,b in enumerate(blocks):                                             
+        lines=b.splitlines()                                                  
+        tid=None                                                              
+        for ln in lines:                                                      
+            if ln.startswith('id: GO:'):                                      
+                tid=ln.split('id: ')[1].strip(); break                        
+        if tid in move_ids:                                                   
+            new=[]                                                            
+            changed=False                                                     
+            for ln in lines:                                                  
+                if ln=='is_a: GO:0043495 ! protein-membrane adaptor activity':
+                    ln='is_a: GO:0140177 ! membrane-membrane adaptor activity'
+                    changed=True                                              
+                new.append(ln)                                                
+            if changed:                                                       
+                updated.append((tid,'parent'))                                
+            lines=new                                                         
+        if tid=='GO:0160190':                                                 
+            new=[]                                                            
+            changed=False                                                     
+            old='def: "The binding activity of a molecule that brings together
+  the peroxisome and the mitochondrial outer membrane, establishing the       
+  localization of the peroxisome close to the mitochondrion." [PMID:29720625, 
+  PMID:38669296]'                                                             
+            rep='def: "The binding activity of a molecule that brings together
+  the peroxisome membrane and the mitochondrial outer membrane, establishing  
+  the localization of the peroxisome close to the mitochondrion."             
+  [PMID:29720625, PMID:38669296]'                                             
+            for ln in lines:                                                  
+                if ln==old:                                                   
+                    ln=rep                                                    
+                    changed=True                                              
+                new.append(ln)                                                
+            if changed:                                                       
+                updated.append((tid,'definition'))                            
+            lines=new                                                         
+        blocks[i]='\n'.join(lines)                                            
+    new_text='\n\n'.join(blocks)                                              
+    if new_text!=text:                                                        
+        path.write_text(new_text)                                             
+    print('Updated:', updated)                                                
+    PY                                                                        
+    Updated: [('GO:0140443', 'parent'), ('GO:0160183', 'parent'),             
+  ('GO:0160190', 'parent'), ('GO:0160190', 'definition'), ('GO:0160204',      
+  'parent'), ('GO:0160214', 'parent'), ('GO:0170009', 'parent'), ('GO:0180050',
+  'parent')]                                                                  
+    <exited with exit code 0>
+
+Bash: Show ontology file diff
+$ cd /home/runner/work/go-ontology/go-ontology && git --no-pager diff --  
+  src/ontology/go-edit.obo | cat                                              
+    diff --git a/src/ontology/go-edit.obo b/src/ontology/go-edit.obo          
+    index 926cd93..795e372 100644                                             
+    --- a/src/ontology/go-edit.obo                                            
+    +++ b/src/ontology/go-edit.obo                                            
+    @@ -466605,7 +466605,7 @@ synonym: "mitochondrion plasma membrane adaptor 
+  activity" EXACT []                                                          
+     synonym: "mitochondrion plasma membrane tether activity" EXACT []        
+     synonym: "plasma membrane-mitochondrion adaptor activity" EXACT []       
+     synonym: "plasma membrane-mitochondrion tether activity" EXACT []        
+    -is_a: GO:0043495 ! protein-membrane adaptor activity                     
+    +is_a: GO:0140177 ! membrane-membrane adaptor activity                    
+     property_value: term_tracker_item "https://github.com/geneontology/go-   
+  ontology/issues/19090" xsd:anyURI                                           
+     created_by: pg                                                           
+     creation_date: 2020-03-24T13:11:20Z                                      
+    @@ -479538,7 +479538,7 @@ id: GO:0160183                                  
+     name: autophagosome-membrane adaptor activity                            
+     namespace: molecular_function                                            
+     def: "The binding activity of a molecule that brings together a target   
+  membrane and an autophagosome during autophagy." [PMID:30544615,            
+  PMID:36635405]                                                              
+    -is_a: GO:0043495 ! protein-membrane adaptor activity                     
+    +is_a: GO:0140177 ! membrane-membrane adaptor activity                    
+     is_a: GO:0160247 ! autophagy cargo adaptor activity                      
+     property_value: term_tracker_item "https://github.com/geneontology/go-   
+  ontology/issues/27704" xsd:anyURI                                           
+     property_value: term_tracker_item "https://github.com/geneontology/go-   
+  ontology/issues/28285" xsd:anyURI                                           
+    @@ -479617,8 +479617,8 @@ creation_date: 2024-06-24T22:11:59Z             
+     id: GO:0160190                                                           
+     name: peroxisome-mitochondrion membrane tether activity                  
+     namespace: molecular_function                                            
+    -def: "The binding activity of a molecule that brings together the        
+  peroxisome and the mitochondrial outer membrane, establishing the           
+  localization of the peroxisome close to the mitochondrion." [PMID:29720625, 
+  PMID:38669296]                                                              
+    -is_a: GO:0043495 ! protein-membrane adaptor activity                     
+    +def: "The binding activity of a molecule that brings together the        
+  peroxisome membrane and the mitochondrial outer membrane, establishing the  
+  localization of the peroxisome close to the mitochondrion." [PMID:29720625, 
+  PMID:38669296]                                                              
+    +is_a: GO:0140177 ! membrane-membrane adaptor activity                    
+     property_value: term_tracker_item "https://github.com/geneontology/go-   
+  ontology/issues/28255" xsd:anyURI                                           
+     created_by: rynl                                                         
+     creation_date: 2024-06-24T22:53:31Z                                      
+    @@ -479792,7 +479792,7 @@ namespace: molecular_function                   
+     def: "The binding activity of a molecule that brings together two        
+  mitochondrion membranes via membrane lipid binding or by interacting with a 
+  mitochondrial outer membrane protein, to establish or maintain the          
+  localization of the mitochondrion." [PMID:38843396]                         
+     synonym: "mitochondrion membrane tether activity" RELATED []             
+     synonym: "mitochondrion outer membrane tether activity" RELATED []       
+    -is_a: GO:0043495 ! protein-membrane adaptor activity                     
+    +is_a: GO:0140177 ! membrane-membrane adaptor activity                    
+     property_value: term_tracker_item "https://github.com/geneontology/go-   
+  ontology/issues/28694" xsd:anyURI                                           
+     created_by: rynl                                                         
+     creation_date: 2024-08-15T17:06:16Z                                      
+    @@ -479912,7 +479912,7 @@ id: GO:0160214                                  
+     name: endoplasmic reticulum-plasma membrane adaptor activity             
+     namespace: molecular_function                                            
+     def: "The binding activity of a molecule that brings together a plasma   
+  membrane with an endoplasmic reticulum membrane, via membrane lipid binding,
+  to establish membrane contact sites and mediate exchange and communication."
+  [PMID:23041194, PMID:39239853]                                              
+    -is_a: GO:0043495 ! protein-membrane adaptor activity                     
+    +is_a: GO:0140177 ! membrane-membrane adaptor activity                    
+     property_value: term_tracker_item "https://github.com/geneontology/go-   
+  ontology/issues/28899" xsd:anyURI                                           
+     created_by: rynl                                                         
+     creation_date: 2024-09-12T20:22:40Z                                      
+    @@ -481290,7 +481290,7 @@ id: GO:0170009                                  
+     name: endoplasmic reticulum-organelle membrane tether activity           
+     namespace: molecular_function                                            
+     def: "The binding activity of a molecule that brings together two        
+  membranes, either via membrane lipid binding or by interacting with a       
+  membrane protein, to establish or maintain membrane contact sites and       
+  mediate organelle exchange and communication." [PMID:29858488]              
+    -is_a: GO:0043495 ! protein-membrane adaptor activity                     
+    +is_a: GO:0140177 ! membrane-membrane adaptor activity                    
+     property_value: term_tracker_item "https://github.com/geneontology/go-   
+  ontology/issues/25429" xsd:anyURI                                           
+     created_by: ew                                                           
+     creation_date: 2023-06-29T16:28:28Z                                      
+    @@ -482557,7 +482557,7 @@ id: GO:0180050                                  
+     name: protein-mitochondrial outer membrane tethering activity            
+     namespace: molecular_function                                            
+     def: "The binding activity of a molecule that brings together a protein  
+  or protein complex and a mitochondrial outer membrane lipid or membrane-    
+  associated protein, in order to maintain the localization of the protein, or
+  protein complex at a specific mitochondrial outer membrane location."       
+  [GOC:vw]                                                                    
+    -is_a: GO:0043495 ! protein-membrane adaptor activity                     
+    +is_a: GO:0140177 ! membrane-membrane adaptor activity                    
+     property_value: term_tracker_item "https://github.com/geneontology/go-   
+  ontology/issues/29131" xsd:anyURI                                           
+     created_by: vw                                                           
+     creation_date: 2024-12-02T13:24:07Z                                      
+    <exited with exit code 0>
+
+Bash: Verify updated parentage/definitions for impacted terms
+$ python - <<'PY'                                                         
+    from pathlib import Path                                                  
+    p=Path('/home/runner/work/go-ontology/go-ontology/src/ontology/go-edit.   
+  obo')                                                                       
+    text=p.read_text()                                                        
+    ids=['GO:0140443','GO:0160183','GO:0160190','GO:0160204','GO:0160214',    
+  'GO:0170009','GO:0180050','GO:0140474','GO:0140506','GO:0140580',           
+  'GO:0170016','GO:0160229']                                                  
+    for block in text.split('\n\n'):                                          
+        lines=block.splitlines()                                              
+        if not lines: continue                                                
+        idline=next((l for l in lines if l.startswith('id: ')),None)          
+        if idline and idline.split('id: ')[1] in ids:                         
+            tid=idline.split('id: ')[1]                                       
+            print(tid)                                                        
+            for l in lines:                                                   
+                if l.startswith('name: ') or l.startswith('def: ') or l.      
+  startswith('is_a: '):                                                       
+                    print('  '+l)                                             
+            print()                                                           
+    PY                                                                        
+    GO:0140443                                                                
+      name: mitochondrion-plasma membrane adaptor activity                    
+      def: "The binding activity of a molecule that brings together a         
+  mitochondrion and a plasma membrane either via membrane lipid binding or by 
+  interacting with a mitochondrial outer membrane protein, to establish or    
+  maintain the localization of the mitochondrion." [PMID:31582398]            
+      is_a: GO:0140177 ! membrane-membrane adaptor activity                   
+                                                                              
+    GO:0140474                                                                
+      name: mitochondrion-endoplasmic reticulum membrane tether activity      
+      def: "The binding activity of a molecule that brings together a         
+  mitochondrion and an ER membrane either via membrane lipid binding or by    
+  interacting with a mitochondrial outer membrane protein, to establish or    
+  maintain the localization of the mitochondrion." [PMID:19556461,            
+  PMID:27875684]                                                              
+      is_a: GO:0170009 ! endoplasmic reticulum-organelle membrane tether      
+  activity                                                                    
+                                                                              
+    GO:0140506                                                                
+      name: endoplasmic reticulum-autophagosome adaptor activity              
+      def: "The binding activity of a molecule that brings together an ER     
+  membrane and an autophagosome during reticulophagy." [PMID:32735772]        
+      is_a: GO:0160183 ! autophagosome-membrane adaptor activity              
+      is_a: GO:0170009 ! endoplasmic reticulum-organelle membrane tether      
+  activity                                                                    
+                                                                              
+    GO:0140580                                                                
+      name: mitochondrion autophagosome adaptor activity                      
+      def: "The binding activity of a molecule that brings together a         
+  mitochondrial membrane and an autophagosome during mitophagy."              
+  [PMID:33138913]                                                             
+      is_a: GO:0160183 ! autophagosome-membrane adaptor activity              
+                                                                              
+    GO:0160183                                                                
+      name: autophagosome-membrane adaptor activity                           
+      def: "The binding activity of a molecule that brings together a target  
+  membrane and an autophagosome during autophagy." [PMID:30544615,            
+  PMID:36635405]                                                              
+      is_a: GO:0140177 ! membrane-membrane adaptor activity                   
+      is_a: GO:0160247 ! autophagy cargo adaptor activity                     
+                                                                              
+    GO:0160190                                                                
+      name: peroxisome-mitochondrion membrane tether activity                 
+      def: "The binding activity of a molecule that brings together the       
+  peroxisome membrane and the mitochondrial outer membrane, establishing the  
+  localization of the peroxisome close to the mitochondrion." [PMID:29720625, 
+  PMID:38669296]                                                              
+      is_a: GO:0140177 ! membrane-membrane adaptor activity                   
+                                                                              
+    GO:0160204                                                                
+      name: mitochondrion-mitochondrion outer membrane tether activity        
+      def: "The binding activity of a molecule that brings together two       
+  mitochondrion membranes via membrane lipid binding or by interacting with a 
+  mitochondrial outer membrane protein, to establish or maintain the          
+  localization of the mitochondrion." [PMID:38843396]                         
+      is_a: GO:0140177 ! membrane-membrane adaptor activity                   
+                                                                              
+    GO:0160214                                                                
+      name: endoplasmic reticulum-plasma membrane adaptor activity            
+      def: "The binding activity of a molecule that brings together a plasma  
+  membrane with an endoplasmic reticulum membrane, via membrane lipid binding,
+  to establish membrane contact sites and mediate exchange and communication."
+  [PMID:23041194, PMID:39239853]                                              
+      is_a: GO:0140177 ! membrane-membrane adaptor activity                   
+                                                                              
+    GO:0160229                                                                
+      name: peroxisome-endoplasmic reticulum membrane tether activity         
+      def: "The binding activity of a molecule that brings together a         
+  peroxisome and an ER membrane, either via membrane lipid binding or by      
+  interacting with a membrane protein." [PMID:39271061]                       
+      is_a: GO:0170009 ! endoplasmic reticulum-organelle membrane tether      
+  activity                                                                    
+                                                                              
+    GO:0170009                                                                
+      name: endoplasmic reticulum-organelle membrane tether activity          
+      def: "The binding activity of a molecule that brings together two       
+  membranes, either via membrane lipid binding or by interacting with a       
+  membrane protein, to establish or maintain membrane contact sites and       
+  mediate organelle exchange and communication." [PMID:29858488]              
+      is_a: GO:0140177 ! membrane-membrane adaptor activity                   
+                                                                              
+    GO:0170016                                                                
+      name: endoplasmic reticulum-endosome tether activity                    
+      def: "The binding activity of a molecule that brings together an        
+  endosome and an ER membrane either via membrane lipid binding or by         
+  interacting with an endosome protein, to establish and facilitate organelle 
+  exchange." [PMID:33124732]                                                  
+      is_a: GO:0170009 ! endoplasmic reticulum-organelle membrane tether      
+  activity                                                                    
+                                                                              
+    GO:0180050                                                                
+      name: protein-mitochondrial outer membrane tethering activity           
+      def: "The binding activity of a molecule that brings together a protein 
+  or protein complex and a mitochondrial outer membrane lipid or membrane-    
+  associated protein, in order to maintain the localization of the protein, or
+  protein complex at a specific mitochondrial outer membrane location."       
+  [GOC:vw]                                                                    
+      is_a: GO:0140177 ! membrane-membrane adaptor activity                   
+    <exited with exit code 0>
+
+Bash: Run targeted post-edit assertions for parent migration and def update
+$ python - <<'PY'                                                         
+    from pathlib import Path                                                  
+    p=Path('/home/runner/work/go-ontology/go-ontology/src/ontology/go-edit.   
+  obo')                                                                       
+    text=p.read_text()                                                        
+    # parse blocks by id                                                      
+    blocks={}                                                                 
+    for b in text.split('\n\n'):                                              
+        lines=b.splitlines()                                                  
+        idl=next((l for l in lines if l.startswith('id: GO:')),None)          
+        if idl:                                                               
+            blocks[idl.split('id: ')[1]] = lines                              
+                                                                              
+    direct=['GO:0140443','GO:0160183','GO:0160190','GO:0160204','GO:0160214', 
+  'GO:0170009','GO:0180050']                                                  
+    for tid in direct:                                                        
+        assert any(l=='is_a: GO:0140177 ! membrane-membrane adaptor activity' 
+  for l in blocks[tid]), f'{tid} missing new parent'                          
+        assert not any(l=='is_a: GO:0043495 ! protein-membrane adaptor        
+  activity' for l in blocks[tid]), f'{tid} still has old parent'              
+                                                                              
+    def_line='def: "The binding activity of a molecule that brings together   
+  the peroxisome membrane and the mitochondrial outer membrane, establishing  
+  the localization of the peroxisome close to the mitochondrion."             
+  [PMID:29720625, PMID:38669296]'                                             
+    assert def_line in blocks['GO:0160190'], 'GO:0160190 def not updated'     
+    print('Targeted checks passed.')                                          
+    PY                                                                        
+    Targeted checks passed.                                                   
+    <exited with exit code 0>
+
+Bash: Create temporary design pattern notes for this issue
+$ cat > /tmp/DESIGN_PATTERNS.md <<'EOF'                                   
+    # DESIGN_PATTERNS (issue-specific)                                        
+                                                                              
+    ## Scope                                                                  
+    Reparent membrane tether/adaptor molecular function terms from `protein-  
+  membrane adaptor activity (GO:0043495)` to `membrane-membrane adaptor       
+  activity (GO:0140177)` where they represent membrane-membrane contacts.     
+                                                                              
+    ## Relevant precedent observed in GO                                      
+    - `GO:0140177 membrane-membrane adaptor activity` definition describes    
+  bringing together **two membranes**.                                        
+    - Existing specific tether/adaptor terms under this branch use `is_a`     
+  hierarchy and textual defs without introducing new `intersection_of` axioms.
+                                                                              
+    ## Pattern guidance applied                                               
+    - Keep edits minimal: update asserted parent (`is_a`) only for relevant   
+  terms.                                                                      
+    - Do not add logical definitions (`intersection_of`) because no explicit  
+  DOSDP pattern for this membrane tether sub-branch is being introduced here. 
+    - Keep definitions aligned with membrane-membrane semantics; targeted     
+  wording update applied to `GO:0160190` to specify "peroxisome membrane".    
+    EOF                                                                       
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check changed files before progress report
+$ cd /home/runner/work/go-ontology/go-ontology && git --no-pager status --
+  short                                                                       
+    M src/ontology/go-edit.obo                                                
+    ?? src/resources/rhea.rdf                                                 
+    <exited with exit code 0>
+
+Bash: Remove generated artifact and recheck status
+$ cd /home/runner/work/go-ontology/go-ontology && rm -f src/resources/rhea.
+  rdf && git --no-pager status --short                                        
+    M src/ontology/go-edit.obo                                                
+    <exited with exit code 0>
+
+Progress update: Reparent membrane tether/adaptor terms to membrane-membrane adaptor activity
+
+[x] PLAN: Analyze issue request and identify all listed GO terms to update  
+  [x] PRE-VALIDATION: Attempted baseline validation; blocked in this          
+  environment by missing amm/robot and unreachable snapshot.geneontology.org  
+  [ ] RESEARCH: N/A (no new literature/PMID additions expected)               
+  [x] TERM-SEARCH: Confirmed current parents/definitions for all listed terms 
+  in go-edit.obo                                                              
+  [x] DESIGN-PATTERNS: Reviewed membrane adaptor/tether precedent; no new     
+  logical definitions needed                                                  
+  [x] EDITS: Updated requested parentage in go-edit.obo and revised GO:0160190
+  definition wording to membrane-membrane form                                
+  [x] RELATIONSHIPS: Kept assertions minimal and consistent (is_a changes only,
+  no over-specification)                                                      
+  [x] SPECIALIZED-EDITS: N/A (no obsoletion, CHEBI, reaction, or taxon-       
+  constraint edits)                                                           
+  [x] METADATA: No new terms added; existing metadata preserved               
+  [ ] AUTOMATED-VALIDATION: Full ontology validation blocked by missing       
+  tooling in sandbox (amm/robot) and network resolution limits                
+  [x] REFERENCE-VALIDATION: N/A (no new references introduced)                
+  [x] CHANGES-COMMITTED: Committed focused ontology updates for requested     
+  reparenting/definition fix
+
+Bash: Review latest commit contents
+$ cd /home/runner/work/go-ontology/go-ontology && git --no-pager show --  
+  stat --name-only --oneline HEAD | cat                                       
+    c1da14e Reparent membrane tether/adaptor terms to membrane-membrane       
+  adaptor activity                                                            
+    src/ontology/go-edit.obo                                                  
+    <exited with exit code 0>
+
+Call to parallel_validation
+
+Input:
+
+{                                                                         
+      "prDescription": "Reparented requested membrane tether/adaptor terms    
+  from GO:0043495 to GO:0140177 and updated GO:0160190 definition wording to  
+  specify peroxisome membrane.",                                              
+      "prTitle": "Migrate membrane tether/adaptor terms under membrane-       
+  membrane adaptor activity"                                                  
+    }
+
+Progress update: Update checklist after validation
+
+[x] PLAN: Analyze issue request and identify all listed GO terms to update  
+  [x] PRE-VALIDATION: Attempted baseline validation; blocked in this          
+  environment by missing amm/robot and unreachable snapshot.geneontology.org  
+  [x] RESEARCH: N/A (no new literature/PMID additions expected)               
+  [x] TERM-SEARCH: Confirmed current parents/definitions for all listed terms 
+  in go-edit.obo                                                              
+  [x] DESIGN-PATTERNS: Reviewed membrane adaptor/tether precedent; no new     
+  logical definitions needed                                                  
+  [x] EDITS: Updated requested parentage in go-edit.obo and revised GO:0160190
+  definition wording to membrane-membrane form                                
+  [x] RELATIONSHIPS: Kept assertions minimal and consistent (is_a changes only,
+  no over-specification)                                                      
+  [x] SPECIALIZED-EDITS: N/A (no obsoletion, CHEBI, reaction, or taxon-       
+  constraint edits)                                                           
+  [x] METADATA: No new terms added; existing metadata preserved               
+  [ ] AUTOMATED-VALIDATION: Full ontology validation remains blocked in       
+  sandbox by missing tooling (amm/robot) and network resolution limits        
+  [x] REFERENCE-VALIDATION: N/A (no new references introduced)                
+  [x] CHANGES-COMMITTED: Focused ontology updates committed; parallel         
+  validation run with no actionable findings
+
+Bash: Confirm clean working tree
+$ cd /home/runner/work/go-ontology/go-ontology && git --no-pager status --
+  short                                                                       
+                                                                              
+    <exited with exit code 0>
+
+
+Implemented with a single focused file change:                              
+                                                                              
+  ### ✅ Updated file                                                         
+                                                                              
+  • /home/runner/work/go-ontology/go-ontology/src/ontology/go-edit.obo        
+                                                                              
+  ### ✅ What I changed                                                       
+                                                                              
+  Reparented these terms from GO:0043495 ! protein-membrane adaptor activity  
+  to                                                                          
+  GO:0140177 ! membrane-membrane adaptor activity:                            
+                                                                              
+  • GO:0140443                                                                
+  • GO:0160183                                                                
+  • GO:0160190                                                                
+  • GO:0160204                                                                
+  • GO:0160214                                                                
+  • GO:0170009                                                                
+  • GO:0180050                                                                
+                                                                              
+  Also updated the requested definition wording for:                          
+                                                                              
+  • GO:0160190                                                                
+  from “brings together the peroxisome and the mitochondrial outer membrane...
+  ”                                                                           
+  to “brings together the **peroxisome membrane** and the mitochondrial outer 
+  membrane...”.                                                               
+                                                                              
+  This also correctly moves the listed descendants (e.g. under GO:0170009)    
+  under the membrane-membrane branch indirectly.                              
+                                                                              
+  ### ✅ Validation performed                                                 
+                                                                              
+  • Targeted post-edit assertions passed (parent swaps + definition text).    
+  • Ran parallel_validation (Code Review/CodeQL): no actionable issues.       
+                                                                              
+  ### ⚠️ Environment limitations encountered                                   
+                                                                              
+  Full ontology validation (make travis_build) could not run in this sandbox  
+  due missing tools/network limits (amm/robot unavailable;                    
+  snapshot.geneontology.org unresolved).
+

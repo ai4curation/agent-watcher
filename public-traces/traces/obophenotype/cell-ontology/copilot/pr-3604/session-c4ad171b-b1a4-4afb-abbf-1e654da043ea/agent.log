@@ -1,0 +1,80 @@
+Clone repository obophenotype/cell-ontology
+Start 'playwright' MCP server
+Start 'github-mcp-server' MCP server
+Start 'ols4' MCP server
+Start 'artl-mcp' MCP server
+
+Both comments ask to change the "neurectodermal cell" synonym from          
+  hasRelatedSynonym to hasExactSynonym. Let me make that fix:
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0000133 
+  \"neurectodermal cell\")",                                                  
+      "old_str": "AnnotationAssertion(oboInOwl:hasRelatedSynonym              
+  obo:CL_0000133 \"neurectodermal cell\")",                                   
+      "path": "/home/runner/work/cell-ontology/cell-ontology/src/ontology/cl- 
+  edit.owl"                                                                   
+    }
+
+Bash: Verify the change
+$ grep -n "CL_0000133" /home/runner/work/cell-ontology/cell-              
+  ontology/src/ontology/cl-edit.owl | grep -v "SubClassOf|Equivalent|         
+  Declaration" | head -20                                                     
+    5125:# Class: obo:CL_0000133 (neuroectodermal cell)                       
+    5127:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")         
+  Annotation(oboInOwl:hasDbXref "ISBN:068340007X") obo:IAO_0000115            
+  obo:CL_0000133 "Ectoderm destined to be nervous tissue.")                   
+    5128:AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0000133          
+  "neuroectoderm cell")                                                       
+    5129:AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0000133          
+  "neurectodermal cell")                                                      
+    5130:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000133 <https://github.  
+  com/obophenotype/cell-ontology/issues/3595>)                                
+    5131:AnnotationAssertion(rdfs:label obo:CL_0000133 "neuroectodermal cell")
+    <exited with exit code 0>
+
+
+The synonym is now hasExactSynonym. Let me commit and report progress:
+
+Progress update: Change 'neurectodermal cell' synonym from related to exact for CL:0000133
+
+Signed-off-by: GitHub Copilot
+
+[x] Fix label: "neurectodermal cell" → "neuroectodermal cell"               
+  [x] Fix exact synonym: "neurectoderm cell" → "neuroectoderm cell"           
+  [x] Add old label "neurectodermal cell" as exact synonym (changed from      
+  related per reviewer request)                                               
+  [x] Add term_tracker_item linking to issue #3595
+
+Call to reply_to_comment
+
+Input:
+
+{                                                                         
+      "comment_id": "4107498923",                                             
+      "reply": "Done — changed `\"neurectodermal cell\"` from                 
+  `hasRelatedSynonym` to `hasExactSynonym` in commit f48cb11."                
+    }
+
+Call to reply_to_comment
+
+Input:
+
+{                                                                         
+      "comment_id": "4281333332",                                             
+      "reply": "Done — changed to `hasExactSynonym` in commit f48cb11."       
+    }
+
+
+Changed "neurectodermal cell" from hasRelatedSynonym to hasExactSynonym as  
+  requested by both reviewers. The term CL:0000133 now has:                   
+                                                                              
+  • **Label**: neuroectodermal cell                                           
+  • **Exact synonyms**: neuroectoderm cell, neurectodermal cell (old          
+  misspelling kept as exact synonym)                                          
+  • **term_****tracker_****item**: linked to issue #3595
+

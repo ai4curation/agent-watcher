@@ -1,0 +1,1216 @@
+Clone repository obophenotype/cell-ontology
+Start 'github-mcp-server' MCP server
+Start 'artl-mcp' MCP server
+Start 'ols4' MCP server
+Start 'playwright' MCP server
+Call to search_code_subagent
+
+Input:
+
+{                                                                         
+      "query": "entorhinal cortex layer neuron cell type glutamatergic        
+  principal neuron"                                                           
+    }
+
+Bash: Search for existing entorhinal cortex terms
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -i "entorhinal"
+  src/ontology/cl-edit.owl | head -30                                         
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "MP:0009955")           
+  obo:IAO_0000115 obo:CL_1001503 "The principal glutaminergic neuron located  
+  in the outer third of the external plexiform layer of the olfactory bulb; a 
+  single short primary dendrite traverses the outer external plexiform layer  
+  and terminates within an olfactory glomerulus in a tuft of branches, where  
+  it receives the input from olfactory receptor neuron axon terminals; axons  
+  of the tufted cells transfer information to a number of areas in the brain, 
+  including the piriform cortex, entorhinal cortex, olfactory tubercle, and   
+  amygdala.")                                                                 
+    <exited with exit code 0>
+
+Bash: Find parent term glutamatergic neuron
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "CL_0000679|
+  glutamatergic neuron" src/ontology/cl-edit.owl | head -20                   
+    733:Declaration(Class(obo:CL_0000679))                                    
+    9721:# Class: obo:CL_0000679 (glutamatergic neuron)                       
+    9723:AnnotationAssertion(obo:IAO_0000115 obo:CL_0000679 "A neuron that is 
+  capable of some neurotansmission by glutamate secretion.")                  
+    9724:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000679 "WBbt:0006829")
+    9725:AnnotationAssertion(rdfs:label obo:CL_0000679 "glutamatergic neuron")
+    9726:EquivalentClasses(obo:CL_0000679 ObjectIntersectionOf(obo:CL_0000540 
+  ObjectSomeValuesFrom(obo:RO_0002215 obo:GO_0061535)))                       
+    9727:SubClassOf(obo:CL_0000679 obo:CL_0000540)                            
+    9853:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:10600995")   
+  Annotation(oboInOwl:hasDbXref "PMID:34047341") Annotation(oboInOwl:hasDbXref
+  "PMID:36774666") Annotation(oboInOwl:hasDbXref "PMID:37775311")             
+  Annotation(oboInOwl:hasDbXref "PMID:9728912") obo:IAO_0000115 obo:CL_0000695
+  "A type of transient, early-born glutamatergic neuron located primarily in  
+  the marginal zone (future layer I) of the developing cerebral cortex and    
+  hippocampus in vertebrates. it is characterized by a bipolar morphology with
+  an elongated soma, a single thick dendrite oriented toward the pial surface,
+  and a long, thin axon that extends tangentially to form horizontal plexuses 
+  across the cortical surface. It is important for the multiple developmental 
+  processes including migration, dendritogenesis and synaptogenesis. It       
+  typically undergoes programmed cell death following cortical maturation with
+  species- and region specific patterns of survival. In mice, it is           
+  predominantly observed in the hippocampal formation, particularly in the    
+  stratum lacunosum-moleculare and outer molecular layer of the dentate gyrus 
+  (van Bruggen et al., 2023). In contrast, in humans, a second morphologically
+  distinct subpopulation emerges mid-gestation and persists postnatally, with 
+  surviving cells observed in the cortical sulci and the hippocampus.")       
+    9859:SubClassOf(obo:CL_0000695 obo:CL_0000679)                            
+    13399:SubClassOf(obo:CL_0001031 obo:CL_0000679)                           
+    23079:AnnotationAssertion(rdfs:comment obo:CL_0008030 "Consider using     
+  glutamatergic neuron instead. Do note that not all glutamatergic neurons are
+  excitatory and replacing excitatory neuron with glutamatergic neuron should 
+  be done with caution.")                                                     
+    29857:# Class: obo:CL_2000028 (cerebellum glutamatergic neuron)           
+    29859:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:TermGenie")  
+  obo:IAO_0000115 obo:CL_2000028 "Any glutamatergic neuron that is part of a  
+  cerebellum.")                                                               
+    29863:AnnotationAssertion(rdfs:label obo:CL_2000028 "cerebellum           
+  glutamatergic neuron")                                                      
+    29864:EquivalentClasses(obo:CL_2000028 ObjectIntersectionOf(obo:CL_0000679
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0002037)))                   
+    30681:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:34616075")  
+  obo:IAO_0000115 obo:CL_4023008 "A glutamatergic neuron located in the       
+  cerebral cortex that projects to structures of telencephalic origins.")     
+    30687:EquivalentClasses(obo:CL_4023008 ObjectIntersectionOf(obo:CL_0000679
+  ObjectSomeValuesFrom(obo:RO_0000053 obo:PATO_0070034)                       
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0000956)))                   
+    30692:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "DOI:10.1101/2020.
+  10.19.343129") obo:IAO_0000115 obo:CL_4023009 "A glutamatergic neuron       
+  located in the cerebral cortex that projects to structures not derived from 
+  telencephalon.")                                                            
+    30698:EquivalentClasses(obo:CL_4023009 ObjectIntersectionOf(obo:CL_0000679
+  ObjectSomeValuesFrom(obo:RO_0000053 obo:PATO_0070028)                       
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0000956)))                   
+    30730:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "DOI:10.1101/2020.
+  10.19.343129") obo:IAO_0000115 obo:CL_4023012 "A glutamatergic neuron       
+  located in the cerebral cortex that projects axons locally rather than      
+  distantly.")                                                                
+    <exited with exit code 0>
+
+Bash: Find stellate neuron term
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "CL_0000122|
+  stellate neuron" src/ontology/cl-edit.owl | head -20                        
+    176:Declaration(Class(obo:CL_0000122))                                    
+    5011:# Class: obo:CL_0000122 (stellate neuron)                            
+    5013:AnnotationAssertion(Annotation(oboInOwl:hasDbXref                    
+  "ISBN:9780123973481") obo:IAO_0000115 obo:CL_0000122 "A neuron that has     
+  dendritic processes radiating from the cell body forming a star-like shape. 
+  ")                                                                          
+    5014:AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000122 "BTO:0002316") 
+    5015:AnnotationAssertion(oboInOwl:inSubset obo:CL_0000122 cl:BDS_subset)  
+    5016:AnnotationAssertion(rdfs:label obo:CL_0000122 "stellate neuron")     
+    5017:EquivalentClasses(obo:CL_0000122 ObjectIntersectionOf(obo:CL_0000540 
+  ObjectSomeValuesFrom(obo:RO_0000053 obo:PATO_0070010)))                     
+    5018:SubClassOf(obo:CL_0000122 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    24623:EquivalentClasses(obo:CL_0010010 ObjectIntersectionOf(obo:CL_0000122
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0002974)))                   
+    30468:EquivalentClasses(obo:CL_2000090 ObjectIntersectionOf(obo:CL_0000122
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0001885)))                   
+    <exited with exit code 0>
+
+Bash: Find ID range for new terms
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "idrange:81|
+  CL_990|CL_99" src/ontology/cl-idranges.owl | head -20                       
+    505:Datatype: idrange:81                                                  
+    <exited with exit code 0>
+
+Bash: Find last used NTR ID
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep "CL_990"       
+  src/ontology/cl-edit.owl | tail -20                                         
+                                                                              
+    <exited with exit code 0>
+
+Bash: View id ranges file
+$ cd /home/runner/work/cell-ontology/cell-ontology && cat src/ontology/cl-
+  idranges.owl | head -60                                                     
+    Prefix: idrange: <http://purl.obolibrary.org/obo/cl/idrange/>             
+    Prefix: allocatedto: <http://purl.obolibrary.org/obo/IAO_0000597>         
+    Prefix: iddigits: <http://purl.obolibrary.org/obo/IAO_0000596>            
+    Prefix: idprefix: <http://purl.obolibrary.org/obo/IAO_0000599>            
+    Prefix: idsfor: <http://purl.obolibrary.org/obo/IAO_0000598>              
+    Prefix: comment: <http://www.w3.org/2000/01/rdf-schema#comment>           
+                                                                              
+    Ontology: <http://purl.obolibrary.org/obo/cl/cl-idranges.owl>             
+                                                                              
+    Annotations:                                                              
+        idprefix: "http://purl.obolibrary.org/obo/CL_",                       
+        iddigits: 7,                                                          
+        idsfor: "CL"                                                          
+                                                                              
+    AnnotationProperty: allocatedto:                                          
+                                                                              
+    AnnotationProperty: idprefix:                                             
+                                                                              
+    AnnotationProperty: iddigits:                                             
+                                                                              
+    AnnotationProperty: idsfor:                                               
+                                                                              
+    AnnotationProperty: comment:                                              
+                                                                              
+    Datatype: idrange:1                                                       
+        Annotations:                                                          
+            allocatedto: "Alexander Diehl"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 1, < 2000]                                         
+                                                                              
+    Datatype: idrange:2                                                       
+        Annotations:                                                          
+            allocatedto: "Terrence Meehan"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 2001, < 4000]                                      
+                                                                              
+    Datatype: idrange:3                                                       
+        Annotations:                                                          
+            allocatedto: "Wade Valleau and Alexander Diehl, nervous system    
+  cell types"                                                                 
+        EquivalentTo:                                                         
+            xsd:integer[>= 4001, < 5000]                                      
+                                                                              
+    Datatype: idrange:4                                                       
+        Annotations:                                                          
+            allocatedto: "Ceri Van Slyke"                                     
+        EquivalentTo:                                                         
+            xsd:integer[>= 5001, < 6000]                                      
+                                                                              
+    Datatype: idrange:5                                                       
+        Annotations:                                                          
+            allocatedto: "Alan Ruttenberg"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 6001, < 7000]                                      
+                                                                              
+    Datatype: idrange:6                                                       
+        Annotations:                                                          
+            allocatedto: "Melissa Haendel"                                    
+        EquivalentTo:                                                         
+            xsd:integer[>= 7001, < 8000]                                      
+    <exited with exit code 0>
+
+Bash: Find the idrange:81 range details
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep "idrange:81"   
+  src/ontology/cl-idranges.owl -A 5                                           
+    Datatype: idrange:81                                                      
+        Annotations:                                                          
+            allocatedto: "Temporary IDs"                                      
+        EquivalentTo:                                                         
+            xsd:integer[>= 9900000, < 10000000]                               
+    <exited with exit code 0>
+
+Bash: Find latest CL_990xxxx IDs
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep "CL_990[0-9][0-
+  9][0-9][0-9]" src/ontology/cl-edit.owl | tail -20                           
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find existing NTR IDs with CL_99
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep "CL_99[0-9]"   
+  src/ontology/cl-edit.owl | head -30                                         
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find the last CL_4 term in the file
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "CL_4"      
+  src/ontology/cl-edit.owl | tail -20                                         
+    35971:AnnotationAssertion(terms:contributor obo:CL_4072103 <https://orcid.
+  org/0009-0000-8480-9277>)                                                   
+    35972:AnnotationAssertion(oboInOwl:creation_date obo:CL_4072103 "2025-11- 
+  05T11:49:53Z"^^xsd:dateTime)                                                
+    35973:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:38016881")  
+  oboInOwl:hasNarrowSynonym obo:CL_4072103 "dermal sheath cup cell")          
+    35974:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25465495")  
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072103 "hfDSC")                          
+    35975:AnnotationAssertion(rdfs:label obo:CL_4072103 "hair follicle dermal 
+  stem cell")                                                                 
+    35976:EquivalentClasses(obo:CL_4072103 ObjectIntersectionOf(obo:CL_0000134
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0002073)))                  
+    35977:SubClassOf(obo:CL_4072103 ObjectSomeValuesFrom(obo:RO_0002215       
+  obo:GO_0042634))                                                            
+    35979:# Class: obo:CL_4072104 (fibrochondrocyte)                          
+    35981:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:28939894")  
+  Annotation(oboInOwl:hasDbXref "PMID:31871141") Annotation(oboInOwl:hasDbXref
+  "PMID:34608249") obo:IAO_0000115 obo:CL_4072104 "A chondrocyte with hybrid  
+  fibroblastic-chondrogenic characteristics found in fibrocartilage,          
+  particularly in the avascular inner zone and transitional middle zone of the
+  meniscus. In humans, fibrochondrocytes are marked by predominant expression 
+  of type I collagen (COL1A1) and fibril-associated collagens (COL3A1, COL6A1),
+  while retaining type II collagen (COL2A1) expression and exhibiting lower   
+  SOX9 than hyaline chondrocytes. This molecular profile underlies the        
+  synthesis of abundant type I collagen essential for fibrocartilage matrix   
+  and reflects an intermediate phenotype between fibroblast and chondrocyte.")
+    35982:AnnotationAssertion(terms:contributor obo:CL_4072104 <https://orcid.
+  org/0009-0000-8480-9277>)                                                   
+    35983:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:34608249")  
+  oboInOwl:hasExactSynonym obo:CL_4072104 "fibrocartilage chondrocyte")       
+    35984:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:28939894")  
+  oboInOwl:hasNarrowSynonym obo:CL_4072104 "meniscus fibrochondrocyte")       
+    35985:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:31871141")  
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072104 "FC")                             
+    35986:AnnotationAssertion(rdfs:label obo:CL_4072104 "fibrochondrocyte")   
+    35987:EquivalentClasses(obo:CL_4072104 ObjectIntersectionOf(obo:CL_0000138
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001995)))                  
+    35988:SubClassOf(obo:CL_4072104 obo:CL_0002320)                           
+    35989:SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002202       
+  obo:CL_0020021))                                                            
+    35990:SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292       
+  obo:PR_000003264))                                                          
+    35991:SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292       
+  obo:PR_000003328))                                                          
+    35992:SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292       
+  obo:PR_000003353))                                                          
+    <exited with exit code 0>
+
+Bash: Find the Purkinje layer interneuron example from CLAUDE.md
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "CL_4072102"
+  src/ontology/cl-edit.owl | head -20                                         
+    3326:Declaration(Class(obo:CL_4072102))                                   
+    24755:SubClassOf(obo:CL_0011006 obo:CL_4072102)                           
+    35959:# Class: obo:CL_4072102 (Purkinje layer interneuron)                
+    35961:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:35803588")  
+  obo:IAO_0000115 obo:CL_4072102 "A type of GABAergic interneuron residing in 
+  the Purkinje cell layer of the cerebellar cortex.")                         
+    35962:AnnotationAssertion(terms:date obo:CL_4072102 "2025-04-             
+  29T13:06:36Z"^^xsd:dateTime)                                                
+    35963:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:35803588")  
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072102 "PLI")                            
+    35964:AnnotationAssertion(rdfs:label obo:CL_4072102 "Purkinje layer       
+  interneuron")                                                               
+    35965:EquivalentClasses(obo:CL_4072102 ObjectIntersectionOf(obo:CL_0000099
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0002979)))                   
+    35966:SubClassOf(obo:CL_4072102 ObjectSomeValuesFrom(obo:RO_0002215       
+  obo:GO_0061534))                                                            
+    <exited with exit code 0>
+
+Bash: View the end of the file to understand where to add new terms
+$ cd /home/runner/work/cell-ontology/cell-ontology && tail -100           
+  src/ontology/cl-edit.owl                                                    
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25356439")        
+  Annotation(oboInOwl:hasDbXref "PMID:27443500") obo:IAO_0000115              
+  obo:CL_7770005 "A trabecular meshwork cell that is part of the eye's        
+  trabecular meshwork, residing in the uveal and corneoscleral meshwork       
+  regions and serving as the primary biological filter in the aqueous humor   
+  drainage cascade. This cell exhibits endothelial-like properties, including 
+  production of antithrombogenic substances such as tissue plasminogen        
+  activator, while also demonstrating phagocytic activity to remove cellular  
+  debris from aqueous humour before the fluid moves deeper into the less      
+  porous juxtacanalicular tissue.")                                           
+    AnnotationAssertion(terms:contributor obo:CL_7770005 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(oboInOwl:creation_date obo:CL_7770005 "2025-09-       
+  12T11:19:45Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(rdfs:label obo:CL_7770005 "beam cell")                
+    AnnotationAssertion(Annotation(dc:license <http://creativecommons.        
+  org/licenses/by/4.0/>) Annotation(oboInOwl:hasDbXref "PMID:35836364")       
+  Annotation(rdfs:comment "Trabecular meshwork (TM) structure. The TM consists
+  of uveal (blue), corneoscleral (red), and juxtacanalicular (green) regions. 
+  TM beam cells (blue/red) line the uveal and corneoscleral regions, while JCT
+  cells (green) occupy the juxtacanalicular region.") foaf:depiction          
+  obo:CL_7770005 "http://purl.obolibrary.                                     
+  org/obo/cl/images/Trabecular_meshowk_cells_PMID35836364.jpg")               
+    SubClassOf(Annotation(oboInOwl:is_inferred "true") obo:CL_7770005         
+  obo:CL_0002367)                                                             
+    SubClassOf(obo:CL_7770005 ObjectSomeValuesFrom(obo:BFO_0000050            
+  obo:UBERON_0005969))                                                        
+    SubClassOf(obo:CL_7770005 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0006909))                                                            
+                                                                              
+    # Class: obo:CL_7770006 (beam B cell, human)                              
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25356439")        
+  Annotation(oboInOwl:hasDbXref "PMID:32341164") Annotation(oboInOwl:hasDbXref
+  "PMID:39829808") obo:IAO_0000115 obo:CL_7770006 "A trabecular meshwork cell 
+  within the eye's trabecular meshwork. This cell is molecularly distinguished
+  by TMEFF2 expression in humans. A beam B cell is spatially intermingled with
+  beam A cells throughout the uveal and corneoscleral meshwork regions, but   
+  demonstrates a tendency to localise closer to the juxtacanalicular tissue.")
+    AnnotationAssertion(terms:contributor obo:CL_7770006 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(terms:date obo:CL_7770006 "2025-09-                   
+  15T08:48:01Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(rdfs:label obo:CL_7770006 "beam B cell, human")       
+    AnnotationAssertion(Annotation(dc:license <http://creativecommons.        
+  org/licenses/by/4.0/>) Annotation(oboInOwl:hasDbXref "PMID:35836364")       
+  Annotation(rdfs:comment "Trabecular meshwork (TM) structure. The TM consists
+  of uveal (blue), corneoscleral (red), and juxtacanalicular (green) regions. 
+  TM beam cells (blue/red) line the uveal and corneoscleral regions, while JCT
+  cells (green) occupy the juxtacanalicular region.") foaf:depiction          
+  obo:CL_7770006 "http://purl.obolibrary.                                     
+  org/obo/cl/images/Trabecular_meshowk_cells_PMID35836364.jpg")               
+    SubClassOf(obo:CL_7770006 obo:CL_0002367)                                 
+    SubClassOf(obo:CL_7770006 ObjectSomeValuesFrom(obo:RO_0002162             
+  obo:NCBITaxon_9606))                                                        
+    SubClassOf(obo:CL_7770006 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_Q9UIK5))                                                             
+                                                                              
+    # Class: obo:CP_0000000 (obsolete CP:0000000)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000000 obo:CL_0017500)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000000 "ID was moved to the CL   
+  namespace. Use CL:0017500.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000000 "obsolete CP:0000000")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000000 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:CP_0000025 (obsolete CP:0000025)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000025 obo:CL_0017501)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000025 "ID was moved to the CL   
+  namespace. Use CL:0017501.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000025 "obsolete CP:0000025")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000025 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:CP_0000027 (obsolete CP:0000027)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000027 obo:CL_0017502)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000027 "ID was moved to the CL   
+  namespace. Use CL:0017502.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000027 "obsolete CP:0000027")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000027 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:CP_0000028 (obsolete CP:0000028)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000028 obo:CL_0017503)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000028 "ID was moved to the CL   
+  namespace. Use CL:0017503.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000028 "obsolete CP:0000028")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000028 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:CP_0000035 (obsolete CP:0000035)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000035 obo:CL_0017504)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000035 "ID was moved to the CL   
+  namespace. Use CL:0017504.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000035 "obsolete CP:0000035")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000035 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:CP_0000037 (obsolete CP:0000037)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000037 obo:CL_0017505)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000037 "ID was moved to the CL   
+  namespace. Use CL:0017505.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000037 "obsolete CP:0000037")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000037 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:CP_0000039 (obsolete CP:0000039)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000039 obo:CL_0017506)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000039 "ID was moved to the CL   
+  namespace. Use CL:0017506.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000039 "obsolete CP:0000039")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000039 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:CP_0000040 (obsolete CP:0000040)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000040 obo:CL_0017507)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000040 "ID was moved to the CL   
+  namespace. Use CL:0017507.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000040 "obsolete CP:0000040")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000040 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:CP_0000043 (obsolete CP:0000043)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000043 obo:CL_0017508)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000043 "ID was moved to the CL   
+  namespace. Use CL:0017508.")                                                
+    AnnotationAssertion(rdfs:label obo:CP_0000043 "obsolete CP:0000043")      
+    AnnotationAssertion(owl:deprecated obo:CP_0000043 "true"^^xsd:boolean)    
+                                                                              
+    # Class: obo:D96882F1-8709-49AB-BCA9-772A67EA6C33 (obsolete D96882F1-8709-
+  49AB-BCA9-772A67EA6C33)                                                     
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:D96882F1-8709-49AB-BCA9-          
+  772A67EA6C33 obo:CL_0017509)                                                
+    AnnotationAssertion(rdfs:comment obo:D96882F1-8709-49AB-BCA9-772A67EA6C33 
+  "ID was moved to the CL namespace. Use CL:0017509.")                        
+    AnnotationAssertion(rdfs:label obo:D96882F1-8709-49AB-BCA9-772A67EA6C33   
+  "obsolete D96882F1-8709-49AB-BCA9-772A67EA6C33")                            
+    AnnotationAssertion(owl:deprecated obo:D96882F1-8709-49AB-BCA9-           
+  772A67EA6C33 "true"^^xsd:boolean)                                           
+                                                                              
+    # Class: obo:GO_0051932 (synaptic transmission, GABAergic)                
+                                                                              
+    EquivalentClasses(obo:GO_0051932 ObjectIntersectionOf(obo:GO_0007268      
+  ObjectSomeValuesFrom(obo:RO_0000057 obo:CHEBI_59888)                        
+  ObjectSomeValuesFrom(obo:RO_0000057 obo:CL_0000617)))                       
+                                                                              
+                                                                              
+    SubClassOf(ObjectIntersectionOf(obo:CL_0000163                            
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000160)) obo:CL_0000164)   
+    SubClassOf(ObjectIntersectionOf(obo:CL_0000163                            
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0000945)) obo:CL_0000164)   
+    SubClassOf(ObjectIntersectionOf(obo:CL_0000163                            
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001264)) obo:CL_0000164)   
+    SubClassOf(Annotation(oboInOwl:hasDbXref <https://github.                 
+  com/obophenotype/cell-ontology/issues/757>)                                 
+  ObjectIntersectionOf(obo:CL_0000540 ObjectSomeValuesFrom(obo:RO_0002162     
+  obo:NCBITaxon_7742)) ObjectSomeValuesFrom(obo:RO_0002202 obo:CL_0000031))   
+    )                                                                         
+    <exited with exit code 0>
+
+Bash: Find any existing NTR IDs and term_tracker_item annotations
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  "term_tracker_item|CL_990|CL_9900" src/ontology/cl-edit.owl | head -30      
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find term_tracker_item examples
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  "term_tracker_item" src/ontology/cl-edit.owl | head -10                     
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find term tracker item usage
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "IAO_0000233|
+  tracker" src/ontology/cl-edit.owl | head -10                                
+    3754:AnnotationAssertion(obo:IAO_0000233                                  
+  cl:has_high_plasma_membrane_amount <https://github.com/obophenotype/cell-   
+  ontology/issues/1481>)                                                      
+    3762:AnnotationAssertion(obo:IAO_0000233 cl:has_low_plasma_membrane_amount
+  <https://github.com/obophenotype/cell-ontology/issues/1481>)                
+    3816:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000003 <https://github.  
+  com/obophenotype/cell-ontology/issues/2124>)                                
+    4339:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000054 <https://github.  
+  com/obophenotype/cell-ontology/issues/2698>)                                
+    4348:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000055 "https://github.  
+  com/obophenotype/cell-ontology/issues/2922")                                
+    4537:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000073 <https://github.  
+  com/obophenotype/cell-ontology/issues/1149>)                                
+    4641:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000085 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4649:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000086 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4657:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000087 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4665:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000088 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    <exited with exit code 0>
+
+Bash: Search for term tracker annotation
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -rn            
+  "term_tracker" src/ontology/cl-edit.owl | head -10                          
+                                                                              
+    <exited with exit code 0>
+
+Bash: View the most recent terms to understand the pattern
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "CL_4072104|
+  CL_4072103|CL_4072102|CL_4072101" src/ontology/cl-edit.owl | head -30       
+    3326:Declaration(Class(obo:CL_4072102))                                   
+    3327:Declaration(Class(obo:CL_4072103))                                   
+    3328:Declaration(Class(obo:CL_4072104))                                   
+    24755:SubClassOf(obo:CL_0011006 obo:CL_4072102)                           
+    25676:SubClassOf(obo:CL_0020018 obo:CL_4072104)                           
+    35959:# Class: obo:CL_4072102 (Purkinje layer interneuron)                
+    35961:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:35803588")  
+  obo:IAO_0000115 obo:CL_4072102 "A type of GABAergic interneuron residing in 
+  the Purkinje cell layer of the cerebellar cortex.")                         
+    35962:AnnotationAssertion(terms:date obo:CL_4072102 "2025-04-             
+  29T13:06:36Z"^^xsd:dateTime)                                                
+    35963:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:35803588")  
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072102 "PLI")                            
+    35964:AnnotationAssertion(rdfs:label obo:CL_4072102 "Purkinje layer       
+  interneuron")                                                               
+    35965:EquivalentClasses(obo:CL_4072102 ObjectIntersectionOf(obo:CL_0000099
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0002979)))                   
+    35966:SubClassOf(obo:CL_4072102 ObjectSomeValuesFrom(obo:RO_0002215       
+  obo:GO_0061534))                                                            
+    35968:# Class: obo:CL_4072103 (hair follicle dermal stem cell)            
+    35970:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25465495")  
+  Annotation(oboInOwl:hasDbXref "PMID:29691589") Annotation(oboInOwl:hasDbXref
+  "PMID:35036581") Annotation(oboInOwl:hasDbXref "PMID:35069694")             
+  obo:IAO_0000115 obo:CL_4072103 "A bipotent mesenchymal stem cell that       
+  resides in the dermal sheath, specifically within the dermal sheath cup at  
+  the base of the hair follicle, characterized by its capacity for self-      
+  renewal and differentiation into both dermal sheath and dermal papilla cells
+  throughout hair cycling. In humans, this cell is marked by enriched         
+  expression of gremlin-2 (GREM2) and dipeptidase-1 (DPEP1), and acts as a    
+  progenitor reservoir sustaining and regenerating the follicle's mesenchymal 
+  compartments.")                                                             
+    35971:AnnotationAssertion(terms:contributor obo:CL_4072103 <https://orcid.
+  org/0009-0000-8480-9277>)                                                   
+    35972:AnnotationAssertion(oboInOwl:creation_date obo:CL_4072103 "2025-11- 
+  05T11:49:53Z"^^xsd:dateTime)                                                
+    35973:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:38016881")  
+  oboInOwl:hasNarrowSynonym obo:CL_4072103 "dermal sheath cup cell")          
+    35974:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25465495")  
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072103 "hfDSC")                          
+    35975:AnnotationAssertion(rdfs:label obo:CL_4072103 "hair follicle dermal 
+  stem cell")                                                                 
+    35976:EquivalentClasses(obo:CL_4072103 ObjectIntersectionOf(obo:CL_0000134
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0002073)))                  
+    35977:SubClassOf(obo:CL_4072103 ObjectSomeValuesFrom(obo:RO_0002215       
+  obo:GO_0042634))                                                            
+    35979:# Class: obo:CL_4072104 (fibrochondrocyte)                          
+    35981:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:28939894")  
+  Annotation(oboInOwl:hasDbXref "PMID:31871141") Annotation(oboInOwl:hasDbXref
+  "PMID:34608249") obo:IAO_0000115 obo:CL_4072104 "A chondrocyte with hybrid  
+  fibroblastic-chondrogenic characteristics found in fibrocartilage,          
+  particularly in the avascular inner zone and transitional middle zone of the
+  meniscus. In humans, fibrochondrocytes are marked by predominant expression 
+  of type I collagen (COL1A1) and fibril-associated collagens (COL3A1, COL6A1),
+  while retaining type II collagen (COL2A1) expression and exhibiting lower   
+  SOX9 than hyaline chondrocytes. This molecular profile underlies the        
+  synthesis of abundant type I collagen essential for fibrocartilage matrix   
+  and reflects an intermediate phenotype between fibroblast and chondrocyte.")
+    35982:AnnotationAssertion(terms:contributor obo:CL_4072104 <https://orcid.
+  org/0009-0000-8480-9277>)                                                   
+    35983:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:34608249")  
+  oboInOwl:hasExactSynonym obo:CL_4072104 "fibrocartilage chondrocyte")       
+    35984:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:28939894")  
+  oboInOwl:hasNarrowSynonym obo:CL_4072104 "meniscus fibrochondrocyte")       
+    35985:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:31871141")  
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072104 "FC")                             
+    35986:AnnotationAssertion(rdfs:label obo:CL_4072104 "fibrochondrocyte")   
+    35987:EquivalentClasses(obo:CL_4072104 ObjectIntersectionOf(obo:CL_0000138
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001995)))                  
+    35988:SubClassOf(obo:CL_4072104 obo:CL_0002320)                           
+    <exited with exit code 0>
+
+Bash: View the most recent terms in the file
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '35940,      
+  35995p' src/ontology/cl-edit.owl                                            
+    # Class: obo:CL_4072046 (pvalb chandelier GABAergic interneuron (Homo     
+  sapiens))                                                                   
+                                                                              
+    AnnotationAssertion(obo:IAO_0000028 obo:CL_4072046 "chandelier PV         
+  interneuron (Homo sapiens)")                                                
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:27477017")        
+  Annotation(oboInOwl:hasDbXref "PMID:37824655") Annotation(oboInOwl:hasDbXref
+  "https://cellxgene.cziscience.com/e/9c63201d-bfd9-41a8-bbbc-18d947556f3d.   
+  cxg/") obo:IAO_0000115 obo:CL_4072046 "A transcriptomically definined       
+  GABAergic interneuron of the human pallium.  These cells correspond to the  
+  classically defined pvalb chandelier neuron type. The standard              
+  transcriptomic reference data for this cell type can be found on the        
+  CellxGene census under the collection: 'Transcriptomic cytoarchitecture     
+  reveals principles of human neocortex organization', dataset: 'Supercluster:
+  CGE-derived interneurons', Author Categories: 'CrossArea_subclass', clusters
+  Chandelier.")                                                               
+    AnnotationAssertion(obo:RO_0002175 obo:CL_4072046 obo:NCBITaxon_9606)     
+    AnnotationAssertion(terms:contributor obo:CL_4072046 "https://orcid.      
+  org/0000-0002-5507-2103")                                                   
+    AnnotationAssertion(terms:date obo:CL_4072046 "2025-09-                   
+  29T10:07:47Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(oboInOwl:hasDbXref obo:CL_4072046 "ILX:0107356")      
+    AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_4072046 "Chandelier PV
+  (Homo sapiens)")                                                            
+    AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_4072046 "chandelier   
+  pvalb GABAergic interneuron (Homo sapiens)")                                
+    AnnotationAssertion(oboInOwl:inSubset obo:CL_4072046 cl:BDS_subset)       
+    AnnotationAssertion(oboInOwl:inSubset obo:CL_4072046 cl:cellxgene_subset) 
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "https://doi.org/10.    
+  5281/zenodo.11165918") rdfs:comment obo:CL_4072046 "The marker set GPR149,  
+  CA8 can identify the Human cell type chandelier pvalb GABAergic cortical    
+  interneuron in the neocortex with a confidence of 0.799748111 (NS-Forest    
+  FBeta value).")                                                             
+    AnnotationAssertion(rdfs:label obo:CL_4072046 "pvalb chandelier GABAergic 
+  interneuron (Homo sapiens)")                                                
+    SubClassOf(obo:CL_4072046 obo:CL_4023036)                                 
+    SubClassOf(obo:CL_4072046 ObjectSomeValuesFrom(obo:RO_0002162             
+  obo:NCBITaxon_9606))                                                        
+    SubClassOf(obo:CL_4072046 ObjectSomeValuesFrom(obo:RO_0015004             
+  obo:CLM_1000063))                                                           
+                                                                              
+    # Class: obo:CL_4072102 (Purkinje layer interneuron)                      
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:35803588")        
+  obo:IAO_0000115 obo:CL_4072102 "A type of GABAergic interneuron residing in 
+  the Purkinje cell layer of the cerebellar cortex.")                         
+    AnnotationAssertion(terms:date obo:CL_4072102 "2025-04-                   
+  29T13:06:36Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:35803588")        
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072102 "PLI")                            
+    AnnotationAssertion(rdfs:label obo:CL_4072102 "Purkinje layer             
+  interneuron")                                                               
+    EquivalentClasses(obo:CL_4072102 ObjectIntersectionOf(obo:CL_0000099      
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0002979)))                   
+    SubClassOf(obo:CL_4072102 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0061534))                                                            
+                                                                              
+    # Class: obo:CL_4072103 (hair follicle dermal stem cell)                  
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25465495")        
+  Annotation(oboInOwl:hasDbXref "PMID:29691589") Annotation(oboInOwl:hasDbXref
+  "PMID:35036581") Annotation(oboInOwl:hasDbXref "PMID:35069694")             
+  obo:IAO_0000115 obo:CL_4072103 "A bipotent mesenchymal stem cell that       
+  resides in the dermal sheath, specifically within the dermal sheath cup at  
+  the base of the hair follicle, characterized by its capacity for self-      
+  renewal and differentiation into both dermal sheath and dermal papilla cells
+  throughout hair cycling. In humans, this cell is marked by enriched         
+  expression of gremlin-2 (GREM2) and dipeptidase-1 (DPEP1), and acts as a    
+  progenitor reservoir sustaining and regenerating the follicle's mesenchymal 
+  compartments.")                                                             
+    AnnotationAssertion(terms:contributor obo:CL_4072103 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(oboInOwl:creation_date obo:CL_4072103 "2025-11-       
+  05T11:49:53Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:38016881")        
+  oboInOwl:hasNarrowSynonym obo:CL_4072103 "dermal sheath cup cell")          
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25465495")        
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072103 "hfDSC")                          
+    AnnotationAssertion(rdfs:label obo:CL_4072103 "hair follicle dermal stem  
+  cell")                                                                      
+    EquivalentClasses(obo:CL_4072103 ObjectIntersectionOf(obo:CL_0000134      
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0002073)))                  
+    SubClassOf(obo:CL_4072103 ObjectSomeValuesFrom(obo:RO_0002215             
+  obo:GO_0042634))                                                            
+                                                                              
+    # Class: obo:CL_4072104 (fibrochondrocyte)                                
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:28939894")        
+  Annotation(oboInOwl:hasDbXref "PMID:31871141") Annotation(oboInOwl:hasDbXref
+  "PMID:34608249") obo:IAO_0000115 obo:CL_4072104 "A chondrocyte with hybrid  
+  fibroblastic-chondrogenic characteristics found in fibrocartilage,          
+  particularly in the avascular inner zone and transitional middle zone of the
+  meniscus. In humans, fibrochondrocytes are marked by predominant expression 
+  of type I collagen (COL1A1) and fibril-associated collagens (COL3A1, COL6A1),
+  while retaining type II collagen (COL2A1) expression and exhibiting lower   
+  SOX9 than hyaline chondrocytes. This molecular profile underlies the        
+  synthesis of abundant type I collagen essential for fibrocartilage matrix   
+  and reflects an intermediate phenotype between fibroblast and chondrocyte.")
+    AnnotationAssertion(terms:contributor obo:CL_4072104 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:34608249")        
+  oboInOwl:hasExactSynonym obo:CL_4072104 "fibrocartilage chondrocyte")       
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:28939894")        
+  oboInOwl:hasNarrowSynonym obo:CL_4072104 "meniscus fibrochondrocyte")       
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:31871141")        
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_4072104 "FC")                             
+    AnnotationAssertion(rdfs:label obo:CL_4072104 "fibrochondrocyte")         
+    EquivalentClasses(obo:CL_4072104 ObjectIntersectionOf(obo:CL_0000138      
+  ObjectSomeValuesFrom(obo:BFO_0000050 obo:UBERON_0001995)))                  
+    SubClassOf(obo:CL_4072104 obo:CL_0002320)                                 
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002202             
+  obo:CL_0020021))                                                            
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_000003264))                                                          
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_000003328))                                                          
+    SubClassOf(obo:CL_4072104 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_000003353))                                                          
+                                                                              
+    # Class: obo:CL_7770002 (juxtacanalicular tissue cell)                    
+    <exited with exit code 0>
+
+Bash: Verify UBERON term for entorhinal cortex layer 2
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep "UBERON_0022337|
+  entorhinal cortex layer 2" src/ontology/cl-edit.owl | head -10              
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find the GitHub issue number for this NTR
+$ cd /home/runner/work/cell-ontology/cell-ontology && gh issue list --    
+  search "entorhinal cortex layer II stellate" | head -10                     
+    3630	OPEN	[NTR] entorhinal cortex layer II stellate cell	new term request    
+  2026-05-05T13:17:27Z                                                        
+    <exited with exit code 0>
+
+Bash: Find RO_0002100 usage
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "RO_0002100"
+  src/ontology/cl-edit.owl | head -10                                         
+    4849:SubClassOf(obo:CL_0000104 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    4871:EquivalentClasses(obo:CL_0000107 ObjectIntersectionOf(obo:CL_0000540 
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0002410)))                   
+    4915:SubClassOf(obo:CL_0000112 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    4981:SubClassOf(obo:CL_0000119 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0002956))                                                        
+    4991:SubClassOf(obo:CL_0000120 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    5008:SubClassOf(obo:CL_0000121 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0002979))                                                        
+    5018:SubClassOf(obo:CL_0000122 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    7132:SubClassOf(obo:CL_0000379 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0001017))                                                        
+    7255:EquivalentClasses(obo:CL_0000397 ObjectIntersectionOf(obo:CL_0000099 
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0000045)))                   
+    8288:SubClassOf(obo:CL_0000530 ObjectSomeValuesFrom(obo:RO_0002100        
+  obo:UBERON_0002240))                                                        
+    <exited with exit code 0>
+
+Bash: Find any existing terms related to dentate gyrus or perforant pathway
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "perforant| 
+  dentate gyrus|hippocampal" src/ontology/cl-edit.owl | head -10              
+    9853:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:10600995")   
+  Annotation(oboInOwl:hasDbXref "PMID:34047341") Annotation(oboInOwl:hasDbXref
+  "PMID:36774666") Annotation(oboInOwl:hasDbXref "PMID:37775311")             
+  Annotation(oboInOwl:hasDbXref "PMID:9728912") obo:IAO_0000115 obo:CL_0000695
+  "A type of transient, early-born glutamatergic neuron located primarily in  
+  the marginal zone (future layer I) of the developing cerebral cortex and    
+  hippocampus in vertebrates. it is characterized by a bipolar morphology with
+  an elongated soma, a single thick dendrite oriented toward the pial surface,
+  and a long, thin axon that extends tangentially to form horizontal plexuses 
+  across the cortical surface. It is important for the multiple developmental 
+  processes including migration, dendritogenesis and synaptogenesis. It       
+  typically undergoes programmed cell death following cortical maturation with
+  species- and region specific patterns of survival. In mice, it is           
+  predominantly observed in the hippocampal formation, particularly in the    
+  stratum lacunosum-moleculare and outer molecular layer of the dentate gyrus 
+  (van Bruggen et al., 2023). In contrast, in humans, a second morphologically
+  distinct subpopulation emerges mid-gestation and persists postnatally, with 
+  surviving cells observed in the cortical sulci and the hippocampus.")       
+    13408:# Class: obo:CL_0001033 (hippocampal granule cell)                  
+    13411:AnnotationAssertion(rdfs:label obo:CL_0001033 "hippocampal granule  
+  cell")                                                                      
+    20335:# Class: obo:CL_0002604 (hippocampal astrocyte)                     
+    20340:AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0002604         
+  "astrocyte of the hippocampal formation")                                   
+    20342:AnnotationAssertion(rdfs:label obo:CL_0002604 "hippocampal          
+  astrocyte")                                                                 
+    20372:# Class: obo:CL_0002608 (hippocampal neuron)                        
+    20377:AnnotationAssertion(rdfs:label obo:CL_0002608 "hippocampal neuron") 
+    29236:# Class: obo:CL_1001569 (hippocampal interneuron)                   
+    29240:AnnotationAssertion(rdfs:label obo:CL_1001569 "hippocampal          
+  interneuron")                                                               
+    <exited with exit code 0>
+
+
+Now I have enough context to plan and implement the new term. Let me set up 
+  my plan and start implementing.
+
+Bash: Find the last Declaration line
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  "^Declaration" src/ontology/cl-edit.owl | tail -10                          
+    3629:Declaration(AnnotationProperty(oboInOwl:hasRelatedSynonym))          
+    3630:Declaration(AnnotationProperty(oboInOwl:hasSynonymType))             
+    3631:Declaration(AnnotationProperty(oboInOwl:id))                         
+    3632:Declaration(AnnotationProperty(oboInOwl:inSubset))                   
+    3633:Declaration(AnnotationProperty(oboInOwl:is_inferred))                
+    3634:Declaration(AnnotationProperty(oboInOwl:shorthand))                  
+    3635:Declaration(AnnotationProperty(rdfs:comment))                        
+    3636:Declaration(AnnotationProperty(rdfs:label))                          
+    3637:Declaration(AnnotationProperty(rdfs:seeAlso))                        
+    3638:Declaration(AnnotationProperty(owl:deprecated))                      
+    <exited with exit code 0>
+
+Bash: Find the last Class section
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "^# Class:  
+  obo:CL" src/ontology/cl-edit.owl | tail -5                                  
+    35994:# Class: obo:CL_7770002 (juxtacanalicular tissue cell)              
+    36006:# Class: obo:CL_7770003 (beam A cell)                               
+    36015:# Class: obo:CL_7770004 (suprabasal cell)                           
+    36023:# Class: obo:CL_7770005 (beam cell)                                 
+    36034:# Class: obo:CL_7770006 (beam B cell, human)                        
+    <exited with exit code 0>
+
+Bash: Find the last class declaration
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  "Declaration(Class" src/ontology/cl-edit.owl | tail -10                     
+    3562:Declaration(Class(obo:UBERON_8410042))                               
+    3563:Declaration(Class(obo:UBERON_8410043))                               
+    3564:Declaration(Class(obo:UBERON_8600000))                               
+    3565:Declaration(Class(obo:UBERON_8600001))                               
+    3566:Declaration(Class(obo:UBERON_8600002))                               
+    3567:Declaration(Class(obo:UBERON_8600003))                               
+    3568:Declaration(Class(obo:UBERON_8600004))                               
+    3569:Declaration(Class(obo:UBERON_8600014))                               
+    3570:Declaration(Class(obo:UBERON_8850000))                               
+    3571:Declaration(Class(obo:UBERON_8910001))                               
+    <exited with exit code 0>
+
+Bash: Find where CL_4072104 is declared
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '3323,3335p' 
+  src/ontology/cl-edit.owl                                                    
+    Declaration(Class(obo:CL_4072044))                                        
+    Declaration(Class(obo:CL_4072045))                                        
+    Declaration(Class(obo:CL_4072046))                                        
+    Declaration(Class(obo:CL_4072102))                                        
+    Declaration(Class(obo:CL_4072103))                                        
+    Declaration(Class(obo:CL_4072104))                                        
+    Declaration(Class(obo:CL_7770002))                                        
+    Declaration(Class(obo:CL_7770003))                                        
+    Declaration(Class(obo:CL_7770004))                                        
+    Declaration(Class(obo:CL_7770005))                                        
+    Declaration(Class(obo:CL_7770006))                                        
+    Declaration(Class(obo:CP_0000000))                                        
+    Declaration(Class(obo:CP_0000025))                                        
+    <exited with exit code 0>
+
+Bash: View area after CL_7770006 declaration
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '3328,3345p' 
+  src/ontology/cl-edit.owl                                                    
+    Declaration(Class(obo:CL_4072104))                                        
+    Declaration(Class(obo:CL_7770002))                                        
+    Declaration(Class(obo:CL_7770003))                                        
+    Declaration(Class(obo:CL_7770004))                                        
+    Declaration(Class(obo:CL_7770005))                                        
+    Declaration(Class(obo:CL_7770006))                                        
+    Declaration(Class(obo:CP_0000000))                                        
+    Declaration(Class(obo:CP_0000025))                                        
+    Declaration(Class(obo:CP_0000027))                                        
+    Declaration(Class(obo:CP_0000028))                                        
+    Declaration(Class(obo:CP_0000035))                                        
+    Declaration(Class(obo:CP_0000037))                                        
+    Declaration(Class(obo:CP_0000039))                                        
+    Declaration(Class(obo:CP_0000040))                                        
+    Declaration(Class(obo:CP_0000043))                                        
+    Declaration(Class(obo:D96882F1-8709-49AB-BCA9-772A67EA6C33))              
+    Declaration(Class(obo:GO_0001552))                                        
+    Declaration(Class(obo:GO_0001649))                                        
+    <exited with exit code 0>
+
+Bash: Find the line numbers of CL_7770006 and CP_0000000 class sections
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "# Class:   
+  obo:CL_7770006|# Class: obo:CP_0000000" src/ontology/cl-edit.owl            
+    36034:# Class: obo:CL_7770006 (beam B cell, human)                        
+    36045:# Class: obo:CP_0000000 (obsolete CP:0000000)                       
+    <exited with exit code 0>
+
+Bash: View the CL_7770006 section to end
+$ cd /home/runner/work/cell-ontology/cell-ontology && sed -n '36034,      
+  36048p' src/ontology/cl-edit.owl                                            
+    # Class: obo:CL_7770006 (beam B cell, human)                              
+                                                                              
+    AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:25356439")        
+  Annotation(oboInOwl:hasDbXref "PMID:32341164") Annotation(oboInOwl:hasDbXref
+  "PMID:39829808") obo:IAO_0000115 obo:CL_7770006 "A trabecular meshwork cell 
+  within the eye's trabecular meshwork. This cell is molecularly distinguished
+  by TMEFF2 expression in humans. A beam B cell is spatially intermingled with
+  beam A cells throughout the uveal and corneoscleral meshwork regions, but   
+  demonstrates a tendency to localise closer to the juxtacanalicular tissue.")
+    AnnotationAssertion(terms:contributor obo:CL_7770006 <https://orcid.      
+  org/0009-0000-8480-9277>)                                                   
+    AnnotationAssertion(terms:date obo:CL_7770006 "2025-09-                   
+  15T08:48:01Z"^^xsd:dateTime)                                                
+    AnnotationAssertion(rdfs:label obo:CL_7770006 "beam B cell, human")       
+    AnnotationAssertion(Annotation(dc:license <http://creativecommons.        
+  org/licenses/by/4.0/>) Annotation(oboInOwl:hasDbXref "PMID:35836364")       
+  Annotation(rdfs:comment "Trabecular meshwork (TM) structure. The TM consists
+  of uveal (blue), corneoscleral (red), and juxtacanalicular (green) regions. 
+  TM beam cells (blue/red) line the uveal and corneoscleral regions, while JCT
+  cells (green) occupy the juxtacanalicular region.") foaf:depiction          
+  obo:CL_7770006 "http://purl.obolibrary.                                     
+  org/obo/cl/images/Trabecular_meshowk_cells_PMID35836364.jpg")               
+    SubClassOf(obo:CL_7770006 obo:CL_0002367)                                 
+    SubClassOf(obo:CL_7770006 ObjectSomeValuesFrom(obo:RO_0002162             
+  obo:NCBITaxon_9606))                                                        
+    SubClassOf(obo:CL_7770006 ObjectSomeValuesFrom(obo:RO_0002292             
+  obo:PR_Q9UIK5))                                                             
+                                                                              
+    # Class: obo:CP_0000000 (obsolete CP:0000000)                             
+                                                                              
+    AnnotationAssertion(obo:IAO_0100001 obo:CP_0000000 obo:CL_0017500)        
+    AnnotationAssertion(rdfs:comment obo:CP_0000000 "ID was moved to the CL   
+  namespace. Use CL:0017500.")                                                
+    <exited with exit code 0>
+
+
+Now I have all the information I need. Let me start implementing the new    
+  term.
+
+Bash: View the prefix declarations to understand namespace prefixes
+$ cd /home/runner/work/cell-ontology/cell-ontology && head -30            
+  src/ontology/cl-edit.owl                                                    
+    Prefix(:=<http://purl.obolibrary.org/obo/cl.owl#>)                        
+    Prefix(cl:=<http://purl.obolibrary.org/obo/cl#>)                          
+    Prefix(dc:=<http://purl.org/dc/elements/1.1/>)                            
+    Prefix(go:=<http://purl.obolibrary.org/obo/go#>)                          
+    Prefix(pr:=<http://purl.obolibrary.org/obo/pr#>)                          
+    Prefix(obo:=<http://purl.obolibrary.org/obo/>)                            
+    Prefix(owl:=<http://www.w3.org/2002/07/owl#>)                             
+    Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)                
+    Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)                       
+    Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)                          
+    Prefix(core:=<http://purl.obolibrary.org/obo/uberon/core#>)               
+    Prefix(foaf:=<http://xmlns.com/foaf/0.1/>)                                
+    Prefix(pato:=<http://purl.obolibrary.org/obo/pato#>)                      
+    Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)                     
+    Prefix(sssom:=<https://w3id.org/sssom/>)                                  
+    Prefix(terms:=<http://purl.org/dc/terms/>)                                
+    Prefix(uberon:=<http://purl.obolibrary.org/obo/uberon#>)                  
+    Prefix(ubprop:=<http://purl.obolibrary.org/obo/ubprop#>)                  
+    Prefix(subsets:=<http://purl.obolibrary.org/obo/ro/subsets#>)             
+    Prefix(oboInOwl:=<http://www.geneontology.org/formats/oboInOwl#>)         
+    Prefix(ncbitaxon:=<http://purl.obolibrary.org/obo/ncbitaxon#>)            
+                                                                              
+                                                                              
+    Ontology(<http://purl.obolibrary.org/obo/cl.owl>                          
+    Import(<http://purl.obolibrary.org/obo/cl/components/PNS_neurons.owl>)    
+    Import(<http://purl.obolibrary.org/obo/cl/components/bgo-cl-comp.owl>)    
+    Import(<http://purl.obolibrary.                                           
+  org/obo/cl/components/blood_and_immune_upper_slim.owl>)                     
+    Import(<http://purl.obolibrary.org/obo/cl/components/cellxgene_subset.    
+  owl>)                                                                       
+    Import(<http://purl.obolibrary.org/obo/cl/components/clm-cl.owl>)         
+    Import(<http://purl.obolibrary.org/obo/cl/components/eye_upper_slim.owl>) 
+    <exited with exit code 0>
+
+Bash: Find creator annotation usage
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n             
+  "terms:creator|dc:creator" src/ontology/cl-edit.owl | head -10              
+    3613:Declaration(AnnotationProperty(dc:creator))                          
+    3618:Declaration(AnnotationProperty(terms:creator))                       
+    25620:AnnotationAssertion(dc:creator obo:CL_0020014 "GitHub Copilot")     
+    25634:AnnotationAssertion(dc:creator obo:CL_0020015 "GitHub Copilot")     
+    25647:AnnotationAssertion(terms:creator obo:CL_0020016 "GitHub Copilot")  
+    25660:AnnotationAssertion(dc:creator obo:CL_0020017 "GitHub Copilot")     
+    25671:AnnotationAssertion(terms:creator obo:CL_0020018 "GitHub Copilot")  
+    25684:AnnotationAssertion(dc:creator obo:CL_0020019 "GitHub Copilot")     
+    25693:AnnotationAssertion(dc:creator obo:CL_0020020 "GitHub Copilot")     
+    25705:AnnotationAssertion(terms:creator obo:CL_0020021 "GitHub Copilot")  
+    <exited with exit code 0>
+
+Progress update: Initial plan for entorhinal cortex layer II stellate cell NTR
+
+[ ] Add new term entorhinal cortex layer II stellate cell (CL_9900001) to   
+  src/ontology/cl-edit.owl                                                    
+      [ ] Add Declaration(Class(obo:CL_9900001)) in declarations section      
+      [ ] Add class definition with:                                          
+          [ ] Label: "entorhinal cortex layer II stellate cell"               
+          [ ] Definition with all 5 PMID references                           
+          [ ] Exact synonyms: MEC layer II stellate cell, layer II stellate   
+          cell of medial entorhinal cortex, entorhinal stellate cell, EC LII  
+          stellate cell                                                       
+          [ ] Related synonym: reelin-positive entorhinal cortex layer II     
+          neuron                                                              
+          [ ] Logical definition (EquivalentClasses): glutamatergic neuron ∩  
+          has_soma_location some entorhinal cortex layer 2                    
+          [ ] SubClassOf: stellate neuron (CL:0000122)                        
+          [ ] Term tracker: GitHub issue #3630                                
+          [ ] Date, creator metadata
+
+
+Now let me make the changes to the ontology file. I'll add the new term:
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str":                                                              
+  "Declaration(Class(obo:CL_7770006))\nDeclaration(Class(obo:CL_9900001))\nDeclaration(Class(obo:CP_0000000))",
+      "old_str":                                                              
+  "Declaration(Class(obo:CL_7770006))\nDeclaration(Class(obo:CP_0000000))",   
+      "path": "/home/runner/work/cell-ontology/cell-ontology/src/ontology/cl- 
+  edit.owl"                                                                   
+    }
+
+
+Now add the class definition after the CL_7770006 section and before the    
+  CP_0000000 section:
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "SubClassOf(obo:CL_7770006                                   
+  obo:CL_0002367)\nSubClassOf(obo:CL_7770006                                  
+  ObjectSomeValuesFrom(obo:RO_0002162                                         
+  obo:NCBITaxon_9606))\nSubClassOf(obo:CL_7770006                             
+  ObjectSomeValuesFrom(obo:RO_0002292 obo:PR_Q9UIK5))\n\n# Class:             
+  obo:CL_9900001 (entorhinal cortex layer II stellate                         
+  cell)\n\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                  
+  \"PMID:20512133\") Annotation(oboInOwl:hasDbXref \"PMID:26223342\")         
+  Annotation(oboInOwl:hasDbXref \"PMID:26711115\")                            
+  Annotation(oboInOwl:hasDbXref \"PMID:31680885\")                            
+  Annotation(oboInOwl:hasDbXref \"PMID:32039761\") obo:IAO_0000115            
+  obo:CL_9900001 \"A glutamatergic principal neuron with its soma located in  
+  layer II of the entorhinal cortex, distinguished by stellate morphology,    
+  lack of calbindin expression, and expression of reelin in rodents. This cell
+  type is a major source of perforant pathway projections from entorhinal     
+  cortex layer II to the dentate gyrus of the hippocampal formation. It       
+  displays electrophysiological properties including a prominent              
+  hyperpolarisation-activated inward current, voltage sag, and theta-frequency
+  membrane resonance.\")\nAnnotationAssertion(obo:IAO_0000233 obo:CL_9900001  
+  \u003chttps://github.com/obophenotype/cell-                                 
+  ontology/issues/3630\u003e)\nAnnotationAssertion(dc:creator obo:CL_9900001  
+  \"GitHub Copilot\")\nAnnotationAssertion(terms:date obo:CL_9900001 \"2026-05-
+  05T13:19:02Z\"^^xsd:dateTime)\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref
+  \"PMID:26223342\") Annotation(oboInOwl:hasDbXref \"PMID:26711115\")         
+  Annotation(oboInOwl:hasDbXref \"PMID:32039761\") oboInOwl:hasExactSynonym   
+  obo:CL_9900001 \"MEC layer II stellate                                      
+  cell\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                  
+  \"PMID:26223342\") oboInOwl:hasExactSynonym obo:CL_9900001 \"entorhinal     
+  stellate cell\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref         
+  \"PMID:26711115\") oboInOwl:hasExactSynonym obo:CL_9900001 \"EC LII stellate
+  cell\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                  
+  \"PMID:26223342\") oboInOwl:hasExactSynonym obo:CL_9900001 \"layer II       
+  stellate cell of medial entorhinal                                          
+  cortex\")\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref                
+  \"PMID:26711115\") oboInOwl:hasRelatedSynonym obo:CL_9900001 \"reelin-      
+  positive entorhinal cortex layer II                                         
+  neuron\")\nAnnotationAssertion(rdfs:label obo:CL_9900001 \"entorhinal cortex
+  layer II stellate cell\")\nEquivalentClasses(obo:CL_9900001                 
+  ObjectIntersectionOf(obo:CL_0000679 ObjectSomeValuesFrom(obo:RO_0002100     
+  obo:UBERON_0022337)))\nSubClassOf(obo:CL_9900001 obo:CL_0000122)\n\n# Class:
+  obo:CP_0000000 (obsolete CP:0000000)",                                      
+      "old_str": "SubClassOf(obo:CL_7770006                                   
+  obo:CL_0002367)\nSubClassOf(obo:CL_7770006                                  
+  ObjectSomeValuesFrom(obo:RO_0002162                                         
+  obo:NCBITaxon_9606))\nSubClassOf(obo:CL_7770006                             
+  ObjectSomeValuesFrom(obo:RO_0002292 obo:PR_Q9UIK5))\n\n# Class:             
+  obo:CP_0000000 (obsolete CP:0000000)",                                      
+      "path": "/home/runner/work/cell-ontology/cell-ontology/src/ontology/cl- 
+  edit.owl"                                                                   
+    }
+
+
+Now let me verify the changes look correct:
+
+Bash: Verify the new term was added correctly
+$ cd /home/runner/work/cell-ontology/cell-ontology && grep -n "CL_9900001"
+  src/ontology/cl-edit.owl                                                    
+    3334:Declaration(Class(obo:CL_9900001))                                   
+    36046:# Class: obo:CL_9900001 (entorhinal cortex layer II stellate cell)  
+    36048:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:20512133")  
+  Annotation(oboInOwl:hasDbXref "PMID:26223342") Annotation(oboInOwl:hasDbXref
+  "PMID:26711115") Annotation(oboInOwl:hasDbXref "PMID:31680885")             
+  Annotation(oboInOwl:hasDbXref "PMID:32039761") obo:IAO_0000115              
+  obo:CL_9900001 "A glutamatergic principal neuron with its soma located in   
+  layer II of the entorhinal cortex, distinguished by stellate morphology,    
+  lack of calbindin expression, and expression of reelin in rodents. This cell
+  type is a major source of perforant pathway projections from entorhinal     
+  cortex layer II to the dentate gyrus of the hippocampal formation. It       
+  displays electrophysiological properties including a prominent              
+  hyperpolarisation-activated inward current, voltage sag, and theta-frequency
+  membrane resonance.")                                                       
+    36049:AnnotationAssertion(obo:IAO_0000233 obo:CL_9900001 <https://github. 
+  com/obophenotype/cell-ontology/issues/3630>)                                
+    36050:AnnotationAssertion(dc:creator obo:CL_9900001 "GitHub Copilot")     
+    36051:AnnotationAssertion(terms:date obo:CL_9900001 "2026-05-             
+  05T13:19:02Z"^^xsd:dateTime)                                                
+    36052:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:26223342")  
+  Annotation(oboInOwl:hasDbXref "PMID:26711115") Annotation(oboInOwl:hasDbXref
+  "PMID:32039761") oboInOwl:hasExactSynonym obo:CL_9900001 "MEC layer II      
+  stellate cell")                                                             
+    36053:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:26223342")  
+  oboInOwl:hasExactSynonym obo:CL_9900001 "entorhinal stellate cell")         
+    36054:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:26711115")  
+  oboInOwl:hasExactSynonym obo:CL_9900001 "EC LII stellate cell")             
+    36055:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:26223342")  
+  oboInOwl:hasExactSynonym obo:CL_9900001 "layer II stellate cell of medial   
+  entorhinal cortex")                                                         
+    36056:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:26711115")  
+  oboInOwl:hasRelatedSynonym obo:CL_9900001 "reelin-positive entorhinal cortex
+  layer II neuron")                                                           
+    36057:AnnotationAssertion(rdfs:label obo:CL_9900001 "entorhinal cortex    
+  layer II stellate cell")                                                    
+    36058:EquivalentClasses(obo:CL_9900001 ObjectIntersectionOf(obo:CL_0000679
+  ObjectSomeValuesFrom(obo:RO_0002100 obo:UBERON_0022337)))                   
+    36059:SubClassOf(obo:CL_9900001 obo:CL_0000122)                           
+    <exited with exit code 0>
+
+
+The new term has been added correctly. Let me also verify that the          
+  UBERON:0022337 is a valid term by checking if ROBOT can process the file:
+
+Bash: Check if ROBOT is available
+$ cd /home/runner/work/cell-ontology/cell-ontology && which robot && robot --
+  version                                                                     
+    /home/runner/work/cell-ontology/cell-ontology/tools/robot                 
+    ROBOT version 1.9.7                                                       
+    <exited with exit code 0>
+
+Bash: Test if the OWL file parses correctly with ROBOT
+$ cd /home/runner/work/cell-ontology/cell-ontology && robot convert -i    
+  src/ontology/cl-edit.owl -o /tmp/cl-test.ofn 2>&1 | head -30                
+                                                                              
+    <exited with exit code 0>
+
+
+The file parses correctly with no errors. Now let me commit and report      
+  progress:
+
+Progress update: Add new term CL_9900001: entorhinal cortex layer II stellate cell (issue #3630)
+
+- Added Declaration(Class(obo:CL_9900001)) in the declarations section
+- Added class definition for 'entorhinal cortex layer II stellate cell' with:
+  - Definition referencing PMID:26223342, PMID:26711115, PMID:20512133, PMID:32039761, PMID:31680885
+  - Exact synonyms: MEC layer II stellate cell, entorhinal stellate cell, EC LII stellate cell, layer II stellate cell of medial entorhinal cortex
+  - Related synonym: reelin-positive entorhinal cortex layer II neuron
+  - Logical definition: glutamatergic neuron EquivalentTo CL:0000679 AND has_soma_location some UBERON:0022337
+  - SubClassOf: stellate neuron (CL:0000122) per issue recommendation
+  - Term tracker link to GitHub issue #3630
+  - Date and creator metadata
+
+Signed-off-by: GitHub Copilot
+
+[x] Add new term entorhinal cortex layer II stellate cell (CL_9900001) to   
+  src/ontology/cl-edit.owl                                                    
+      [x] Add Declaration(Class(obo:CL_9900001)) in declarations section      
+      [x] Add class definition with:                                          
+          [x] Label: "entorhinal cortex layer II stellate cell"               
+          [x] Definition with all 5 PMID references (PMID:26223342,           
+          PMID:26711115, PMID:20512133, PMID:32039761, PMID:31680885)         
+          [x] Exact synonyms: MEC layer II stellate cell, layer II stellate   
+          cell of medial entorhinal cortex, entorhinal stellate cell, EC LII  
+          stellate cell                                                       
+          [x] Related synonym: reelin-positive entorhinal cortex layer II     
+          neuron                                                              
+          [x] Logical definition (EquivalentClasses): glutamatergic neuron    
+          (CL:0000679) ∩ has_soma_location some entorhinal cortex layer 2     
+          (UBERON:0022337)                                                    
+          [x] SubClassOf: stellate neuron (CL:0000122)                        
+          [x] Term tracker: GitHub issue #3630                                
+          [x] Date and creator metadata
+
+
+Now let me run the parallel validation to check the code:
+
+Call to parallel_validation
+
+Input:
+
+{                                                                         
+      "prDescription": "This PR adds a new term request (NTR) for \"entorhinal
+  cortex layer II stellate cell\" (CL_9900001) to the cell ontology, as       
+  requested in GitHub issue #3630.\n\nChanges to `src/ontology/cl-edit.owl`:\n-
+  Added Declaration(Class(obo:CL_9900001))\n- Added class definition with     
+  definition, synonyms, logical axioms, and metadata following CL ontology    
+  conventions\n\nThe term is defined as a glutamatergic neuron (CL:0000679)   
+  with soma located in entorhinal cortex layer 2 (UBERON:0022337), with an    
+  additional asserted parent of stellate neuron (CL:0000122).",               
+      "prTitle": "Add new term CL_9900001: entorhinal cortex layer II stellate
+  cell",                                                                      
+      "trivialChangeDeclaration": {                                           
+        "codeql": {                                                           
+          "isTrivial": true,                                                  
+          "reason": "Changes are only to an OWL ontology file (functional     
+  syntax), adding a new ontology term. No executable code is modified."       
+        }                                                                     
+      }                                                                       
+    }
+
+
+The validation passed with no issues. Let me provide a summary of the       
+  changes made:                                                               
+                                                                              
+  ## Summary                                                                  
+                                                                              
+  I've successfully implemented the new term request (NTR) for **entorhinal   
+  cortex layer II stellate cell** in the cell ontology.                       
+                                                                              
+  ### Changes Made                                                            
+                                                                              
+  In src/ontology/cl-edit.owl:                                                
+                                                                              
+  1. **Added Declaration**: Declaration(Class(obo:CL_9900001)) in the correct 
+  alphabetical position (after CL_7770006, before CP_0000000)                 
+  2. **Added Class Definition** with the following components:                
+      • **ID**: CL_9900001 (using the NTR temporary ID range 9900000–9999999) 
+      • **Label**: "entorhinal cortex layer II stellate cell"                 
+      • **Definition**: As provided in the issue, with all 5 PMID references  
+      (PMID:26223342, PMID:26711115, PMID:20512133, PMID:32039761,            
+      PMID:31680885)                                                          
+      • **Exact synonyms**: MEC layer II stellate cell, entorhinal stellate   
+      cell, EC LII stellate cell, layer II stellate cell of medial entorhinal 
+      cortex                                                                  
+      • **Related synonym**: reelin-positive entorhinal cortex layer II neuron
+      • **Logical definition** (EquivalentClasses): glutamatergic neuron      
+      (CL:0000679) AND has_soma_location some entorhinal cortex layer 2       
+      (UBERON:0022337)                                                        
+      • **Additional parent**: stellate neuron (CL:0000122) as an asserted    
+      SubClassOf                                                              
+      • **Term tracker**: Links to GitHub issue #3630                         
+      • **Metadata**: Creation date (2026-05-05) and creator (GitHub Copilot)
+

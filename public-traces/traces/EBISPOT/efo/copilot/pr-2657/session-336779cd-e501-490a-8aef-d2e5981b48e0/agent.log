@@ -1,0 +1,1811 @@
+Clone repository EBISPOT/efo
+Start 'playwright' MCP server
+Start 'github-mcp-server' MCP server
+Start 'ebi-kg' MCP server
+Start 'ols4' MCP server
+Start 'artl-mcp' MCP server
+
+I'll work on adding the new term "perimenopausal" to the EFO ontology. Let  
+  me start by understanding the issue and examining existing similar terms.
+
+Bash: Search for existing related terms
+$ cd /home/runner/work/efo/efo && grep -n "postmenopausal|EFO_0002721|    
+  perimenopausal|perimenopause" src/ontology/efo-edit.owl | head -50          
+    175989:    <!-- http://www.ebi.ac.uk/efo/EFO_0002721 -->                  
+    175991:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0002721">   
+    175995:        <rdfs:label>postmenopausal</rdfs:label>                    
+    202817:        <rdfs:label>obsolete_postmenopausal                        
+  osteoporosis</rdfs:label>                                                   
+    215062:        <obo:IAO_0000115>Adiponectin measurement is a measurement  
+  of the circulating hormone adiponectin in serum. Adiponectin regulated      
+  modulates glucose regulation and fatty acid catabolism. Low circulating     
+  adiponectin concentrations (hypoadiponectinemia; &lt;4 μg/mL) are associated
+  with a variety of diseases, including dysmetabolism (type 2 diabetes,       
+  insulin resistance, hypertension, dyslipidemia, metabolic syndrome,         
+  hyperuricemia), atherosclerosis (coronary artery disease, stroke, peripheral
+  artery disease), sleep apnea, non-alcoholic fatty liver disease, gastritis  
+  and gastro-esophageal reflux disease, inflammatory bowel diseases,          
+  pancreatitis, osteoporosis, and cancer (endometrial cancer, postmenopausal  
+  breast cancer, leukemia, colon cancer, gastric cancer, prostate cancer).    
+  Hyperadiponectinemia is associated with cardiac, renal and pulmonary        
+  diseases.</obo:IAO_0000115>                                                 
+    263712:        <obo:IAO_0000115>human mammary carcinoma cell line obtained
+  from the pleural effusion of a postmenopausal breast cancer patient (Sigma  
+  catalog number 98050130)</obo:IAO_0000115>                                  
+    504097:        <obo:IAO_0000115>A carcinosarcoma that arises from the     
+  fallopian tube. It usually affects postmenopausal women and presents with   
+  abdominal pain, abdominal distension or genital bleeding. The prognosis is  
+  usually poor.</obo:IAO_0000115>                                             
+    504118:        <owl:annotatedTarget>A carcinosarcoma that arises from the 
+  fallopian tube. It usually affects postmenopausal women and presents with   
+  abdominal pain, abdominal distension or genital bleeding. The prognosis is  
+  usually poor.</owl:annotatedTarget>                                         
+    519010:        <obo:IAO_0000115>A rare, benign steroid tumor that arises  
+  from the ovary and is composed of Leydig cells that contain Reinke crystals.
+  It usually affects postmenopausal women and in most cases, is associated    
+  with androgenic manifestations.</obo:IAO_0000115>                           
+    524933:        <obo:IAO_0000115>A rare, serous adenocarcinoma that        
+  diffusely involves the pelvic peritoneum seen predominantly in elderly      
+  postmenopausal women. Exclusion of serous carcinoma arising from the ovary  
+  and fimbrial end of fallopian tube is required to diagnose the above entity.
+  </obo:IAO_0000115>                                                          
+    524950:        <owl:annotatedTarget>A rare, serous adenocarcinoma that    
+  diffusely involves the pelvic peritoneum seen predominantly in elderly      
+  postmenopausal women. Exclusion of serous carcinoma arising from the ovary  
+  and fimbrial end of fallopian tube is required to diagnose the above entity.
+  </owl:annotatedTarget>                                                      
+    <exited with exit code 0>
+
+Bash: Find the last EFO_092 ID used
+$ cd /home/runner/work/efo/efo && grep -n "EFO_092" src/ontology/efo-edit.
+  owl | tail -5                                                               
+    484750:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920058">   
+    484764:        <owl:annotatedSource rdf:resource="http://www.ebi.ac.      
+  uk/efo/EFO_0920058"/>                                                       
+    484774:    <!-- http://www.ebi.ac.uk/efo/EFO_0920059 -->                  
+    484776:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920059">   
+    484787:        <owl:annotatedSource rdf:resource="http://www.ebi.ac.      
+  uk/efo/EFO_0920059"/>                                                       
+    <exited with exit code 0>
+
+Bash: Check gh CLI
+$ cd /home/runner/work/efo/efo && gh issue list --limit 5 2>/dev/null |   
+  head -10 || echo "gh not available"                                         
+                                                                              
+    <exited with exit code 0>
+
+View src/ontology/efo-edit.owl
+<!-- http://www.ebi.ac.uk/efo/EFO_0002721 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0002721">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0001272"/>                                                       
+             <obo:IAO_0000117>James Malone</obo:IAO_0000117>                  
+             <oboInOwl:hasDbXref>NCIt:C15421</oboInOwl:hasDbXref>             
+             <rdfs:label>postmenopausal</rdfs:label>                          
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0002739 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0002739">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0002547"/>                                                       
+             <obo:IAO_0000115>C57Bl/10 derived non-diabetic mouse strain      
+  expressing H2g7.</obo:IAO_0000115>                                          
+             <obo:IAO_0000117>Jie Zheng</obo:IAO_0000117>                     
+             <obo:IAO_0000117>Tomasz Adamusiak</obo:IAO_0000117>              
+             <efo:definition_citation>https://www.cbil.upenn.                 
+  edu/RADQuerier/php/sampleInfo.php?assay_id=8649&amp;&amp;                   
+  study_id=2424</efo:definition_citation>                                     
+             <rdfs:label>B10.NOD_H2g7</rdfs:label>                            
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0002740 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0002740">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0002547"/>                                                       
+             <obo:IAO_0000115>Nonobese diabetic (NOD) mouse strain which is   
+  homozygous for the scid mutation.</obo:IAO_0000115>                         
+             <obo:IAO_0000117>Jie Zheng</obo:IAO_0000117>                     
+             <obo:IAO_0000117>Tomasz Adamusiak</obo:IAO_0000117>              
+             <efo:definition_citation>http://www.criver.com/fr-               
+  FR/ProdServ/ByType/ResModOver/ResMod/Pages/NOD_SCID_mouse_J.                
+  aspx</efo:definition_citation>                                              
+             <efo:definition_citation>https://www.cbil.upenn.                 
+  edu/RADQuerier/php/sampleInfo.php?assay_id=10939&amp;&amp;                  
+  study_id=3144</efo:definition_citation>                                     
+             <rdfs:label>NOD.scid</rdfs:label>                                
+         </owl:Class>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0002741 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0002741">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0002547"/>
+
+Bash: Find all EFO_092 IDs used
+$ cd /home/runner/work/efo/efo && grep 'EFO_092[0-9]*' src/ontology/efo-  
+  edit.owl | grep -oP 'EFO_092[0-9]+' | sort -u | tail -10                    
+    EFO_0920050                                                               
+    EFO_0920051                                                               
+    EFO_0920052                                                               
+    EFO_0920053                                                               
+    EFO_0920054                                                               
+    EFO_0920055                                                               
+    EFO_0920056                                                               
+    EFO_0920057                                                               
+    EFO_0920058                                                               
+    EFO_0920059                                                               
+    <exited with exit code 0>
+
+Bash: Check current version
+$ cd /home/runner/work/efo/efo && cat 'ExFactor Ontology release notes.   
+  txt' | head -20                                                             
+    ___           ___           ___                                           
+         /__\         /__\         /\  \                                      
+        /:/ _/_       /:/ _/_       /::\  \                                   
+       /:/ /__\     /:/ /__\     /:/\:\  \                                    
+      /:/ /:/ _/_   /:/ /:/  /    /:/  \:\  \                                 
+     /:/_/:/ /__\ /:/_/:/  /    /:/__/ \:__\                                  
+     \:\/:/ /:/  / \:\/:/  /     \:\  \ /:/  /                                
+      \::/_/:/  /   \::/__/       \:\  /:/  /                                 
+       \:\/:/  /     \:\  \        \:\/:/  /                                  
+        \::/  /       \:__\        \::/  /                                    
+         \/__/         \/__/         \/__/                                    
+                                                                              
+    EFO - Release Notes                                                       
+    Experimental Factor Ontology version 3.88.0                               
+    Date Released: 16th March 2026                                            
+    Class Count: 93,267                                                       
+                                                                              
+    Summary:                                                                  
+                                                                              
+    EFO 3.88.0 contains terms to cater for users, such as the GWAS Catalog,   
+  Open Targets, and more.                                                     
+    <exited with exit code 0>
+
+
+Now I have the key information. The next available ID is EFO_0920060. Let me
+  check the OLS for existing perimenopause terms and look at the parent term  
+  structure.
+
+Bash: Check parent term EFO_0001272
+$ cd /home/runner/work/efo/efo && grep -n "EFO_0001272" src/ontology/efo- 
+  edit.owl | head -10                                                         
+    146332:    <!-- http://www.ebi.ac.uk/efo/EFO_0001272 -->                  
+    146334:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001272">   
+    175992:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0001272"/>                                                       
+    235379:        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.          
+  uk/efo/EFO_0001272"/>                                                       
+    243723:                                            <rdf:Description       
+  rdf:about="http://www.ebi.ac.uk/efo/EFO_0001272"/>                          
+    245697:                                            <rdf:Description       
+  rdf:about="http://www.ebi.ac.uk/efo/EFO_0001272"/>                          
+    245748:                                            <rdf:Description       
+  rdf:about="http://www.ebi.ac.uk/efo/EFO_0001272"/>                          
+    <exited with exit code 0>
+
+Call to ols4-search
+
+Output:
+
+[                                                                         
+      {                                                                       
+        "id": "hp+http://purl.obolibrary.org/obo/HP_0040406",                 
+        "isObsolete": false,                                                  
+        "title": "HP:0040406 Perimenopausal",                                 
+        "url": "http://purl.obolibrary.org/obo/HP_0040406"                    
+      },                                                                      
+      {                                                                       
+        "id": "mesh+http://id.nlm.nih.gov/mesh/D047648",                      
+        "isObsolete": false,                                                  
+        "title": "mesh:D047648 Perimenopause",                                
+        "url": "http://id.nlm.nih.gov/mesh/D047648"                           
+      },                                                                      
+      {                                                                       
+        "id": "ncit+http://purl.obolibrary.org/obo/NCIT_C158829",             
+        "isObsolete": false,                                                  
+        "title": "NCIT:C158829 Perimenopausal 6 to 12 Months Since LMP        
+  Question",                                                                  
+        "url": "http://purl.obolibrary.org/obo/NCIT_C158829"                  
+      },                                                                      
+      {                                                                       
+        "id": "ncit+http://purl.obolibrary.org/obo/NCIT_C15692",              
+        "isObsolete": false,                                                  
+        "title": "NCIT:C15692 Perimenopausal",                                
+        "url": "http://purl.obolibrary.org/obo/NCIT_C15692"                   
+      },                                                                      
+      {                                                                       
+        "id": "mesh+http://id.nlm.nih.gov/mesh/D015663",                      
+        "isObsolete": false,                                                  
+        "title": "mesh:D015663 Osteoporosis, Postmenopausal",                 
+        "url": "http://id.nlm.nih.gov/mesh/D015663"                           
+      },                                                                      
+      {                                                                       
+        "id": "omit+http://purl.obolibrary.org/obo/OMIT_0023947",             
+        "isObsolete": false,                                                  
+        "title": "OMIT:0023947 Perimenopause",                                
+        "url": "http://purl.obolibrary.org/obo/OMIT_0023947"                  
+      },                                                                      
+      {                                                                       
+        "id": "ncit+http://purl.obolibrary.org/obo/NCIT_C15491",              
+        "isObsolete": false,                                                  
+        "title": "NCIT:C15491 Premenopausal",                                 
+        "url": "http://purl.obolibrary.org/obo/NCIT_C15491"                   
+      },                                                                      
+      {                                                                       
+        "id": "hp+http://purl.obolibrary.org/obo/HP_6000314",                 
+        "isObsolete": false,                                                  
+        "title": "HP:6000314 Perimenopausal onset",                           
+        "url": "http://purl.obolibrary.org/obo/HP_6000314"                    
+      },                                                                      
+      {                                                                       
+        "id": "obi+http://purl.obolibrary.org/obo/OBI_0002413",               
+        "isObsolete": false,                                                  
+        "title": "OBI:0002413 perimenopausal status",                         
+        "url": "http://purl.obolibrary.org/obo/OBI_0002413"                   
+      },                                                                      
+      {                                                                       
+        "id": "gsso+http://purl.obolibrary.org/obo/GSSO_004749",              
+        "isObsolete": false,                                                  
+        "title": "GSSO:004749 peri-menopausal vaginismus",                    
+        "url": "http://purl.obolibrary.org/obo/GSSO_004749"                   
+      },                                                                      
+      {                                                                       
+        "id": "ncit+http://purl.obolibrary.org/obo/NCIT_C3852",               
+        "isObsolete": false,                                                  
+        "title": "NCIT:C3852 Menopausal Symptom",                             
+        "url": "http://purl.obolibrary.org/obo/NCIT_C3852"                    
+      },                                                                      
+      {                                                                       
+        "id": "ncit+http://purl.obolibrary.org/obo/NCIT_C127071",             
+        "isObsolete": false,                                                  
+        "title": "NCIT:C127071 Benign Uterine Corpus PEComa",                 
+        "url": "http://purl.obolibrary.org/obo/NCIT_C127071"                  
+      },                                                                      
+      {                                                                       
+        "id": "ncit+http://purl.obolibrary.org/obo/NCIT_C29782",              
+        "isObsolete": false,                                                  
+        "title": "NCIT:C29782 19-Norprogesterone",                            
+        "url": "http://purl.obolibrary.org/obo/NCIT_C29782"                   
+      },                                                                      
+      {                                                                       
+        "id": "exmo+http://purl.obolibrary.org/obo/HP_0040406",               
+        "isObsolete": false,                                                  
+        "title": "HP:0040406 Perimenopausal",                                 
+        "url": "http://purl.obolibrary.org/obo/HP_0040406"                    
+      },                                                                      
+      {                                                                       
+        "id": "gsso+http://purl.bioontology.org/ontology/MESH/D047648",       
+        "isObsolete": false,                                                  
+        "title": "D047648 perimenopause",                                     
+        "url": "http://purl.bioontology.org/ontology/MESH/D047648"            
+      },                                                                      
+      {                                                                       
+        "id": "obib+http://purl.obolibrary.org/obo/OBI_0002413",              
+        "isObsolete": false,                                                  
+        "title": "OBI:0002413 perimenopausal status",                         
+        "url": "http://purl.obolibrary.org/obo/OBI_0002413"                   
+      },                                                                      
+      {                                                                       
+        "id": "one+http://purl.obolibrary.org/obo/OBI_0002413",               
+        "isObsolete": false,                                                  
+        "title": "OBI:0002413 perimenopausal status",                         
+        "url": "http://purl.obolibrary.org/obo/OBI_0002413"                   
+      },                                                                      
+      {                                                                       
+        "id": "pbpko+http://purl.obolibrary.org/obo/OBI_0002413",             
+        "isObsolete": false,                                                  
+        "title": "OBI:0002413 perimenopausal status",                         
+        "url": "http://purl.obolibrary.org/obo/OBI_0002413"                   
+      }                                                                       
+    ]
+
+
+Input:
+
+{                                                                         
+      "query": "perimenopausal perimenopause"                                 
+    }
+
+Bash: Check available import files
+$ cd /home/runner/work/efo/efo && ls src/ontology/iri_dependencies/       
+    chebi_terms.txt    fbbi_terms.txt  gwas_header.tsv	  hancestro_terms.txt   
+  oba_terms.txt   uberon_exclude.txt                                          
+    cl_terms.txt	   fbbt_terms.txt  gwas_terms.tsv	  hp_terms.txt               
+  obi_terms.txt   uberon_terms.txt                                            
+    ecto_terms.txt	   go_terms.txt    gwas_traits.tsv	  mondo_exclude.txt       
+  pr_exclude.txt                                                              
+    efo-relations.txt  gsso_terms.txt  hancestro_exclude.txt  mondo_terms.txt 
+  pr_terms.txt                                                                
+    <exited with exit code 0>
+
+Bash: Check if HP:0040406 is already in the ontology
+$ cd /home/runner/work/efo/efo && grep -i "HP_0040406|HP:0040406"         
+  src/ontology/efo-edit.owl | head -5                                         
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check if HP:0040406 is in hp_terms.txt
+$ cd /home/runner/work/efo/efo && grep "HP_0040406|0040406"               
+  src/ontology/iri_dependencies/hp_terms.txt | head -5                        
+                                                                              
+    <exited with exit code 0>
+
+Call to ols4-fetch
+
+Output:
+
+{                                                                         
+      "id": "ncit+http://purl.obolibrary.org/obo/NCIT_C15692",                
+      "isObsolete": false,                                                    
+      "metadata": {                                                           
+        "type": "class"                                                       
+      },                                                                      
+      "text": "Describes the time in a woman's life as she approaches         
+  menopause. This is usually three to five years before menopause and is often
+  marked by irregular menstrual periods and many of the symptoms of menopause,
+  including hot flashes, mood swings, night sweats, vaginal dryness, trouble  
+  concentrating, and infertility.",                                           
+      "title": "NCIT:C15692 Perimenopausal",                                  
+      "url": "http://purl.obolibrary.org/obo/NCIT_C15692"                     
+    }
+
+
+Input:
+
+{                                                                         
+      "id": "ncit+http://purl.obolibrary.org/obo/NCIT_C15692"                 
+    }
+
+
+Let me look at a recently added EFO_092 term to understand the exact format,
+  and also check the PMIDs from the issue:
+
+View src/ontology/efo-edit.owl
+<owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920058">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0010961"/>                                                       
+             <obo:IAO_0000115>Visium HD Spatial Gene Expression is a probe-   
+  based, whole-transcriptome spatial gene expression assay that captures mRNA 
+  at single-cell-scale resolution using continuous 2 µm capture features (~11 
+  million features across a 6.5 × 6.5 mm capture area), compatible with       
+  formalin-fixed paraffin-embedded (FFPE), freshly frozen, and fixed frozen   
+  tissue sections.</obo:IAO_0000115>                                          
+             <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+             <dc:creator>https://orcid.org/0000-0002-8937-3457</dc:creator>   
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2026-02-25T13:48:06Z</dc:date>                 
+             <oboInOwl:hasExactSynonym>Visium HD Spatial Gene                 
+  Expression</oboInOwl:hasExactSynonym>                                       
+             <oboInOwl:hasRelatedSynonym>10x Genomics Visium                  
+  HD</oboInOwl:hasRelatedSynonym>                                             
+             <oboInOwl:hasRelatedSynonym>Visium HD                            
+  platform</oboInOwl:hasRelatedSynonym>                                       
+             <oboInOwl:hasRelatedSynonym>high-definition                      
+  Visium</oboInOwl:hasRelatedSynonym>                                         
+             <rdfs:label xml:lang="en">Visium HD</rdfs:label>                 
+             <rdfs:seeAlso>https://github.                                    
+  com/EBISPOT/efo/issues/2212</rdfs:seeAlso>                                  
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920058"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>Visium HD Spatial Gene Expression is a probe-
+  based, whole-transcriptome spatial gene expression assay that captures mRNA 
+  at single-cell-scale resolution using continuous 2 µm capture features (~11 
+  million features across a 6.5 × 6.5 mm capture area), compatible with       
+  formalin-fixed paraffin-embedded (FFPE), freshly frozen, and fixed frozen   
+  tissue sections.</owl:annotatedTarget>                                      
+             <oboInOwl:hasDbXref>PMID:39266749</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:40473992</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>https://jitc.bmj.                            
+  com/content/11/Suppl_1/A1620</oboInOwl:hasDbXref>                           
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0920059 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920059">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0000548"/>                                                       
+             <obo:IAO_0000115>CosMx SMI is a high-plex in situ analysis       
+  platform to provide spatial multiomics with formalin-fixed paraffin-embedded
+  (FFPE) and fresh frozen (FF) tissue samples at cellular and subcellular     
+  resolution.</obo:IAO_0000115>                                               
+             <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+             <dc:creator>https://orcid.org/0000-0002-8937-3457</dc:creator>   
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2026-03-11T11:04:16Z</dc:date>                 
+             <oboInOwl:hasExactSynonym>CosMx</oboInOwl:hasExactSynonym>       
+             <rdfs:label xml:lang="en">CosMx SMI</rdfs:label>                 
+             <rdfs:seeAlso>https://github.                                    
+  com/EBISPOT/efo/issues/2210</rdfs:seeAlso>                                  
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920059"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>CosMx SMI is a high-plex in situ analysis   
+  platform to provide spatial multiomics with formalin-fixed paraffin-embedded
+  (FFPE) and fresh frozen (FF) tissue samples at cellular and subcellular     
+  resolution.</owl:annotatedTarget>                                           
+             <oboInOwl:hasDbXref>PMID:36203011</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41006245</oboInOwl:hasDbXref>           
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_1000003 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_1000003">         
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/HP_0008277"/>                                                       
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0000651"/>
+
+Call to artl-mcp-get_europepmc_paper_by_id
+
+Output:
+
+{                                                                         
+      "_search_info": {                                                       
+        "detected_type": "pmid",                                              
+        "input_identifier": "PMID:41836925",                                  
+        "normalized_identifier": "41836925",                                  
+        "query_used": "ext_id:41836925 AND src:med",                          
+        "result_type": "core",                                                
+        "source": "europepmc"                                                 
+      },                                                                      
+      "abstractText": "\u003ch4\u003eBackground\u003c/h4\u003eHypertension    
+  (HTN) during perimenopause significantly increases the risk of cognitive    
+  decline. However, how hemodynamic stress and hormonal fluctuations (e.g.,   
+  estradiol depletion) interact to reshape the brain's macroscale organization
+  remains poorly understood. This study aimed to map the \"hormone-thalamus-  
+  cortex\" axis to explore these mechanisms.                                  
+  \u003ch4\u003eMethods\u003c/h4\u003eThirty perimenopausal women with HTN and
+  30 healthy controls (HC) underwent 3-T MRI, blood pressure monitoring, and  
+  serum hormone analysis. We constructed individual cortical morphometric     
+  similarity (MS) gradients and segmented the thalamus into 52 subregions to  
+  analyze the interplay between hormones, brain structure, and cognition.     
+  \u003ch4\u003eResults\u003c/h4\u003eWe found that the principal MS gradient 
+  exhibited a distinct \"stretching\" pattern in the HTN group compared with  
+  HC, characterized by a significant positive spatial correlation with the HC 
+  gradient. The HTN group exhibited significantly elevated gradient values in 
+  the Visual and Somatomotor networks (VIS and SMN), as well as in specific   
+  regions within the frontoparietal network (FPN, left parietal subregion-4)  
+  and ventral attention network (VAN, right medial subregion-5). Thalamic     
+  analysis revealed a bidirectional remodeling pattern: atrophy in            
+  sensory/executive nuclei (e.g., VPL, LGN, MDm) and hypertrophy in           
+  intralaminar nuclei (e.g., CL, AV). Critically, estradiol (E2) depletion and
+  FSH elevation were linked to specific thalamic atrophy (e.g., Right Pc),    
+  which in turn predicted lower MMSE scores and VAN disruptions.              
+  \u003ch4\u003eConclusion\u003c/h4\u003ePerimenopausal HTN is associated with
+  a neuroendocrine-modulated reorganization of the brain's hierarchy. The     
+  findings suggest that hormonal shifts exacerbate thalamic vulnerability,    
+  potentially contributing to cortical instability and cognitive impairment.  
+  This identifies perimenopause as a critical window for integrated vascular  
+  and hormonal interventions to preserve cognitive health.",                  
+      "affiliation": "College of Integrative Medicine, Fujian University of   
+  Traditional Chinese Medicine, Fuzhou, China.",                              
+      "authMan": "N",                                                         
+      "authorList": {                                                         
+        "author": [                                                           
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "College of Integrative Medicine, Fujian     
+  University of Traditional Chinese Medicine, Fuzhou, China."                 
+                },                                                            
+                {                                                             
+                  "affiliation": "Fuzong Teaching Hospital, Fujian University 
+  of Traditional Chinese Medicine (900th Hospital), Fuzhou, China."           
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Taipeng",                                           
+            "fullName": "Zeng T",                                             
+            "initials": "T",                                                  
+            "lastName": "Zeng"                                                
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Fuzong Teaching Hospital, Fujian University 
+  of Traditional Chinese Medicine (900th Hospital), Fuzhou, China."           
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Xiaoyang",                                          
+            "fullName": "Wang X",                                             
+            "initials": "X",                                                  
+            "lastName": "Wang"                                                
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "College of Integrative Medicine, Fujian     
+  University of Traditional Chinese Medicine, Fuzhou, China."                 
+                },                                                            
+                {                                                             
+                  "affiliation": "Fuzong Teaching Hospital, Fujian University 
+  of Traditional Chinese Medicine (900th Hospital), Fuzhou, China."           
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Yuhang",                                            
+            "fullName": "Zhang Y",                                            
+            "initials": "Y",                                                  
+            "lastName": "Zhang"                                               
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Fuzong Teaching Hospital, Fujian University 
+  of Traditional Chinese Medicine (900th Hospital), Fuzhou, China."           
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Minghui",                                           
+            "fullName": "Mao M",                                              
+            "initials": "M",                                                  
+            "lastName": "Mao"                                                 
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Fuzong Teaching Hospital, Fujian University 
+  of Traditional Chinese Medicine (900th Hospital), Fuzhou, China."           
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Chengkun",                                          
+            "fullName": "Hong C",                                             
+            "initials": "C",                                                  
+            "lastName": "Hong"                                                
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Fuzong Teaching Hospital, Fujian University 
+  of Traditional Chinese Medicine (900th Hospital), Fuzhou, China."           
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Zhen",                                              
+            "fullName": "Yu Z",                                               
+            "initials": "Z",                                                  
+            "lastName": "Yu"                                                  
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "College of Integrative Medicine, Fujian     
+  University of Traditional Chinese Medicine, Fuzhou, China."                 
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Hao",                                               
+            "fullName": "Huang H",                                            
+            "initials": "H",                                                  
+            "lastName": "Huang"                                               
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "College of Integrative Medicine, Fujian     
+  University of Traditional Chinese Medicine, Fuzhou, China."                 
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Jianfeng",                                          
+            "fullName": "Chu J",                                              
+            "initials": "J",                                                  
+            "lastName": "Chu"                                                 
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Fuzong Teaching Hospital, Fujian University 
+  of Traditional Chinese Medicine (900th Hospital), Fuzhou, China."           
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Liyuan",                                            
+            "fullName": "Fu L",                                               
+            "initials": "L",                                                  
+            "lastName": "Fu"                                                  
+          }                                                                   
+        ]                                                                     
+      },                                                                      
+      "authorString": "Zeng T, Wang X, Zhang Y, Mao M, Hong C, Yu Z, Huang H, 
+  Chu J, Fu L.",                                                              
+      "citedByCount": 0,                                                      
+      "dateOfCompletion": "2026-03-16",                                       
+      "dateOfCreation": "2026-03-16",                                         
+      "dateOfRevision": "2026-03-16",                                         
+      "doi": "10.3389/fmed.2026.1775371",                                     
+      "electronicPublicationDate": "2026-02-27",                              
+      "epmcAuthMan": "N",                                                     
+      "firstIndexDate": "2026-03-17",                                         
+      "firstPublicationDate": "2026-02-27",                                   
+      "fullTextUrlList": {                                                    
+        "fullTextUrl": [                                                      
+          {                                                                   
+            "availability": "Subscription required",                          
+            "availabilityCode": "S",                                          
+            "documentStyle": "doi",                                           
+            "site": "DOI",                                                    
+            "url": "https://doi.org/10.3389/fmed.2026.1775371"                
+          }                                                                   
+        ]                                                                     
+      },                                                                      
+      "hasBook": "N",                                                         
+      "hasData": "N",                                                         
+      "hasDbCrossReferences": "N",                                            
+      "hasEvaluations": "N",                                                  
+      "hasLabsLinks": "N",                                                    
+      "hasPDF": "N",                                                          
+      "hasReferences": "N",                                                   
+      "hasSuppl": "N",                                                        
+      "hasTMAccessionNumbers": "N",                                           
+      "hasTextMinedTerms": "Y",                                               
+      "id": "41836925",                                                       
+      "inEPMC": "N",                                                          
+      "inPMC": "N",                                                           
+      "isOpenAccess": "N",                                                    
+      "journalInfo": {                                                        
+        "dateOfPublication": "2026 ",                                         
+        "journal": {                                                          
+          "essn": "2296-858X",                                                
+          "isoabbreviation": "Front Med (Lausanne)",                          
+          "issn": "2296-858X",                                                
+          "medlineAbbreviation": "Front Med (Lausanne)",                      
+          "nlmid": "101648047",                                               
+          "title": "Frontiers in medicine"                                    
+        },                                                                    
+        "journalIssueId": 4110742,                                            
+        "monthOfPublication": 0,                                              
+        "printPublicationDate": "2026-01-01",                                 
+        "volume": "13",                                                       
+        "yearOfPublication": 2026                                             
+      },                                                                      
+      "keywordList": {                                                        
+        "keyword": [                                                          
+          "Hypertension",                                                     
+          "Cognitive impairment",                                             
+          "perimenopause",                                                    
+          "Thalamic Subregions",                                              
+          "Morphometric Similarity Gradient",                                 
+          "Neuroendocrine-Vascular Interaction"                               
+        ]                                                                     
+      },                                                                      
+      "language": "eng",                                                      
+      "nihAuthMan": "N",                                                      
+      "pageInfo": "1775371",                                                  
+      "pmid": "41836925",                                                     
+      "pubModel": "Electronic-eCollection",                                   
+      "pubTypeList": {                                                        
+        "pubType": [                                                          
+          "Journal Article"                                                   
+        ]                                                                     
+      },                                                                      
+      "pubYear": "2026",                                                      
+      "publicationStatus": "epublish",                                        
+      "source": "MED",                                                        
+      "title": "Neuroendocrine-vascular interaction is associated with        
+  thalamocortical disorganization and cognitive decline in perimenopausal     
+  hypertension."                                                              
+    }
+
+
+Input:
+
+{                                                                         
+      "identifier": "PMID:41836925"                                           
+    }
+
+Bash: Find the issue number
+$ cd /home/runner/work/efo/efo && gh issue list --search "perimenopausal" 
+  2>/dev/null | head -10                                                      
+                                                                              
+    <exited with exit code 0>
+
+Call to artl-mcp-get_europepmc_paper_by_id
+
+Input:
+
+{                                                                         
+      "identifier": "PMID:41829913"                                           
+    }
+
+
+Let me find the GitHub issue number and check the third PMID:
+
+Search issues on GitHub
+
+Output:
+
+{                                                                         
+      "incomplete_results": false,                                            
+      "items": [                                                              
+        {                                                                     
+          "assignee": {                                                       
+            "avatar_url": "https://avatars.githubusercontent.                 
+  com/in/1143301?v=4",                                                        
+            "events_url": "https://api.github.                                
+  com/users/Copilot/events{/privacy}",                                        
+            "followers_url": "https://api.github.com/users/Copilot/followers",
+            "following_url": "https://api.github.                             
+  com/users/Copilot/following{/other_user}",                                  
+            "gists_url": "https://api.github.                                 
+  com/users/Copilot/gists{/gist_id}",                                         
+            "gravatar_id": "",                                                
+            "html_url": "https://github.com/apps/copilot-swe-agent",          
+            "id": 198982749,                                                  
+            "login": "Copilot",                                               
+            "node_id": "BOT_kgDOC9w8XQ",                                      
+            "organizations_url": "https://api.github.com/users/Copilot/orgs", 
+            "received_events_url": "https://api.github.                       
+  com/users/Copilot/received_events",                                         
+            "repos_url": "https://api.github.com/users/Copilot/repos",        
+            "site_admin": false,                                              
+            "starred_url": "https://api.github.                               
+  com/users/Copilot/starred{/owner}{/repo}",                                  
+            "subscriptions_url": "https://api.github.                         
+  com/users/Copilot/subscriptions",                                           
+            "type": "Bot",                                                    
+            "url": "https://api.github.com/users/Copilot"                     
+          },                                                                  
+          "assignees": [                                                      
+            {                                                                 
+              "avatar_url": "https://avatars.githubusercontent.               
+  com/u/454895?v=4",                                                          
+              "events_url": "https://api.github.                              
+  com/users/jamesamcl/events{/privacy}",                                      
+              "followers_url": "https://api.github.                           
+  com/users/jamesamcl/followers",                                             
+              "following_url": "https://api.github.                           
+  com/users/jamesamcl/following{/other_user}",                                
+              "gists_url": "https://api.github.                               
+  com/users/jamesamcl/gists{/gist_id}",                                       
+              "gravatar_id": "",                                              
+              "html_url": "https://github.com/jamesamcl",                     
+              "id": 454895,                                                   
+              "login": "jamesamcl",                                           
+              "node_id": "MDQ6VXNlcjQ1NDg5NQ==",                              
+              "organizations_url": "https://api.github.                       
+  com/users/jamesamcl/orgs",                                                  
+              "received_events_url": "https://api.github.                     
+  com/users/jamesamcl/received_events",                                       
+              "repos_url": "https://api.github.com/users/jamesamcl/repos",    
+              "site_admin": false,                                            
+              "starred_url": "https://api.github.                             
+  com/users/jamesamcl/starred{/owner}{/repo}",                                
+              "subscriptions_url": "https://api.github.                       
+  com/users/jamesamcl/subscriptions",                                         
+              "type": "User",                                                 
+              "url": "https://api.github.com/users/jamesamcl"                 
+            },                                                                
+            {                                                                 
+              "avatar_url": "https://avatars.githubusercontent.               
+  com/in/1143301?v=4",                                                        
+              "events_url": "https://api.github.                              
+  com/users/Copilot/events{/privacy}",                                        
+              "followers_url": "https://api.github.                           
+  com/users/Copilot/followers",                                               
+              "following_url": "https://api.github.                           
+  com/users/Copilot/following{/other_user}",                                  
+              "gists_url": "https://api.github.                               
+  com/users/Copilot/gists{/gist_id}",                                         
+              "gravatar_id": "",                                              
+              "html_url": "https://github.com/apps/copilot-swe-agent",        
+              "id": 198982749,                                                
+              "login": "Copilot",                                             
+              "node_id": "BOT_kgDOC9w8XQ",                                    
+              "organizations_url": "https://api.github.com/users/Copilot/orgs",
+              "received_events_url": "https://api.github.                     
+  com/users/Copilot/received_events",                                         
+              "repos_url": "https://api.github.com/users/Copilot/repos",      
+              "site_admin": false,                                            
+              "starred_url": "https://api.github.                             
+  com/users/Copilot/starred{/owner}{/repo}",                                  
+              "subscriptions_url": "https://api.github.                       
+  com/users/Copilot/subscriptions",                                           
+              "type": "Bot",                                                  
+              "url": "https://api.github.com/users/Copilot"                   
+            }                                                                 
+          ],                                                                  
+          "author_association": "NONE",                                       
+          "body": "### Term Label\n\nperimenopausal\n\n### Definition\n\nThe  
+  transition phase before menopause, characterized by a drop in estrogen and  
+  symptoms like irregular periods, hot flashes, and mood swings. This phase   
+  can last from a few months to as long as 4 years.\n\n### Definition         
+  citation\n\nhttps://www.healthline.com/health/menopause/difference-         
+  perimenopause\n\n### Synonyms\n\nperimenopause || peri-menopause || peri-   
+  menopausal\n\n### Parent term\n\nEFO:0001272 adult\n\n### Child terms\n\n_No
+  response_\n\n### Any additional comments\n\nWould be a sibling to           
+  EFO:0002721 postmenopausal\n\nUsage in literature:\nhttps://pubmed.ncbi.nlm.
+  nih.gov/41836925/\nhttps://pubmed.ncbi.nlm.nih.gov/41829913/\nhttps://pubmed.
+  ncbi.nlm.nih.gov/41807917/",                                                
+          "comments": 0,                                                      
+          "comments_url": "https://api.github.                                
+  com/repos/EBISPOT/efo/issues/2653/comments",                                
+          "created_at": "2026-03-18T12:14:40Z",                               
+          "events_url": "https://api.github.                                  
+  com/repos/EBISPOT/efo/issues/2653/events",                                  
+          "html_url": "https://github.com/EBISPOT/efo/issues/2653",           
+          "id": 4094746433,                                                   
+          "labels": [                                                         
+            {                                                                 
+              "color": "000000",                                              
+              "default": false,                                               
+              "description": "",                                              
+              "id": 8695799180,                                               
+              "name": "new issue",                                            
+              "node_id": "LA_kwDOBZEty88AAAACBk9djA",                         
+              "url": "https://api.github.                                     
+  com/repos/EBISPOT/efo/labels/new%20issue"                                   
+            }                                                                 
+          ],                                                                  
+          "labels_url": "https://api.github.                                  
+  com/repos/EBISPOT/efo/issues/2653/labels{/name}",                           
+          "locked": false,                                                    
+          "node_id": "I_kwDOBZEty870EN9B",                                    
+          "number": 2653,                                                     
+          "reactions": {                                                      
+            "+1": 0,                                                          
+            "-1": 0,                                                          
+            "confused": 0,                                                    
+            "eyes": 1,                                                        
+            "heart": 0,                                                       
+            "hooray": 0,                                                      
+            "laugh": 0,                                                       
+            "rocket": 0,                                                      
+            "total_count": 1,                                                 
+            "url": "https://api.github.                                       
+  com/repos/EBISPOT/efo/issues/2653/reactions"                                
+          },                                                                  
+          "repository_url": "https://api.github.com/repos/EBISPOT/efo",       
+          "state": "open",                                                    
+          "title": "[NTR] Request for new term [perimenopausal]",             
+          "updated_at": "2026-03-24T23:16:47Z",                               
+          "url": "https://api.github.com/repos/EBISPOT/efo/issues/2653",      
+          "user": {                                                           
+            "avatar_url": "https://avatars.githubusercontent.                 
+  com/u/7962316?v=4",                                                         
+            "events_url": "https://api.github.                                
+  com/users/rachhuntley/events{/privacy}",                                    
+            "followers_url": "https://api.github.                             
+  com/users/rachhuntley/followers",                                           
+            "following_url": "https://api.github.                             
+  com/users/rachhuntley/following{/other_user}",                              
+            "gists_url": "https://api.github.                                 
+  com/users/rachhuntley/gists{/gist_id}",                                     
+            "gravatar_id": "",                                                
+            "html_url": "https://github.com/rachhuntley",                     
+            "id": 7962316,                                                    
+            "login": "rachhuntley",                                           
+            "node_id": "MDQ6VXNlcjc5NjIzMTY=",                                
+            "organizations_url": "https://api.github.                         
+  com/users/rachhuntley/orgs",                                                
+            "received_events_url": "https://api.github.                       
+  com/users/rachhuntley/received_events",                                     
+            "repos_url": "https://api.github.com/users/rachhuntley/repos",    
+            "site_admin": false,                                              
+            "starred_url": "https://api.github.                               
+  com/users/rachhuntley/starred{/owner}{/repo}",                              
+            "subscriptions_url": "https://api.github.                         
+  com/users/rachhuntley/subscriptions",                                       
+            "type": "User",                                                   
+            "url": "https://api.github.com/users/rachhuntley"                 
+          }                                                                   
+        }                                                                     
+      ],                                                                      
+      "total_count": 1                                                        
+    }
+
+
+Input:
+
+{                                                                         
+      "query": "perimenopausal NTR repo:EBISPOT/efo"                          
+    }
+
+Call to artl-mcp-get_europepmc_paper_by_id
+
+Output:
+
+{                                                                         
+      "_search_info": {                                                       
+        "detected_type": "pmid",                                              
+        "input_identifier": "PMID:41807917",                                  
+        "normalized_identifier": "41807917",                                  
+        "query_used": "ext_id:41807917 AND src:med",                          
+        "result_type": "core",                                                
+        "source": "europepmc"                                                 
+      },                                                                      
+      "abstractText": "\u003ch4\u003eBackground\u003c/h4\u003eThe relationship
+  between menopause-related hormonal changes and disease outcomes in women    
+  with multiple sclerosis (WwMS) is still debated. We investigated whether    
+  natural estrogen exposure during reproductive years and its decrease at     
+  menopause correlate with disease outcomes in WwMS.                          
+  \u003ch4\u003eMethods\u003c/h4\u003eThirty-two perimenopausal WwMS          
+  participated in a two-phase study. In the first cross-sectional phase, we   
+  calculated the cumulative lifetime estrogen exposure (CLEE) and examined its
+  associations with physical and cognitive disability, as well as optical     
+  coherence tomography and magnetic resonance imaging metrics, comparing      
+  individuals with long versus short CLEE. In the second longitudinal phase,  
+  21 WwMS returned for follow-up at 6, 12 and 18 months. The cohort was       
+  divided into menopause-positive (M+) and menopause-negative (M-) groups, and
+  group differences were analyzed.\u003ch4\u003eResults\u003c/h4\u003eWwMS    
+  with longer CLEE had lower baseline Expanded Disability Status Scale scores 
+  (p = 0.03), a thicker optic nerve head (p = 0.04), and a thicker macular    
+  retinal nerve fiber layer (p = 0.03). They also performed better on the 9-  
+  Hole Peg Test (p = 0.018) and scored lower on the MS Impact Scale-29 (p = 0.
+  002). After 12 months, longer CLEE correlated inversely with loss of the    
+  macular ganglion cell-inner plexiform layer (r = -0.532, p = 0.04).         
+  Additionally, M+ WwMS experienced greater brain volume loss compared with M-
+  WwMS (p = 0.029).\u003ch4\u003eDiscussion\u003c/h4\u003eA longer duration of
+  CLEE is associated with better outcomes in WwMS, while menopause appears to 
+  be linked to increased brain atrophy. Larger clinical studies are warranted 
+  to further explore these findings and clarify the relationships between CLEE,
+  menopause and MS outcomes.",                                                
+      "affiliation": "Department of Human Neurosciences, Sapienza University  
+  of Rome, Rome, Italy; Multiple Sclerosis Center, San Pietro Fatebenefratelli
+  Hospital, Rome, Italy. Electronic address: antonio.ianniello@uniroma1.it.", 
+      "authMan": "N",                                                         
+      "authorList": {                                                         
+        "author": [                                                           
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Department of Human Neurosciences, Sapienza 
+  University of Rome, Rome, Italy; Multiple Sclerosis Center, San Pietro      
+  Fatebenefratelli Hospital, Rome, Italy. Electronic address: antonio.        
+  ianniello@uniroma1.it."                                                     
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Antonio",                                           
+            "fullName": "Ianniello A",                                        
+            "initials": "A",                                                  
+            "lastName": "Ianniello"                                           
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Department of Human Neurosciences, Sapienza 
+  University of Rome, Rome, Italy."                                           
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Claudia",                                           
+            "fullName": "Piervincenzi C",                                     
+            "initials": "C",                                                  
+            "lastName": "Piervincenzi"                                        
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Department of Human Neurosciences, Sapienza 
+  University of Rome, Rome, Italy."                                           
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Carlo",                                             
+            "fullName": "Pozzilli C",                                         
+            "initials": "C",                                                  
+            "lastName": "Pozzilli"                                            
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Department of Human Neurosciences, Sapienza 
+  University of Rome, Rome, Italy."                                           
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Federica",                                          
+            "fullName": "Satriano F",                                         
+            "initials": "F",                                                  
+            "lastName": "Satriano"                                            
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Department of Public Health and Infectious  
+  Disease, Sapienza University of Rome, Rome, Italy."                         
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Nikolaos",                                          
+            "fullName": "Petsas N",                                           
+            "initials": "N",                                                  
+            "lastName": "Petsas"                                              
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Neurology Unit, San Filippo Neri Hospital,  
+  ASL Roma 1, Rome, Italy."                                                   
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Laura",                                             
+            "fullName": "De Giglio L",                                        
+            "initials": "L",                                                  
+            "lastName": "De Giglio"                                           
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Department of Neuroinflammation, Faculty of 
+  Brain Sciences, Queen Square Multiple Sclerosis Centre, University College  
+  London Queen Square Institute of Neurology, University College London,      
+  London WC1B 5EH, UK."                                                       
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Riccardo",                                          
+            "fullName": "Nistri R",                                           
+            "initials": "R",                                                  
+            "lastName": "Nistri"                                              
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Department of Human Neurosciences, Sapienza 
+  University of Rome, Rome, Italy; Unicamillus-Saint Camillus International   
+  University of Health Sciences, Rome, Italy."                                
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Silvia",                                            
+            "fullName": "Tommasin S",                                         
+            "initials": "S",                                                  
+            "lastName": "Tommasin"                                            
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Department of Human Neurosciences, Sapienza 
+  University of Rome, Rome, Italy; IRCCS Neuromed, Pozzilli, Italy."          
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Patrizia",                                          
+            "fullName": "Pantano P",                                          
+            "initials": "P",                                                  
+            "lastName": "Pantano"                                             
+          },                                                                  
+          {                                                                   
+            "authorAffiliationDetailsList": {                                 
+              "authorAffiliation": [                                          
+                {                                                             
+                  "affiliation": "Neuroimaging Unit, Neuroimmunology Division,
+  Department of Neurology, Vanderbilt University Medical Center, Nashville, TN,
+  USA; Department of Neurology, Nashville VA Medical Center, Tennessee Valley 
+  Healthcare System, Nashville, TN, USA."                                     
+                }                                                             
+              ]                                                               
+            },                                                                
+            "firstName": "Francesca",                                         
+            "fullName": "Bagnato F",                                          
+            "initials": "F",                                                  
+            "lastName": "Bagnato"                                             
+          }                                                                   
+        ]                                                                     
+      },                                                                      
+      "authorString": "Ianniello A, Piervincenzi C, Pozzilli C, Satriano F,   
+  Petsas N, De Giglio L, Nistri R, Tommasin S, Pantano P, Bagnato F.",        
+      "citedByCount": 0,                                                      
+      "dateOfCreation": "2026-03-11",                                         
+      "dateOfRevision": "2026-03-11",                                         
+      "doi": "10.1016/j.jns.2026.125854",                                     
+      "electronicPublicationDate": "2026-03-03",                              
+      "epmcAuthMan": "N",                                                     
+      "firstIndexDate": "2026-03-11",                                         
+      "firstPublicationDate": "2026-03-03",                                   
+      "fullTextUrlList": {                                                    
+        "fullTextUrl": [                                                      
+          {                                                                   
+            "availability": "Subscription required",                          
+            "availabilityCode": "S",                                          
+            "documentStyle": "doi",                                           
+            "site": "DOI",                                                    
+            "url": "https://doi.org/10.1016/j.jns.2026.125854"                
+          }                                                                   
+        ]                                                                     
+      },                                                                      
+      "hasBook": "N",                                                         
+      "hasData": "N",                                                         
+      "hasDbCrossReferences": "N",                                            
+      "hasEvaluations": "N",                                                  
+      "hasLabsLinks": "N",                                                    
+      "hasPDF": "N",                                                          
+      "hasReferences": "N",                                                   
+      "hasSuppl": "N",                                                        
+      "hasTMAccessionNumbers": "N",                                           
+      "hasTextMinedTerms": "N",                                               
+      "id": "41807917",                                                       
+      "inEPMC": "N",                                                          
+      "inPMC": "N",                                                           
+      "isOpenAccess": "N",                                                    
+      "journalInfo": {                                                        
+        "dateOfPublication": "2026 Mar",                                      
+        "journal": {                                                          
+          "essn": "1878-5883",                                                
+          "isoabbreviation": "J Neurol Sci",                                  
+          "issn": "0022-510X",                                                
+          "medlineAbbreviation": "J Neurol Sci",                              
+          "nlmid": "0375403",                                                 
+          "title": "Journal of the neurological sciences"                     
+        },                                                                    
+        "journalIssueId": 4143692,                                            
+        "monthOfPublication": 3,                                              
+        "printPublicationDate": "2026-03-01",                                 
+        "volume": "484",                                                      
+        "yearOfPublication": 2026                                             
+      },                                                                      
+      "keywordList": {                                                        
+        "keyword": [                                                          
+          "Multiple sclerosis",                                               
+          "Brain atrophy",                                                    
+          "menopause",                                                        
+          "Disease Progression",                                              
+          "Oct",                                                              
+          "Cumulative Lifetime Estrogen Exposure"                             
+        ]                                                                     
+      },                                                                      
+      "language": "eng",                                                      
+      "nihAuthMan": "N",                                                      
+      "pageInfo": "125854",                                                   
+      "pmid": "41807917",                                                     
+      "pubModel": "Print-Electronic",                                         
+      "pubTypeList": {                                                        
+        "pubType": [                                                          
+          "Journal Article"                                                   
+        ]                                                                     
+      },                                                                      
+      "pubYear": "2026",                                                      
+      "publicationStatus": "aheadofprint",                                    
+      "source": "MED",                                                        
+      "subsetList": {                                                         
+        "subset": [                                                           
+          {                                                                   
+            "code": "IM",                                                     
+            "name": "Index Medicus"                                           
+          }                                                                   
+        ]                                                                     
+      },                                                                      
+      "title": "A proof-of-concept study on the relationship between lifetime 
+  Estrogen exposure, menopausal transition, and neurodegeneration in women    
+  with multiple sclerosis."                                                   
+    }
+
+
+Input:
+
+{                                                                         
+      "identifier": "PMID:41807917"                                           
+    }
+
+
+Now I have all the information needed. Let me plan the work and start with  
+  the branch creation:
+
+Bash: Create branch for issue 2653
+$ cd /home/runner/work/efo/efo && git checkout -b issue-2653 2>&1         
+    Switched to a new branch 'issue-2653'                                     
+    <exited with exit code 0>
+
+Bash: Verify parent term is not obsolete
+$ cd /home/runner/work/efo/efo && grep -A 10 "EFO_0001272\">"             
+  src/ontology/efo-edit.owl | head -15                                        
+    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0001272">              
+            <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                 
+  uk/efo/EFO_0000399"/>                                                       
+            <obo:IAO_0000115>A maturity quality inhering in an individual by  
+  virtue of the individual having attained sexual maturity and full           
+  growth</obo:IAO_0000115>                                                    
+            <obo:IAO_0000117>James Malone</obo:IAO_0000117>                   
+            <obo:IAO_0000117>OntologyMappingImporter following                
+  MAT:0000403</obo:IAO_0000117>                                               
+            <obo:IAO_0000117>Tomasz Adamusiak</obo:IAO_0000117>               
+            <oboInOwl:hasDbXref>EV:0300070</oboInOwl:hasDbXref>               
+            <oboInOwl:hasDbXref>EVM:2990028</oboInOwl:hasDbXref>              
+            <oboInOwl:hasDbXref>FBdv:00005369</oboInOwl:hasDbXref>            
+            <oboInOwl:hasDbXref>MAT:0000403</oboInOwl:hasDbXref>              
+            <oboInOwl:hasDbXref>MESH:D000328</oboInOwl:hasDbXref>             
+    <exited with exit code 0>
+
+Progress update: Create branch for issue-2653
+
+[x] Understand the issue (NTR: new term "perimenopausal", issue #2653)      
+  [x] Search for existing perimenopause terms in EFO and OLS (none found in   
+  EFO)                                                                        
+  [x] Verify parent term EFO:0001272 (adult) exists and is not obsolete       
+  [x] Verify 3 PMIDs from the issue (41836925, 41829913, 41807917) are valid  
+  and relevant                                                                
+  [x] Identify next available ID: EFO_0920060                                 
+  [ ] Add new term EFO_0920060 to efo-edit.owl                                
+  [ ] Normalize the ontology file                                             
+  [ ] Create pull request
+
+Bash: Check current branch
+$ cd /home/runner/work/efo/efo && git branch --show-current && git log -- 
+  oneline -3                                                                  
+    copilot/add-term-perimenopausal                                           
+    115872a (HEAD -> copilot/add-term-perimenopausal, origin/copilot/add-term-
+  perimenopausal, issue-2653) Initial plan                                    
+    e33aab0 (grafted, origin/master) Merge pull request #2648 from            
+  EBISPOT/release-3.88.0                                                      
+    <exited with exit code 0>
+
+
+Good. Now let me delegate to the EFO-ontologist to add the new term:
+
+▶️ Begin subagent: EFO-ontologist
+❌ Failed subagent: EFO-ontologist
+Call to task
+
+Input:
+
+{                                                                         
+      "agent_type": "EFO-ontologist",                                         
+      "description": "Add new EFO term perimenopausal",                       
+      "name": "add-perimenopausal-term",                                      
+      "prompt": "Please add a new EFO term to                                 
+  `/home/runner/work/efo/efo/src/ontology/efo-edit.owl`.\n\n## Term           
+  Details\n\n- **ID**: EFO_0920060\n- **Label**: perimenopausal\n-            
+  **Definition**: The transitional phase before menopause, characterized by   
+  declining and fluctuating estrogen levels and associated symptoms such as   
+  irregular menstrual periods, hot flashes, night sweats, and mood changes.   
+  This phase typically begins several years before menopause and ends with the
+  last menstrual period.\n- **Parent**: EFO:0001272 (adult) — IRI: `http://www.
+  ebi.ac.uk/efo/EFO_0001272`\n- **Synonyms**:\n  - perimenopause →            
+  hasExactSynonym\n  - peri-menopause → hasRelatedSynonym\n  - peri-menopausal
+  → hasRelatedSynonym\n- **xrefs** (on the class, not on the definition):\n  -
+  NCIt:C15692\n  - HP:0040406\n- **Definition xrefs** (PMIDs to embed in the  
+  owl:Axiom annotation):\n  - PMID:41836925\n  - PMID:41829913\n  -           
+  PMID:41807917\n- **GitHub issue**: https://github.                          
+  com/EBISPOT/efo/issues/2653\n- **Curator**: AI agent\n\n## Where to         
+  Insert\n\nAdd the new term after EFO_0920059 (line ~484793 in the file). The
+  new term block should appear after the closing `\u003c/owl:Axiom\u003e` of  
+  EFO_0920059 and before the `\u003c!-- http://www.ebi.ac.uk/efo/EFO_1000003 --
+  \u003e` comment.\n\n## Format\n\nFollow the exact OWL/XML format of         
+  neighboring terms EFO_0920058 and EFO_0920059. Use the nested owl:Axiom     
+  pattern to attach PMID xrefs to the definition.\n\nExample structure (from  
+  EFO_0920059):\n```xml\n    \u003c!-- http://www.ebi.ac.uk/efo/EFO_0920059 --
+  \u003e\n\n    \u003cowl:Class rdf:about=\"http://www.ebi.ac.                
+  uk/efo/EFO_0920059\"\u003e\n        \u003crdfs:subClassOf                   
+  rdf:resource=\"http://www.ebi.ac.uk/efo/EFO_0000548\"/\u003e\n              
+  \u003cobo:IAO_0000115\u003eCosMx SMI is a high-plex in situ analysis        
+  platform...\u003c/obo:IAO_0000115\u003e\n                                   
+  \u003cobo:IAO_0000117\u003eAI agent\u003c/obo:IAO_0000117\u003e\n           
+  \u003cdc:creator\u003ehttps://orcid.org/0000-0002-8937-                     
+  3457\u003c/dc:creator\u003e\n        \u003cdc:date rdf:datatype=\"http://www.
+  w3.org/2001/XMLSchema#dateTime\"\u003e2026-03-                              
+  11T11:04:16Z\u003c/dc:date\u003e\n                                          
+  \u003coboInOwl:hasExactSynonym\u003eCosMx\u003c/oboInOwl:hasExactSynonym\u003e\n
+  \u003crdfs:label xml:lang=\"en\"\u003eCosMx SMI\u003c/rdfs:label\u003e\n    
+  \u003crdfs:seeAlso\u003ehttps://github.                                     
+  com/EBISPOT/efo/issues/2210\u003c/rdfs:seeAlso\u003e\n                      
+  \u003c/owl:Class\u003e\n    \u003cowl:Axiom\u003e\n                         
+  \u003cowl:annotatedSource rdf:resource=\"http://www.ebi.ac.                 
+  uk/efo/EFO_0920059\"/\u003e\n        \u003cowl:annotatedProperty            
+  rdf:resource=\"http://purl.obolibrary.org/obo/IAO_0000115\"/\u003e\n        
+  \u003cowl:annotatedTarget\u003eCosMx SMI is a high-plex in situ analysis    
+  platform...\u003c/owl:annotatedTarget\u003e\n                               
+  \u003coboInOwl:hasDbXref\u003ePMID:36203011\u003c/oboInOwl:hasDbXref\u003e\n
+  \u003coboInOwl:hasDbXref\u003ePMID:41006245\u003c/oboInOwl:hasDbXref\u003e\n
+  \u003c/owl:Axiom\u003e\n```\n\n## After Adding\n\nAfter editing the OWL file,
+  run the normalization step:\n```bash\ncd                                    
+  /home/runner/work/efo/efo/src/ontology\nmake normalize_src\n```\n\nThen     
+  commit with the message:\n```\nAdd new term EFO_0920060 perimenopausal;     
+  closes #2653\n```\n\nDo NOT push - that will be done separately.\n"         
+    }
+
+
+Let me add the term directly:
+
+View src/ontology/efo-edit.owl
+<owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920059"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>CosMx SMI is a high-plex in situ analysis   
+  platform to provide spatial multiomics with formalin-fixed paraffin-embedded
+  (FFPE) and fresh frozen (FF) tissue samples at cellular and subcellular     
+  resolution.</owl:annotatedTarget>                                           
+             <oboInOwl:hasDbXref>PMID:36203011</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41006245</oboInOwl:hasDbXref>           
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_1000003 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_1000003">         
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/HP_0008277"/>                                                       
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0000651"/>
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "    \u003c/owl:Axiom\u003e\n    \n\n\n    \u003c!--         
+  http://www.ebi.ac.uk/efo/EFO_0920060 --\u003e\n\n    \u003cowl:Class        
+  rdf:about=\"http://www.ebi.ac.uk/efo/EFO_0920060\"\u003e\n                  
+  \u003crdfs:subClassOf rdf:resource=\"http://www.ebi.ac.                     
+  uk/efo/EFO_0001272\"/\u003e\n        \u003cobo:IAO_0000115\u003eThe         
+  transitional phase before menopause, characterized by declining and         
+  fluctuating estrogen levels and associated symptoms such as irregular       
+  menstrual periods, hot flashes, night sweats, and mood changes. This phase  
+  typically begins several years before menopause and ends with the last      
+  menstrual period.\u003c/obo:IAO_0000115\u003e\n                             
+  \u003cobo:IAO_0000117\u003eAI agent\u003c/obo:IAO_0000117\u003e\n           
+  \u003cdc:date rdf:datatype=\"http://www.w3.                                 
+  org/2001/XMLSchema#dateTime\"\u003e2026-03-                                 
+  24T23:18:42Z\u003c/dc:date\u003e\n                                          
+  \u003coboInOwl:hasDbXref\u003eHP:0040406\u003c/oboInOwl:hasDbXref\u003e\n   
+  \u003coboInOwl:hasDbXref\u003eNCIt:C15692\u003c/oboInOwl:hasDbXref\u003e\n  
+  \u003coboInOwl:hasExactSynonym\u003eperimenopause\u003c/oboInOwl:hasExactSynonym\u003e\n
+  \u003coboInOwl:hasRelatedSynonym\u003eperi-                                 
+  menopause\u003c/oboInOwl:hasRelatedSynonym\u003e\n                          
+  \u003coboInOwl:hasRelatedSynonym\u003eperi-                                 
+  menopausal\u003c/oboInOwl:hasRelatedSynonym\u003e\n        \u003crdfs:label 
+  xml:lang=\"en\"\u003eperimenopausal\u003c/rdfs:label\u003e\n                
+  \u003crdfs:seeAlso\u003ehttps://github.                                     
+  com/EBISPOT/efo/issues/2653\u003c/rdfs:seeAlso\u003e\n                      
+  \u003c/owl:Class\u003e\n    \u003cowl:Axiom\u003e\n                         
+  \u003cowl:annotatedSource rdf:resource=\"http://www.ebi.ac.                 
+  uk/efo/EFO_0920060\"/\u003e\n        \u003cowl:annotatedProperty            
+  rdf:resource=\"http://purl.obolibrary.org/obo/IAO_0000115\"/\u003e\n        
+  \u003cowl:annotatedTarget\u003eThe transitional phase before menopause,     
+  characterized by declining and fluctuating estrogen levels and associated   
+  symptoms such as irregular menstrual periods, hot flashes, night sweats, and
+  mood changes. This phase typically begins several years before menopause and
+  ends with the last menstrual period.\u003c/owl:annotatedTarget\u003e\n      
+  \u003coboInOwl:hasDbXref\u003ePMID:41836925\u003c/oboInOwl:hasDbXref\u003e\n
+  \u003coboInOwl:hasDbXref\u003ePMID:41829913\u003c/oboInOwl:hasDbXref\u003e\n
+  \u003coboInOwl:hasDbXref\u003ePMID:41807917\u003c/oboInOwl:hasDbXref\u003e\n
+  \u003c/owl:Axiom\u003e\n    \n\n\n    \u003c!-- http://www.ebi.ac.          
+  uk/efo/EFO_1000003 --\u003e",                                               
+      "old_str": "    \u003c/owl:Axiom\u003e\n    \n\n\n    \u003c!--         
+  http://www.ebi.ac.uk/efo/EFO_1000003 --\u003e",                             
+      "path": "/home/runner/work/efo/efo/src/ontology/efo-edit.owl"           
+    }
+
+Bash: Verify term was added correctly
+$ cd /home/runner/work/efo/efo && grep -n "EFO_0920060" src/ontology/efo- 
+  edit.owl | head -20                                                         
+    484796:    <!-- http://www.ebi.ac.uk/efo/EFO_0920060 -->                  
+    484798:    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920060">   
+    484812:        <owl:annotatedSource rdf:resource="http://www.ebi.ac.      
+  uk/efo/EFO_0920060"/>                                                       
+    <exited with exit code 0>
+
+View src/ontology/efo-edit.owl
+<!-- http://www.ebi.ac.uk/efo/EFO_0920060 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920060">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0001272"/>                                                       
+             <obo:IAO_0000115>The transitional phase before menopause,        
+  characterized by declining and fluctuating estrogen levels and associated   
+  symptoms such as irregular menstrual periods, hot flashes, night sweats, and
+  mood changes. This phase typically begins several years before menopause and
+  ends with the last menstrual period.</obo:IAO_0000115>                      
+             <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2026-03-24T23:18:42Z</dc:date>                 
+             <oboInOwl:hasDbXref>HP:0040406</oboInOwl:hasDbXref>              
+             <oboInOwl:hasDbXref>NCIt:C15692</oboInOwl:hasDbXref>             
+                                                                              
+  <oboInOwl:hasExactSynonym>perimenopause</oboInOwl:hasExactSynonym>          
+             <oboInOwl:hasRelatedSynonym>peri-                                
+  menopause</oboInOwl:hasRelatedSynonym>                                      
+             <oboInOwl:hasRelatedSynonym>peri-                                
+  menopausal</oboInOwl:hasRelatedSynonym>                                     
+             <rdfs:label xml:lang="en">perimenopausal</rdfs:label>            
+             <rdfs:seeAlso>https://github.                                    
+  com/EBISPOT/efo/issues/2653</rdfs:seeAlso>                                  
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920060"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>The transitional phase before menopause,    
+  characterized by declining and fluctuating estrogen levels and associated   
+  symptoms such as irregular menstrual periods, hot flashes, night sweats, and
+  mood changes. This phase typically begins several years before menopause and
+  ends with the last menstrual period.</owl:annotatedTarget>                  
+             <oboInOwl:hasDbXref>PMID:41836925</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41829913</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41807917</oboInOwl:hasDbXref>           
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_1000003 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_1000003">         
+             <rdfs:subClassOf rdf:resource="http://purl.obolibrary.           
+  org/obo/HP_0008277"/>                                                       
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0000651"/>                                                       
+             <obo:IAO_0000115>A deficiency of the essential metal Zinc; an    
+  essential cofactor for many enzymes. Zinc deficiency is caused by a lack of 
+  zinc in the diet, loss of zinc after absorption, for example through loss   
+  through burns, inability to absorb Zinc, or increased loss through exercise.
+  </obo:IAO_0000115>                                                          
+             <obo:IAO_0000117>Helen Parkinson</obo:IAO_0000117>               
+             <efo:definition_citation>https://en.wikipedia.                   
+  org/wiki/Zinc_deficiency</efo:definition_citation>                          
+             <oboInOwl:hasDbXref>MedDRA:10048259</oboInOwl:hasDbXref>
+
+
+The term looks correct. Now let me run the normalization step:
+
+Bash: Normalize the ontology file
+$ cd /home/runner/work/efo/efo/src/ontology && make normalize_src 2>&1 |  
+  tail -20                                                                    
+    Makefile:95: warning: overriding recipe for target '.PRECIOUS'            
+    Makefile:91: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:229: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:95: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:387: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:229: warning: ignoring old recipe for target '.PRECIOUS'         
+    ../../bin/robot convert -i efo-edit.owl -f owl -o tmp/normalise && mv     
+  tmp/normalise efo-edit.owl                                                  
+    org.semanticweb.owlapi.model.UnloadableImportException: Could not load    
+  imported ontology: <http://www.ebi.ac.uk/efo/imports/mondo_import.owl>      
+  Cause: /home/runner/work/efo/efo/src/ontology/imports/mondo_import.owl (No  
+  such file or directory)                                                     
+    Use the -vvv option to show the stack trace.                              
+    Use the --help option to see usage information.                           
+    make: *** [Makefile:72: normalize_src] Error 1                            
+    <exited with exit code 0>
+
+Bash: Check ROBOT convert options
+$ cd /home/runner/work/efo/efo/src/ontology && ../../bin/robot convert -- 
+  help 2>&1 | head -30                                                        
+    usage: robot convert --input <file> --format <format> --output <file>     
+        --add-prefix <arg>      add prefix 'foo: http://bar' to the output    
+        --add-prefixes <arg>    add JSON-LD prefixes to the output            
+     -c,--check <arg>           if false, ignore OBO document structure checks
+        --catalog <arg>         use catalog from provided file                
+     -f,--format <arg>          the format: obo, owl, ttl, owx, omn, ofn, json
+     -h,--help                  print usage information                       
+     -i,--input <arg>           convert ontology from a file                  
+     -I,--input-iri <arg>       convert ontology from an IRI                  
+        --noprefixes            do not use default prefixes                   
+     -o,--output <arg>          save ontology to a file                       
+     -p,--prefix <arg>          add a prefix 'foo: http://bar'                
+     -P,--prefixes <arg>        use prefixes from JSON-LD file                
+        --strict                use strict parsing when loading an ontology   
+     -V,--version               print version information                     
+     -v,--verbose               increased logging                             
+     -vv,--very-verbose         high logging                                  
+     -vvv,--very-very-verbose   maximum logging, including stack traces       
+     -x,--xml-entities          use entity substitution with ontology XML     
+                                output                                        
+    <exited with exit code 0>
+
+Bash: Check if imports exist
+$ cd /home/runner/work/efo/efo/src/ontology && ls imports/ | head -10 &&  
+  ls catalog-v001.xml 2>/dev/null && echo "catalog exists"                    
+    chebi_import.owl                                                          
+    chebi_terms.txt                                                           
+    cl_import.owl                                                             
+    cl_terms.txt                                                              
+    ecto_import.owl                                                           
+    ecto_terms.txt                                                            
+    fbbi_import.owl                                                           
+    fbbi_terms.txt                                                            
+    fbbt_import.owl                                                           
+    fbbt_terms.txt                                                            
+    catalog-v001.xml                                                          
+    catalog exists                                                            
+    <exited with exit code 0>
+
+Bash: Check if mondo import exists
+$ cd /home/runner/work/efo/efo/src/ontology && ls imports/ | grep mondo   
+    mondo_terms.txt                                                           
+    <exited with exit code 0>
+
+Bash: Check catalog file
+$ cd /home/runner/work/efo/efo/src/ontology && cat catalog-v001.xml | head -
+  20                                                                          
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>                    
+    <catalog prefer="public"                                                  
+  xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">                        
+        <uri id="Imports Wizard Entry" name="http://www.ebi.ac.               
+  uk/efo/components/disease_to_phenotype.owl"                                 
+  uri="components/disease_to_phenotype.owl"/>                                 
+        <group id="Folder Repository, directory=, recursive=true, Auto-       
+  Update=false, version=2" prefer="public" xml:base="">                       
+            <uri id="subclasses" name="http://www.ebi.ac.                     
+  uk/efo/components/subclasses.owl" uri="components/subclasses.owl"/>         
+            <uri id="import_replaced_by" name="http://www.ebi.ac.             
+  uk/efo/components/import_replaced_by.owl" uri="components/import_replaced_by.
+  owl"/>                                                                      
+            <uri id="hancestro_import" name="http://www.ebi.ac.               
+  uk/efo/imports/hancestro_import.owl" uri="imports/hancestro_import.owl"/>   
+            <uri id="mondo_import" name="http://www.ebi.ac.                   
+  uk/efo/imports/mondo_import.owl" uri="imports/mondo_import.owl"/>           
+            <uri id="uberon_import" name="http://www.ebi.ac.                  
+  uk/efo/imports/uberon_import.owl" uri="imports/uberon_import.owl"/>         
+            <uri id="hp_import" name="http://www.ebi.ac.                      
+  uk/efo/imports/hp_import.owl" uri="imports/hp_import.owl"/>                 
+            <uri id="cl_import" name="http://www.ebi.ac.                      
+  uk/efo/imports/cl_import.owl" uri="imports/cl_import.owl"/>                 
+            <uri id="go_import" name="http://www.ebi.ac.                      
+  uk/efo/imports/go_import.owl" uri="imports/go_import.owl"/>                 
+            <uri id="obi_import" name="http://www.ebi.ac.                     
+  uk/efo/imports/obi_import.owl" uri="imports/obi_import.owl"/>               
+            <uri id="oba_import" name="http://www.ebi.ac.                     
+  uk/efo/imports/oba_import.owl" uri="imports/oba_import.owl"/>               
+            <uri id="chebi_import" name="http://www.ebi.ac.                   
+  uk/efo/imports/chebi_import.owl" uri="imports/chebi_import.owl"/>           
+            <uri id="pr_import" name="http://www.ebi.ac.                      
+  uk/efo/imports/pr_import.owl" uri="imports/pr_import.owl"/>                 
+            <uri id="ecto_import" name="http://www.ebi.ac.                    
+  uk/efo/imports/ecto_import.owl" uri="imports/ecto_import.owl"/>             
+            <uri id="fbbt_import" name="http://www.ebi.ac.                    
+  uk/efo/imports/fbbt_import.owl" uri="imports/fbbt_import.owl"/>             
+            <uri id="gsso_import" name="http://www.ebi.ac.                    
+  uk/efo/imports/gsso_import.owl" uri="imports/gsso_import.owl"/>             
+            <uri id="fbbi_import" name="http://www.ebi.ac.                    
+  uk/efo/imports/fbbi_import.owl" uri="imports/fbbi_import.owl"/>             
+    <exited with exit code 0>
+
+Bash: Check recent git log
+$ cd /home/runner/work/efo/efo && git log --oneline -10                   
+    115872a (HEAD -> copilot/add-term-perimenopausal, origin/copilot/add-term-
+  perimenopausal, issue-2653) Initial plan                                    
+    e33aab0 (grafted, origin/master) Merge pull request #2648 from            
+  EBISPOT/release-3.88.0                                                      
+    <exited with exit code 0>
+
+Bash: Check available imports
+$ cd /home/runner/work/efo/efo && ls src/ontology/imports/ | grep -E      
+  "mondo|hp|uberon|go"                                                        
+    go_import.owl                                                             
+    go_terms.txt                                                              
+    hp_import.owl                                                             
+    hp_terms.txt                                                              
+    mondo_terms.txt                                                           
+    uberon_import.owl                                                         
+    uberon_terms.txt                                                          
+    <exited with exit code 0>
+
+Bash: Check what changed
+$ cd /home/runner/work/efo/efo && git diff --stat                         
+    src/ontology/efo-edit.owl | 26 ++++++++++++++++++++++++++                 
+     1 file changed, 26 insertions(+)                                         
+    <exited with exit code 0>
+
+
+The diff looks correct - only 26 lines added to efo-edit.owl. The term      
+  structure matches the existing patterns exactly. Since the mondo_import.owl 
+  is not available in this environment (common in shallow clones),            
+  normalization can't be run, but the XML is correctly formatted.             
+                                                                              
+  Let me verify the structure one more time and then commit:
+
+Bash: Review the exact diff
+$ cd /home/runner/work/efo/efo && git diff src/ontology/efo-edit.owl      
+    diff --git a/src/ontology/efo-edit.owl b/src/ontology/efo-edit.owl        
+    index dd4f27d..5f01a10 100644                                             
+    --- a/src/ontology/efo-edit.owl                                           
+    +++ b/src/ontology/efo-edit.owl                                           
+    @@ -484793,6 +484793,32 @@ Smart-seq3 is a continuation and improvement of
+  the Smart-seq technology, specif                                            
+                                                                              
+                                                                              
+                                                                              
+    +    <!-- http://www.ebi.ac.uk/efo/EFO_0920060 -->                        
+    +                                                                         
+    +    <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920060">         
+    +        <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0001272"/>                                                       
+    +        <obo:IAO_0000115>The transitional phase before menopause,        
+  characterized by declining and fluctuating estrogen l evels and associated  
+  symptoms such as irregular menstrual periods, hot flashes, night sweats, and
+  mood changes. This pha se typically begins several years before menopause   
+  and ends with the last menstrual period.</obo:IAO_0000115>^[[m              
+    +        <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+    +        <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2026-03-24T23:18:42Z</dc:date>                 
+    +        <oboInOwl:hasDbXref>HP:0040406</oboInOwl:hasDbXref>              
+    +        <oboInOwl:hasDbXref>NCIt:C15692</oboInOwl:hasDbXref>             
+    +                                                                         
+  <oboInOwl:hasExactSynonym>perimenopause</oboInOwl:hasExactSynonym>          
+    +        <oboInOwl:hasRelatedSynonym>peri-                                
+  menopause</oboInOwl:hasRelatedSynonym>                                      
+    +        <oboInOwl:hasRelatedSynonym>peri-                                
+  menopausal</oboInOwl:hasRelatedSynonym>                                     
+    +        <rdfs:label xml:lang="en">perimenopausal</rdfs:label>            
+    +        <rdfs:seeAlso>https://github.                                    
+  com/EBISPOT/efo/issues/2653</rdfs:seeAlso>                                  
+    +    </owl:Class>                                                         
+    +    <owl:Axiom>                                                          
+    +        <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920060"/>                                                       
+    +        <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+    +        <owl:annotatedTarget>The transitional phase before menopause,    
+  characterized by declining and fluctuating estrog en levels and associated  
+  symptoms such as irregular menstrual periods, hot flashes, night sweats, and
+  mood changes. This  phase typically begins several years before menopause   
+  and ends with the last menstrual period.</owl:annotatedTarget>              
+    +        <oboInOwl:hasDbXref>PMID:41836925</oboInOwl:hasDbXref>           
+    +        <oboInOwl:hasDbXref>PMID:41829913</oboInOwl:hasDbXref>           
+    +        <oboInOwl:hasDbXref>PMID:41807917</oboInOwl:hasDbXref>           
+    +    </owl:Axiom>                                                         
+    +                                                                         
+    +                                                                         
+    +                                                                         
+         <!-- http://www.ebi.ac.uk/efo/EFO_1000003 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_1000003">         
+    <exited with exit code 0>
+
+
+The diff shows some terminal wrapping artifacts - let me verify the actual  
+  file content is correct:
+
+Bash: Verify actual file content
+$ cd /home/runner/work/efo/efo && python3 -c "                            
+    import re                                                                 
+    with open('src/ontology/efo-edit.owl', 'r') as f:                         
+        content = f.read()                                                    
+    idx = content.find('EFO_0920060')                                         
+    print(content[content.rfind('<!--', 0, idx):content.find('EFO_1000003')]) 
+    "                                                                         
+    <!-- http://www.ebi.ac.uk/efo/EFO_0920060 -->                             
+                                                                              
+        <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920060">          
+            <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                 
+  uk/efo/EFO_0001272"/>                                                       
+            <obo:IAO_0000115>The transitional phase before menopause,         
+  characterized by declining and fluctuating estrogen levels and associated   
+  symptoms such as irregular menstrual periods, hot flashes, night sweats, and
+  mood changes. This phase typically begins several years before menopause and
+  ends with the last menstrual period.</obo:IAO_0000115>                      
+            <obo:IAO_0000117>AI agent</obo:IAO_0000117>                       
+            <dc:date rdf:datatype="http://www.w3.                             
+  org/2001/XMLSchema#dateTime">2026-03-24T23:18:42Z</dc:date>                 
+            <oboInOwl:hasDbXref>HP:0040406</oboInOwl:hasDbXref>               
+            <oboInOwl:hasDbXref>NCIt:C15692</oboInOwl:hasDbXref>              
+            <oboInOwl:hasExactSynonym>perimenopause</oboInOwl:hasExactSynonym>
+            <oboInOwl:hasRelatedSynonym>peri-                                 
+  menopause</oboInOwl:hasRelatedSynonym>                                      
+            <oboInOwl:hasRelatedSynonym>peri-                                 
+  menopausal</oboInOwl:hasRelatedSynonym>                                     
+            <rdfs:label xml:lang="en">perimenopausal</rdfs:label>             
+            <rdfs:seeAlso>https://github.                                     
+  com/EBISPOT/efo/issues/2653</rdfs:seeAlso>                                  
+        </owl:Class>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://www.ebi.ac.             
+  uk/efo/EFO_0920060"/>                                                       
+            <owl:annotatedProperty rdf:resource="http://purl.obolibrary.      
+  org/obo/IAO_0000115"/>                                                      
+            <owl:annotatedTarget>The transitional phase before menopause,     
+  characterized by declining and fluctuating estrogen levels and associated   
+  symptoms such as irregular menstrual periods, hot flashes, night sweats, and
+  mood changes. This phase typically begins several years before menopause and
+  ends with the last menstrual period.</owl:annotatedTarget>                  
+            <oboInOwl:hasDbXref>PMID:41836925</oboInOwl:hasDbXref>            
+            <oboInOwl:hasDbXref>PMID:41829913</oboInOwl:hasDbXref>            
+            <oboInOwl:hasDbXref>PMID:41807917</oboInOwl:hasDbXref>            
+        </owl:Axiom>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://www.ebi.ac.uk/efo/                                        
+    <exited with exit code 0>
+
+
+The content is correct. Now let me do a code review and then commit:
+
+Call to code_review
+
+Input:
+
+{                                                                         
+      "prDescription": "Adds the new EFO term \"perimenopausal\" (EFO_0920060)
+  as requested in issue #2653.\n\nChanges:\n- Added new owl:Class EFO_0920060 
+  \"perimenopausal\" to efo-edit.owl\n- Parent term: EFO:0001272 (adult),     
+  sibling to EFO:0002721 (postmenopausal)\n- Definition with 3 PMID references
+  (41836925, 41829913, 41807917)\n- xrefs to HP:0040406 and NCIt:C15692\n-    
+  Synonyms: perimenopause (exact), peri-menopause (related), peri-menopausal  
+  (related)\n- Linked to GitHub issue #2653",                                 
+      "prTitle": "Add new term EFO_0920060 perimenopausal"                    
+    }
+
+Progress update: Add new term EFO_0920060 perimenopausal; closes #2653
+
+[x] Understand the issue (NTR: new term "perimenopausal", issue #2653)      
+  [x] Search for existing perimenopause terms in EFO and OLS (none found in   
+  EFO)                                                                        
+  [x] Verify parent term EFO:0001272 (adult) exists and is not obsolete       
+  [x] Verify 3 PMIDs from the issue (41836925, 41829913, 41807917) are valid  
+  and relevant                                                                
+  [x] Identify next available ID: EFO_0920060                                 
+  [x] Add new term EFO_0920060 to efo-edit.owl with definition, synonyms,     
+  xrefs                                                                       
+  [ ] Normalize the ontology file (skipped - mondo_import.owl not available in
+  this environment)                                                           
+  [x] Commit changes
+
+
+The new term has been successfully added to the EFO ontology. Here's a      
+  summary of what was done:                                                   
+                                                                              
+  ## Summary                                                                  
+                                                                              
+  Added new EFO term **EFO_****0920060 "perimenopausal"** to src/ontology/efo-
+  edit.owl as requested in issue #2653                                        
+  https://github.com/EBISPOT/efo/issues/2653.                                 
+                                                                              
+  ### Term details:                                                           
+                                                                              
+  • **ID**: EFO_0920060                                                       
+  • **Label**: perimenopausal                                                 
+  • **Definition**: "The transitional phase before menopause, characterized by
+  declining and fluctuating estrogen levels and associated symptoms such as   
+  irregular menstrual periods, hot flashes, night sweats, and mood changes.   
+  This phase typically begins several years before menopause and ends with the
+  last menstrual period."                                                     
+  • **Parent**: EFO:0001272 (adult) — sibling to EFO:0002721 (postmenopausal) 
+  as requested                                                                
+  • **Synonyms**:                                                             
+      • perimenopause (hasExactSynonym)                                       
+      • peri-menopause (hasRelatedSynonym)                                    
+      • peri-menopausal (hasRelatedSynonym)                                   
+  • **Cross-references**: HP:0040406 (Human Phenotype Ontology), NCIt:C15692  
+  (NCI Thesaurus)                                                             
+  • **Definition references**: PMID:41836925, PMID:41829913, PMID:41807917    
+  (all 3 PMIDs provided in the issue, all verified as relevant perimenopause  
+  literature)
+

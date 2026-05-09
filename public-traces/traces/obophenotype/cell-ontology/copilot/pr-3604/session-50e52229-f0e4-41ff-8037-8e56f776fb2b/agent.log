@@ -1,0 +1,471 @@
+Clone repository obophenotype/cell-ontology
+Start 'playwright' MCP server
+Start 'github-mcp-server' MCP server
+Start 'ols4' MCP server
+Start 'artl-mcp' MCP server
+
+I'll fix the typo "neurectodermal" → "neuroectodermal" in the cell ontology.
+  Let me start by finding all occurrences.
+
+Call to grep
+
+Input:
+
+{                                                                         
+      "-i": true,                                                             
+      "-n": true,                                                             
+      "output_mode": "content",                                               
+      "path": "/home/runner/work/cell-ontology/cell-ontology/src/ontology/cl- 
+  edit.owl",                                                                  
+      "pattern": "neurectodermal"                                             
+    }
+
+Bash: Check issue details
+$ cd /home/runner/work/cell-ontology/cell-ontology && gh issue view 3159  
+  2>/dev/null || echo "no issue 3159"                                         
+    [NTR] Archaeal cell obophenotype/cell-ontology#3159                       
+    Open • uermel (Utz Ermel) opened about 9 months ago • 1 comment           
+    Labels: new term request, Stale                                           
+                                                                              
+                                                                              
+      Preferred term label                                                    
+      Archaeal Cell                                                           
+                                                                              
+      Synonyms (add reference(s), please)                                     
+      N/A                                                                     
+                                                                              
+      Definition (free text, with reference(s), please. PubMed ID format is   
+  PMID:XXXXXX)                                                                
+      Any cell from organisms in taxon Archaea.                               
+  8;5;252m                                                                    
+                                                                              
+      PMID: 36253512 https://pubmed.ncbi.nlm.nih.gov/36253512/                
+                                                  ^[[38;5;252m                
+      Parent cell type term (check the hierarchy here https://www.ebi.ac.     
+  uk/ols4/ontologies/cl)                                                      
+      cell (CL:0000000)                                                       
+                                              m                               
+      Anatomical structure where the cell type is found (check Uberon for     
+  anatomical structures:                                                      
+      https://www.ebi.ac.uk/ols4/ontologies/uberon)                           
+      N/A                                                               ^[[0m 
+                                                                              
+      Your ORCID                                                              
+      0000-0003-4685-037X                                                     
+                                                                              
+      Additional notes or concerns           ^[[0m                            
+      Taxon constraint: NCBItaxon:2157                                        
+                                                                              
+      There are terms eukaryotic cell (CL:0000255) and prokaryotic cell       
+  (CL:0000520) in CL, but no term for archeal cells,                          
+      which would be helpful for consistent annotation of cell types across   
+  the domains of life.                                                        
+                                                                              
+                                                                              
+    github-actions (Contributor) • Dec 23, 2025 • Newest comment              
+                                                                              
+      This issue has not seen any activity in the past 6 months; it will be   
+  closed automatically in one year from now if                                
+      no action is taken.                                                     
+                                                                              
+                                                                              
+    View this issue on GitHub: https://github.com/obophenotype/cell-          
+  ontology/issues/3159                                                        
+    <exited with exit code 0>
+
+View src/ontology/cl-edit.owl
+AnnotationAssertion(rdfs:label obo:CL_0000132 "corneal endothelial cell")
+     SubClassOf(obo:CL_0000132 obo:CL_0000115)                                
+     SubClassOf(obo:CL_0000132 ObjectSomeValuesFrom(obo:BFO_0000050           
+  obo:UBERON_0001985))                                                        
+     SubClassOf(obo:CL_0000132 ObjectSomeValuesFrom(obo:RO_0002202            
+  obo:CL_0000008))                                                            
+                                                                              
+     # Class: obo:CL_0000133 (neurectodermal cell)                            
+                                                                              
+     AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")             
+  Annotation(oboInOwl:hasDbXref "ISBN:068340007X") obo:IAO_0000115            
+  obo:CL_0000133 "Ectoderm destined to be nervous tissue.")                   
+     AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0000133 "neurectoderm
+  cell")                                                                      
+     AnnotationAssertion(rdfs:label obo:CL_0000133 "neurectodermal cell")     
+     SubClassOf(obo:CL_0000133 obo:CL_0000221)                                
+                                                                              
+     # Class: obo:CL_0000134 (mesenchymal stem cell)                          
+                                                                              
+     AnnotationAssertion(Annotation(oboInOwl:hasDbXref "FB:ma")               
+  Annotation(oboInOwl:hasDbXref "GOC:dsd") Annotation(oboInOwl:hasDbXref      
+  "PMCID:PMC2613570") Annotation(oboInOwl:hasDbXref "PMID:10102814")          
+  Annotation(oboInOwl:hasDbXref "PMID:16923606") Annotation(oboInOwl:hasDbXref
+  "PMID:17986482") Annotation(oboInOwl:hasDbXref "PMID:19960544")             
+  Annotation(oboInOwl:hasDbXref "http://en.wikipedia.                         
+  org/wiki/Mesenchymal_stem_cell") Annotation(oboInOwl:hasDbXref "http://www. 
+  copewithcytokines.de/cope.cgi?key=mesenchymal%20stem%20cells")              
+  obo:IAO_0000115 obo:CL_0000134 "A connective tissue cell that normally gives
+  rise to other cells that are organized as three-dimensional masses. In      
+  humans, this cell type is CD73-positive, CD90-positive, CD105-positive, CD45-
+  negative, CD34-negative, and MHCII-negative. They may further differentiate 
+  into osteoblasts, adipocytes, myocytes, neurons, or chondroblasts in vitro. 
+  Originally described as residing in the bone marrow, this cell type is now  
+  known to reside in many, if not all, adult organs.")                        
+     AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000134 "BTO:0002625")     
+     AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000134 "BTO:0003298")     
+     AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000134 "FMA:70546")       
+     AnnotationAssertion(oboInOwl:hasNarrowSynonym obo:CL_0000134 "bone marrow
+  stromal cells")                                                             
+     AnnotationAssertion(oboInOwl:hasNarrowSynonym obo:CL_0000134 "colony-    
+  forming unit-fibroblast")                                                   
+     AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:11378515")       
+  oboInOwl:hasNarrowSynonym obo:CL_0000134 "marrow stromal cells")            
+     AnnotationAssertion(Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)  
+  oboInOwl:hasRelatedSynonym obo:CL_0000134 "BMSC")                           
+     AnnotationAssertion(Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)  
+  oboInOwl:hasRelatedSynonym obo:CL_0000134 "CFU-F")                          
+     AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:11378515")       
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003000)                         
+  oboInOwl:hasRelatedSynonym obo:CL_0000134 "MSC")                            
+     AnnotationAssertion(oboInOwl:hasRelatedSynonym obo:CL_0000134            
+  "mesenchymal precursor cell")                                               
+     AnnotationAssertion(Annotation(oboInOwl:hasDbXref "MESH:D044982")        
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003004)                         
+  oboInOwl:hasRelatedSynonym obo:CL_0000134 "mesenchymal progenitor cells")   
+     AnnotationAssertion(oboInOwl:hasRelatedSynonym obo:CL_0000134            
+  "mesenchymal stem cell")                                                    
+     AnnotationAssertion(oboInOwl:hasRelatedSynonym obo:CL_0000134            
+  "mesenchymal stromal cell")                                                 
+     AnnotationAssertion(Annotation(oboInOwl:hasSynonymType obo:OMO_0003004)  
+  oboInOwl:hasRelatedSynonym obo:CL_0000134 "mesenchymal stromal cells")      
+     AnnotationAssertion(Annotation(oboInOwl:hasDbXref "MESH:D044982")        
+  Annotation(oboInOwl:hasSynonymType obo:OMO_0003004)                         
+  oboInOwl:hasRelatedSynonym obo:CL_0000134 "stem cells, mesenchymal")        
+     AnnotationAssertion(rdfs:comment obo:CL_0000134 "Many but not all        
+  mesenchymal cells derive from the mesoderm. MSCs are reportedly CD3-negative,
+  CD4-negative, CD5-negative, CD8-negative, CD11a-negative, CD11b-negative,   
+  CD14-negative, CD19-negative, CD29-positive, CD31-negative, CD34-negative,  
+  CD38-negative, CD40-negative, CD44-positive, CD45-negative, CD49-positive,  
+  CD54-positive, CD66b-negative, CD79a-negative, CD80-negative, CD102-positive,
+  CD106-positive, CD117-positive, CD121a-positive, CD121b-positive, CD123-    
+  positive, CD124-positive, CD133-negative, CD146-positive, CD166-positive,   
+  CD271-positive, B220-negative, Gr1-negative, MHCI-positive, MHCII-negative, 
+  SSEA4-negative, sca1-positive, Ter119-negative, and glycophorin A-negative. 
+  Cultured MSCs are capable of producing stem cell factor, IL7, IL8, IL11, TGF-
+  beta, cofilin, galectin-1, laminin-receptor 1, cyclophilin A, and MMP-2.")  
+     AnnotationAssertion(rdfs:label obo:CL_0000134 "mesenchymal stem cell")   
+     AnnotationAssertion(rdfs:seeAlso obo:CL_0000134 "https://github.         
+  com/obophenotype/cell-ontology/issues/474")                                 
+     SubClassOf(obo:CL_0000134 obo:CL_0000048)                                
+     SubClassOf(Annotation(oboInOwl:is_inferred "true") obo:CL_0000134        
+  obo:CL_0002320)                                                             
+                                                                              
+     # Class: obo:CL_0000135 (circulating fibrocyte)                          
+                                                                              
+     AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:dsd")             
+  Annotation(oboInOwl:hasDbXref "GOC:tfm") Annotation(oboInOwl:hasDbXref      
+  "PMID:20303382") Annotation(oboInOwl:hasDbXref "PMID:20305780")             
+  Annotation(oboInOwl:hasDbXref "PMID:29286323") Annotation(oboInOwl:hasDbXref
+  "PMID:31473260") Annotation(oboInOwl:hasDbXref "PMID:32084275")             
+  Annotation(oboInOwl:hasDbXref "PMID:9177213") Annotation(oboInOwl:hasDbXref 
+  "doi:/10.1186/1755-1536-5-S1-S6") obo:IAO_0000115 obo:CL_0000135 "A bone    
+  marrow-derived cell that predominantly develops from myeloid lineage-       
+  restricted progenitor cells and circulates in peripheral blood,             
+  characterized by co-expression of hematopoietic markers CD45 and CD34 along 
+  with stromal markers including collagen type I in both humans and mice      
+  (Chesney et al., 1997; Blakaj and Bucala, 2012). This spindle-shaped cell   
+  exhibits a unique dual identity, functionally bridging immune and stromal   
+  compartments with characteristics of both monocytes and fibroblasts.        
+  Predominantly arising from circulating monocytes, it migrates to injury     
+  sites via chemokine receptors and participates in wound repair through      
+  extracellular matrix deposition, cytokine secretion, and antigen            
+  presentation via MHC class II. As mesenchymal progenitors, fibrocytes can   
+  differentiate into fibroblasts, myofibroblasts, and adipocytes, contributing
+  to both physiological repair and pathological fibrosis (Blakaj and Bucala,  
+  2012).")                                                                    
+     AnnotationAssertion(oboInOwl:hasDbXref obo:CL_0000135 "FMA:63879")       
+     AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:30826294")       
+  oboInOwl:hasNarrowSynonym obo:CL_0000135 "monocyte-derived fibrocyte")      
+     AnnotationAssertion(rdfs:comment obo:CL_0000135 "Cultured human          
+  fibrocytes are MHCI-positive, MHCII-positive, CD1a-negative, CD3-negative,  
+  CD4-negative, CD8-negative, CD10-negative, CD11b-positive, CD13-positive,   
+  CD14-negative, CD16-negative, CD18-positive, CD19-negative, CD25-negative,  
+  CD29-positive, CD32-positive, CD33-negative, CD34-positive, CD38-negative,  
+  CD40-positive, CD44-negative, CD45RO-positive, CD49a-positive, CD49b-       
+  positive, CD49c-negative, CD49d-negative, CD49e-positive, CD49f-negative,   
+  CD56-negative, CD58-positive, CD61-positive, CD64-positive, CD70-negative,  
+  CD71-positive, CD80-positive, CD83-negative, CD86-positive, CD103-negative, 
+  CD105-positive, CD181-positive, CD182-negative, CD183-positive, CD184-      
+  positive, CD185-negative, CD186-negative, CD191-positive, CD192-negative,   
+  CD193-positive, CD194-positive, CD195-positive, CD196-negative, CD197-      
+  positive, CD199-positive, desmin-negative, F4/80-positive, Gr1-positive, LSP-
+  1-positive, MHCI-positive, MHCII-positive, alpha-SMA-negative, TCRab-       
+  negative, TCRgd-negative, and vimentin-positive. Fibrocytes are also capable
+  of secreting angiogenin, bFGF, CCL2, CCL3, CCL4, CCL8, CXCL1, type I        
+  collagen, type III collagen, CTGF, fibronectin, GM-CSF, IL-1a, IL-6, IL-8,  
+  IL-10, M-CSF, MMP-9, PDGF-A, TGF-alpha, TGF-beta1, TNF-alpha, and VEGF-A.") 
+     AnnotationAssertion(rdfs:label obo:CL_0000135 "circulating fibrocyte")   
+     SubClassOf(Annotation(oboInOwl:is_inferred "true") obo:CL_0000135        
+  obo:CL_0000499)                                                             
+     SubClassOf(obo:CL_0000135 obo:CL_0011026)                                
+     SubClassOf(obo:CL_0000135 ObjectSomeValuesFrom(obo:RO_0002202            
+  obo:CL_0000839))
+
+Bash: Check git status
+$ cd /home/runner/work/cell-ontology/cell-ontology && git log --oneline -5
+  && git branch                                                               
+    ff94f81 (HEAD -> copilot/fix-neurectodermal-spelling, origin/copilot/fix- 
+  neurectodermal-spelling) Initial plan                                       
+    2246cbc (grafted, origin/master) release of 20260326 (#3600)              
+    * copilot/fix-neurectodermal-spelling                                     
+    <exited with exit code 0>
+
+
+I can see the term. Let me also check for any other occurrences in the file 
+  and understand the full context:
+
+Bash: Find all neurectoderm/neuroectoderm occurrences
+$ grep -in "neurectoderm|neuroectoderm" /home/runner/work/cell-           
+  ontology/cell-ontology/src/ontology/cl-edit.owl                             
+    4070:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:37824650")   
+  Annotation(oboInOwl:hasDbXref "Wikipedia:Glioblast") obo:IAO_0000115        
+  obo:CL_0000030 "A non-terminally differentiated cell that develops form the 
+  neuroectoderm. Glioblast has the potential to differentiate into various    
+  types of glial cells, including astrocytes and oligodendrocytes.")          
+    4247:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:30639325")   
+  obo:IAO_0000115 obo:CL_0000047 "An undifferentiated neural cell that        
+  originates from the neuroectoderm and has the capacity both to perpetually  
+  self-renew without differentiating and to generate multiple central nervous 
+  system neuronal and glial cell types.")                                     
+    4472:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")         
+  Annotation(oboInOwl:hasDbXref "JB:jb") Annotation(oboInOwl:hasDbXref        
+  "PMID:34335193") Annotation(oboInOwl:hasDbXref "PMID:37008045")             
+  Annotation(oboInOwl:hasDbXref "PMID:9550134") Annotation(oboInOwl:hasDbXref 
+  "doi:/10.3389/fncel.2021.703951") Annotation(oboInOwl:hasDbXref "https://www.
+  britannica.com/science/ependymal-cell") obo:IAO_0000115 obo:CL_0000065 "A   
+  neuroepithelial glial cell, derived from a radial glial cell originating    
+  from the neuroectoderm, lines the ventricles of the brain and the central   
+  canal of the spinal cord. This cell is characterized by the presence of     
+  cilia on its apical surface, which can be motile or non-motile.")           
+    5095:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:23616747")   
+  rdfs:comment obo:CL_0000129 "Unlike macroglial cells, microglial cells      
+  arise from hematopoietic stem cells in the yolk sac during early            
+  embryogenesis that populate the central nervous system. They derive from    
+  embryonic mesoderm and are not from neuroectoderm where glioblast develops  
+  from. Markers: Mouse: CD11b+, F4/80+, CD68+. They represent ~12% of the     
+  cells in the CNS, but they are not uniformly distributed within the CNS. A  
+  normal adult mouse brain has approximately 3.5x10e6 microglia. Microglia are
+  also reportedly CD3-negative, CD4-positive, CD8-negative, CD11b-positive,   
+  CD11c-high, CD14-negative, CD19-negative, CD45-low, CD56-negative, CD163-   
+  negative, CD200R-positive, CD281-positive, CD282-positive, CD283-positive,  
+  CD284-positive, CD285-positive, CD286-positive, CD287-positive, CD288-      
+  positive, CD289-positive, Gr1-negative, nestin-positive, and PU.1-positive. 
+  ")                                                                          
+    5125:# Class: obo:CL_0000133 (neurectodermal cell)                        
+    5128:AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0000133          
+  "neurectoderm cell")                                                        
+    5129:AnnotationAssertion(rdfs:label obo:CL_0000133 "neurectodermal cell") 
+    7767:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")         
+  Annotation(oboInOwl:hasDbXref "PMID:7576311") obo:IAO_0000115 obo:CL_0000464
+  "An epidermal progenitor cell that arises from neuroectoderm and in turn    
+  gives rise to the epidermal sheath of ventral and cephalic regions.")       
+    11538:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "SANBI:mhl")      
+  obo:IAO_0000115 obo:CL_0000854 "Interneuromast cell is a neuroectodermal    
+  cell deposited by the migrating lateral line primordium between the         
+  neuromasts. Interneuromast cells proliferate and migrate to form additional 
+  neuromasts.")                                                               
+    16659:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")        
+  Annotation(oboInOwl:hasDbXref "ISBN:0721662544")                            
+  Annotation(oboInOwl:hasDbXref "ISBN:0721694128") obo:IAO_0000115            
+  obo:CL_0002243 "A circular smooth muscle cell of the iris, innervated by the
+  ciliary nerves (parasympathetic), and acting to contract the pupil. This    
+  muscle cell derives from neuroectoderm. This smooth muscle cell results from
+  transformation of epithelial cells to smooth muscle cells.")                
+    32178:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:31819095")  
+  Annotation(oboInOwl:hasDbXref "PMID:34082079") rdfs:comment obo:CL_4030000  
+  "Cellular functions and extracellular interactions of choroidal melanocytes 
+  are distinct to skin melanocytes. They might have both neuroectodermal as   
+  well as mesectodermal origins.")                                            
+    <exited with exit code 0>
+
+
+Now I have a clear picture of what needs to be changed. Let me also find the
+  issue number:
+
+Bash: Find issue number for neurectodermal
+$ cd /home/runner/work/cell-ontology/cell-ontology && gh issue list --    
+  search "neurectodermal" 2>/dev/null | head -20                              
+    3595	OPEN	[Typo/Bug] Neurectodermal cell	bug, typo	2026-04-10T11:54:53Z       
+    <exited with exit code 0>
+
+
+Found the issue #3595. Let me check how term_tracker_item is used in the    
+  file:
+
+Bash: Find term_tracker_item pattern
+$ grep -n "term_tracker_item|IAO_0000233" /home/runner/work/cell-         
+  ontology/cell-ontology/src/ontology/cl-edit.owl | head -10                  
+    3754:AnnotationAssertion(obo:IAO_0000233                                  
+  cl:has_high_plasma_membrane_amount <https://github.com/obophenotype/cell-   
+  ontology/issues/1481>)                                                      
+    3762:AnnotationAssertion(obo:IAO_0000233 cl:has_low_plasma_membrane_amount
+  <https://github.com/obophenotype/cell-ontology/issues/1481>)                
+    3816:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000003 <https://github.  
+  com/obophenotype/cell-ontology/issues/2124>)                                
+    4339:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000054 <https://github.  
+  com/obophenotype/cell-ontology/issues/2698>)                                
+    4348:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000055 "https://github.  
+  com/obophenotype/cell-ontology/issues/2922")                                
+    4537:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000073 <https://github.  
+  com/obophenotype/cell-ontology/issues/1149>)                                
+    4641:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000085 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4649:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000086 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4657:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000087 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    4665:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000088 <https://github.  
+  com/obophenotype/cell-ontology/issues/1935>)                                
+    <exited with exit code 0>
+
+
+Now I have everything I need. Let me outline my plan and make the changes:
+
+Progress update: Initial plan for fixing neurectodermal → neuroectodermal typo
+
+[x] Identify issue: CL:0000133 "neurectodermal cell" should be              
+  "neuroectodermal cell" (GitHub issue #3595)                                 
+  [ ] Fix label: "neurectodermal cell" → "neuroectodermal cell" (line 5129)   
+  [ ] Fix comment: "(neurectodermal cell)" → "(neuroectodermal cell)" (line   
+  5125)                                                                       
+  [ ] Fix synonym: "neurectoderm cell" → "neuroectoderm cell" (line 5128)     
+  [ ] Add old label "neurectodermal cell" as a related synonym for backwards  
+  compatibility                                                               
+  [ ] Add term_tracker_item linking to issue #3595
+
+
+Now let me make the changes to the ontology file:
+
+Call to edit
+
+Input:
+
+{                                                                         
+      "new_str": "# Class: obo:CL_0000133 (neuroectodermal                    
+  cell)\n\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref \"GOC:tfm\")     
+  Annotation(oboInOwl:hasDbXref \"ISBN:068340007X\") obo:IAO_0000115          
+  obo:CL_0000133 \"Ectoderm destined to be nervous tissue.                    
+  \")\nAnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0000133            
+  \"neuroectoderm cell\")\nAnnotationAssertion(oboInOwl:hasRelatedSynonym     
+  obo:CL_0000133 \"neurectodermal cell\")\nAnnotationAssertion(obo:IAO_0000233
+  obo:CL_0000133 \u003chttps://github.com/obophenotype/cell-                  
+  ontology/issues/3595\u003e)\nAnnotationAssertion(rdfs:label obo:CL_0000133  
+  \"neuroectodermal cell\")",                                                 
+      "old_str": "# Class: obo:CL_0000133 (neurectodermal                     
+  cell)\n\nAnnotationAssertion(Annotation(oboInOwl:hasDbXref \"GOC:tfm\")     
+  Annotation(oboInOwl:hasDbXref \"ISBN:068340007X\") obo:IAO_0000115          
+  obo:CL_0000133 \"Ectoderm destined to be nervous tissue.                    
+  \")\nAnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0000133            
+  \"neurectoderm cell\")\nAnnotationAssertion(rdfs:label obo:CL_0000133       
+  \"neurectodermal cell\")",                                                  
+      "path": "/home/runner/work/cell-ontology/cell-ontology/src/ontology/cl- 
+  edit.owl"                                                                   
+    }
+
+
+Let me verify the changes look correct:
+
+Bash: Verify changes
+$ grep -n "CL_0000133|neurectodermal|neuroectodermal|neurectoderm|        
+  neuroectoderm" /home/runner/work/cell-ontology/cell-ontology/src/ontology/cl-
+  edit.owl | grep -v "^[0-9]*:.*neuroectoderm[^a]" | head -20                 
+    187:Declaration(Class(obo:CL_0000133))                                    
+    4073:SubClassOf(obo:CL_0000030 ObjectSomeValuesFrom(obo:RO_0002202        
+  obo:CL_0000133))                                                            
+    4255:SubClassOf(obo:CL_0000047 ObjectSomeValuesFrom(obo:RO_0002202        
+  obo:CL_0000133))                                                            
+    4744:SubClassOf(obo:CL_0000095 ObjectSomeValuesFrom(obo:RO_0002202        
+  obo:CL_0000133))                                                            
+    5125:# Class: obo:CL_0000133 (neuroectodermal cell)                       
+    5127:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")         
+  Annotation(oboInOwl:hasDbXref "ISBN:068340007X") obo:IAO_0000115            
+  obo:CL_0000133 "Ectoderm destined to be nervous tissue.")                   
+    5129:AnnotationAssertion(oboInOwl:hasRelatedSynonym obo:CL_0000133        
+  "neurectodermal cell")                                                      
+    5130:AnnotationAssertion(obo:IAO_0000233 obo:CL_0000133 <https://github.  
+  com/obophenotype/cell-ontology/issues/3595>)                                
+    5131:AnnotationAssertion(rdfs:label obo:CL_0000133 "neuroectodermal cell")
+    5132:SubClassOf(obo:CL_0000133 obo:CL_0000221)                            
+    9984:EquivalentClasses(obo:CL_0000710 ObjectIntersectionOf(obo:CL_0002077 
+  ObjectSomeValuesFrom(obo:RO_0002202 obo:CL_0000133)))                       
+    11540:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "SANBI:mhl")      
+  obo:IAO_0000115 obo:CL_0000854 "Interneuromast cell is a neuroectodermal    
+  cell deposited by the migrating lateral line primordium between the         
+  neuromasts. Interneuromast cells proliferate and migrate to form additional 
+  neuromasts.")                                                               
+    11542:SubClassOf(obo:CL_0000854 obo:CL_0000133)                           
+    16670:SubClassOf(obo:CL_0002243 ObjectSomeValuesFrom(obo:RO_0002202       
+  obo:CL_0000133))                                                            
+    21014:SubClassOf(obo:CL_0002672 ObjectSomeValuesFrom(obo:RO_0002202       
+  obo:CL_0000133))                                                            
+    22688:SubClassOf(obo:CL_0007004 ObjectSomeValuesFrom(obo:RO_0002202       
+  obo:CL_0000133))                                                            
+    32180:AnnotationAssertion(Annotation(oboInOwl:hasDbXref "PMID:31819095")  
+  Annotation(oboInOwl:hasDbXref "PMID:34082079") rdfs:comment obo:CL_4030000  
+  "Cellular functions and extracellular interactions of choroidal melanocytes 
+  are distinct to skin melanocytes. They might have both neuroectodermal as   
+  well as mesectodermal origins.")                                            
+    <exited with exit code 0>
+
+View src/ontology/cl-edit.owl
+# Class: obo:CL_0000133 (neuroectodermal cell)                           
+                                                                              
+     AnnotationAssertion(Annotation(oboInOwl:hasDbXref "GOC:tfm")             
+  Annotation(oboInOwl:hasDbXref "ISBN:068340007X") obo:IAO_0000115            
+  obo:CL_0000133 "Ectoderm destined to be nervous tissue.")                   
+     AnnotationAssertion(oboInOwl:hasExactSynonym obo:CL_0000133              
+  "neuroectoderm cell")                                                       
+     AnnotationAssertion(oboInOwl:hasRelatedSynonym obo:CL_0000133            
+  "neurectodermal cell")                                                      
+     AnnotationAssertion(obo:IAO_0000233 obo:CL_0000133 <https://github.      
+  com/obophenotype/cell-ontology/issues/3595>)                                
+     AnnotationAssertion(rdfs:label obo:CL_0000133 "neuroectodermal cell")    
+     SubClassOf(obo:CL_0000133 obo:CL_0000221)                                
+                                                                              
+     # Class: obo:CL_0000134 (mesenchymal stem cell)
+
+
+The changes look correct. Now let me commit and report progress:
+
+Progress update: Fix typo: neurectodermal → neuroectodermal for CL:0000133
+
+- Fix label from 'neurectodermal cell' to 'neuroectodermal cell'
+- Fix comment heading accordingly
+- Fix exact synonym from 'neurectoderm cell' to 'neuroectoderm cell'
+- Add old misspelling 'neurectodermal cell' as related synonym for backwards compatibility
+- Add term_tracker_item linking to issue #3595
+
+Signed-off-by: GitHub Copilot
+
+[x] Identify issue: CL:0000133 "neurectodermal cell" should be              
+  "neuroectodermal cell" (GitHub issue #3595)                                 
+  [x] Fix label: "neurectodermal cell" → "neuroectodermal cell"               
+  [x] Fix comment: "(neurectodermal cell)" → "(neuroectodermal cell)"         
+  [x] Fix synonym: "neurectoderm cell" → "neuroectoderm cell"                 
+  [x] Add old label "neurectodermal cell" as a related synonym for backwards  
+  compatibility                                                               
+  [x] Add term_tracker_item linking to issue #3595
+
+
+The changes have been committed and pushed. Here's a summary of what was    
+  fixed for CL:0000133:                                                       
+                                                                              
+  1. **Label fixed**: "neurectodermal cell" → "neuroectodermal cell" —        
+  corrects the primary misspelling                                            
+  2. **Comment heading fixed**: (neurectodermal cell) → (neuroectodermal cell)
+  — auto-generated from label                                                 
+  3. **Exact synonym fixed**: "neurectoderm cell" → "neuroectoderm cell" —    
+  also corrected for consistency                                              
+  4. **Backwards compatibility**: Added "neurectodermal cell" as a            
+  hasRelatedSynonym so existing references to the old spelling are still      
+  recognized                                                                  
+  5. **Issue tracker link**: Added term_tracker_item pointing to GitHub issue 
+  #3595
+

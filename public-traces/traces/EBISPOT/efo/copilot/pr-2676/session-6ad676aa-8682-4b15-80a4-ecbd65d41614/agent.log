@@ -1,0 +1,1032 @@
+Start 'playwright' MCP server
+Clone repository EBISPOT/efo
+Start 'github-mcp-server' MCP server
+Start 'ebi-kg' MCP server
+Start 'artl-mcp' MCP server
+
+Let me check the latest CI failures.
+
+Call to github-mcp-server-actions_list
+
+Input:
+
+{                                                                         
+      "method": "list_workflow_runs",                                         
+      "owner": "EBISPOT",                                                     
+      "repo": "efo",                                                          
+      "resource_id": "copilot/add-efo-import-from-eva",                       
+      "workflow_runs_filter": {                                               
+        "status": "completed"                                                 
+      }                                                                       
+    }
+
+Bash: Check recent commits
+$ cd /home/runner/work/efo/efo && git log --oneline -6                    
+    4e36c76 (HEAD -> copilot/add-efo-import-from-eva, origin/copilot/add-efo- 
+  import-from-eva) Fix CI QC failures: add GO_000 4092 label to go_import.owl 
+  and HP_0032373 parent to subclasses.csv                                     
+    d4269b6 Add 5 new EFO terms for EVA-EFO import 26/03 (#2672)              
+    ce4b309 Import MONDO_0006507 (hereditary hemochromatosis) for bronze      
+  diabetes parent (#2672)                                                     
+    b57c618 Import MONDO and HP terms for EVA-EFO import 26/03 (#2672)        
+    122f46d Initial plan                                                      
+    f5f8e22 (grafted) Merge pull request #2670 from EBISPOT/copilot/add-      
+  anatomical-region-term                                                      
+    <exited with exit code 0>
+
+Call to github-mcp-server-actions_list
+
+Input:
+
+{                                                                         
+      "method": "list_workflow_runs",                                         
+      "owner": "EBISPOT",                                                     
+      "repo": "efo",                                                          
+      "workflow_runs_filter": {                                               
+        "branch": "copilot/add-efo-import-from-eva",                          
+        "status": "completed"                                                 
+      }                                                                       
+    }
+
+Get GitHub Actions job logs
+
+Output:
+
+{                                                                         
+      "failed_jobs": 1,                                                       
+      "logs": [                                                               
+        {                                                                     
+          "job_id": 71429616299,                                              
+          "job_name": "ontology_qc",                                          
+          "logs_content": "2026-04-15T09:56:51.3839034Z shell: sh -e {0}\n2026-
+  04-15T09:56:51.3839177Z env:\n2026-04-15T09:56:51.3839305Z   DEFAULT_BRANCH:
+  master\n2026-04-15T09:56:51.3839464Z ##[endgroup]\n2026-04-15T09:56:51.     
+  4264513Z Makefile:95: warning: overriding recipe for target '.              
+  PRECIOUS'\n2026-04-15T09:56:51.4265329Z Makefile:91: warning: ignoring old  
+  recipe for target '.PRECIOUS'\n2026-04-15T09:56:51.4265883Z Makefile:229:   
+  warning: overriding recipe for target '.PRECIOUS'\n2026-04-15T09:56:51.     
+  4266342Z Makefile:95: warning: ignoring old recipe for target '.            
+  PRECIOUS'\n2026-04-15T09:56:51.4266788Z Makefile:387: warning: overriding   
+  recipe for target '.PRECIOUS'\n2026-04-15T09:56:51.4267236Z Makefile:229:   
+  warning: ignoring old recipe for target '.PRECIOUS'\n2026-04-15T09:56:51.   
+  4276332Z cat iri_dependencies/mondo_terms.txt iri_dependencies/efo-relations.
+  txt | sort | uniq \u003e imports/mondo_terms.txt\n2026-04-15T09:56:51.      
+  4328679Z ../../bin/robot extract -i mirror/mondo.owl -T imports/mondo_terms.
+  txt --method BOT -O http://www.ebi.ac.uk/efo/imports/mondo_import.owl -o    
+  imports/mondo_import.owl.tmp.owl\n2026-04-15T09:57:23.1699587Z ../..        
+  /bin/robot query -i imports/mondo_import.owl.tmp.owl -q ../sparql/hgnc_terms.
+  sparql imports/mondo_import.owl.hgnc.tsv 2\u003e/dev/null || true\n2026-04- 
+  15T09:57:54.2779549Z Auto-excluding 3574 HGNC terms from mondo import\n2026-
+  04-15T09:57:54.2818185Z ../../bin/robot remove -i imports/mondo_import.owl. 
+  tmp.owl -T iri_dependencies/mondo_exclude.txt --term rdfs:comment -o        
+  imports/mondo_import.owl\n2026-04-15T09:58:18.5908963Z rm -f                
+  imports/mondo_import.owl.tmp.owl imports/mondo_import.owl.hgnc.tsv          
+  imports/mondo_import.owl.hgnc.txt\n2026-04-15T09:58:18.6055383Z ../..       
+  /bin/robot merge -i efo-edit.owl \\n2026-04-15T09:58:18.6055944Z reason -s  
+  true -m false -r hermit -v --equivalent-classes-allowed asserted-only       
+  \\n2026-04-15T09:58:18.6056657Z annotate -a owl:versionInfo `cat version.   
+  txt` -a rdfs:comment `date +%Y-%m-%d` -O http://www.ebi.ac.uk/efo/efo.owl -V
+  http://www.ebi.ac.uk/efo/releases/v`cat version.txt`/efo.owl -o build/efo.  
+  owl\n2026-04-15T09:59:09.1450676Z 2026-04-15 09:59:09,143 WARN  org.        
+  obolibrary.robot.ReasonOperation - Reference violations found: 11 -         
+  reasoning may be incomplete\n2026-04-15T09:59:09.1473220Z 2026-04-15        
+  09:59:09,146 WARN  org.obolibrary.robot.ReasonOperation - Reference         
+  violation: InvalidReferenceViolation                                        
+  [axiom=EquivalentClasses(\u003chttp://purl.obolibrary.                      
+  org/obo/PATO_0000912\u003e ObjectIntersectionOf(\u003chttp://purl.obolibrary.
+  org/obo/PATO_0000161\u003e ObjectSomeValuesFrom(\u003chttp://purl.obolibrary.
+  org/obo/pato#increased_in_magnitude_relative_to\u003e \u003chttp://purl.    
+  obolibrary.org/obo/PATO_0000461\u003e))), referencedObject=\u003chttp://purl.
+  obolibrary.org/obo/pato#increased_in_magnitude_relative_to\u003e,           
+  category=DANGLING]\n2026-04-15T09:59:09.1477726Z 2026-04-15 09:59:09,146    
+  WARN  org.obolibrary.robot.ReasonOperation - Reference violation:           
+  InvalidReferenceViolation [axiom=EquivalentClasses(\u003chttp://purl.       
+  obolibrary.org/obo/PATO_0001162\u003e ObjectIntersectionOf(\u003chttp://purl.
+  obolibrary.org/obo/PATO_0001159\u003e ObjectSomeValuesFrom(\u003chttp://purl.
+  obolibrary.org/obo/pato#increased_in_magnitude_relative_to\u003e            
+  \u003chttp://purl.obolibrary.org/obo/PATO_0000461\u003e))),                 
+  referencedObject=\u003chttp://purl.obolibrary.                              
+  org/obo/pato#increased_in_magnitude_relative_to\u003e,                      
+  category=DANGLING]\n2026-04-15T09:59:09.1479851Z 2026-04-15 09:59:09,146    
+  WARN  org.obolibrary.robot.ReasonOperation - Reference violation:           
+  InvalidReferenceViolation                                                   
+  [axiom=Declaration(ObjectProperty(\u003chttp://purl.obolibrary.             
+  org/obo/pato#decreased_in_magnitude_relative_to\u003e)),                    
+  referencedObject=\u003chttp://purl.obolibrary.                              
+  org/obo/pato#decreased_in_magnitude_relative_to\u003e,                      
+  category=DANGLING]\n2026-04-15T09:59:09.1483251Z 2026-04-15 09:59:09,146    
+  WARN  org.obolibrary.robot.ReasonOperation - Reference violation:           
+  InvalidReferenceViolation [axiom=SubClassOf(\u003chttp://purl.obolibrary.   
+  org/obo/PATO_0001162\u003e ObjectSomeValuesFrom(\u003chttp://purl.obolibrary.
+  org/obo/pato#increased_in_magnitude_relative_to\u003e \u003chttp://purl.    
+  obolibrary.org/obo/PATO_0000461\u003e)), referencedObject=\u003chttp://purl.
+  obolibrary.org/obo/pato#increased_in_magnitude_relative_to\u003e,           
+  category=DANGLING]\n2026-04-15T09:59:09.1486057Z 2026-04-15 09:59:09,146    
+  WARN  org.obolibrary.robot.ReasonOperation - Reference violation:           
+  InvalidReferenceViolation [axiom=Declaration(ObjectProperty(\u003chttp://www.
+  obofoundry.org/ro/ro.owl#participates_in\u003e)),                           
+  referencedObject=\u003chttp://www.obofoundry.org/ro/ro.                     
+  owl#participates_in\u003e, category=DANGLING]\n2026-04-15T09:59:09.1488024Z 
+  2026-04-15 09:59:09,146 WARN  org.obolibrary.robot.ReasonOperation -        
+  Reference violation: InvalidReferenceViolation                              
+  [axiom=EquivalentClasses(\u003chttp://purl.obolibrary.                      
+  org/obo/PATO_0000470\u003e ObjectIntersectionOf(\u003chttp://purl.obolibrary.
+  org/obo/PATO_0000070\u003e ObjectSomeValuesFrom(\u003chttp://purl.obolibrary.
+  org/obo/pato#increased_in_magnitude_relative_to\u003e \u003chttp://purl.    
+  obolibrary.org/obo/PATO_0000461\u003e))), referencedObject=\u003chttp://purl.
+  obolibrary.org/obo/pato#increased_in_magnitude_relative_to\u003e,           
+  category=DANGLING]\n2026-04-15T09:59:09.1490419Z 2026-\u003coutput too long -
+  dropped 5093 characters from the middle\u003e5T10:06:10.6281059Z Parsing    
+  mirror/mondo.owl for deprecations...\n2026-04-15T10:06:10.6281355Z   Found  
+  3966 deprecated terms in Mondo\n2026-04-15T10:06:10.6281545Z   Found 2217   
+  replaced_by mappings\n2026-04-15T10:06:10.6281677Z \n2026-04-15T10:06:10.   
+  6281750Z Deprecated terms in import list: 648\n2026-04-15T10:06:10.6282364Z 
+  MISSING_REPLACEMENT: http://purl.obolibrary.org/obo/MONDO_0012017 -\u003e   
+  http://purl.obolibrary.org/obo/MONDO_0700325\n2026-04-15T10:06:10.6282919Z  
+  MISSING_REPLACEMENT: http://purl.obolibrary.org/obo/MONDO_0700044 -\u003e   
+  http://purl.obolibrary.org/obo/MONDO_0014337\n2026-04-15T10:06:10.6283215Z  
+  \n2026-04-15T10:06:10.6283333Z Report written to:                           
+  reports/mondo_obsolete_import_check.tsv\n2026-04-15T10:06:10.6283501Z \n2026-
+  04-15T10:06:10.6283555Z Summary:\n2026-04-15T10:06:10.6283695Z   Total      
+  imported terms: 12379\n2026-04-15T10:06:10.6283867Z   Deprecated in Mondo:  
+  648\n2026-04-15T10:06:10.6284053Z   Missing replacements in term list:      
+  2\n2026-04-15T10:06:10.6284239Z   No replacement defined: 473\n2026-04-     
+  15T10:06:10.6284349Z \n2026-04-15T10:06:10.6284487Z ERROR: 2 deprecated     
+  terms have replacements not in the import term list.\n2026-04-15T10:06:10.  
+  6284765Z Add the replacement IRIs to mondo_terms.txt:\n2026-04-15T10:06:10. 
+  6284979Z   http://purl.obolibrary.org/obo/MONDO_0700325\n2026-04-15T10:06:10.
+  6285194Z   http://purl.obolibrary.org/obo/MONDO_0014337\n2026-04-15T10:06:10.
+  6313527Z make: *** [Makefile:370: check_mondo_obsoletes] Error 1\n2026-04-  
+  15T10:06:10.6355492Z ##[error]Process completed with exit code 2.\n2026-04- 
+  15T10:06:10.6458116Z Post job cleanup.\n2026-04-15T10:06:10.6461711Z        
+  ##[command]/usr/bin/docker exec                                             
+  e02b1c5a505303e37a268f8510f3a5a48be36d87b28d647127765b73419272e6 sh -c \"cat
+  /etc/*release | grep ^ID\"\n2026-04-15T10:06:10.8051001Z                    
+  [command]/usr/bin/git version\n2026-04-15T10:06:10.8082638Z git version 2.34.
+  1\n2026-04-15T10:06:10.8118221Z Temporarily overriding                      
+  HOME='/__w/_temp/5ca4612a-7129-4230-8c18-64932dbc3101' before making global 
+  git config changes\n2026-04-15T10:06:10.8119293Z Adding repository directory
+  to the temporary git global config as a safe directory\n2026-04-15T10:06:10.
+  8130120Z [command]/usr/bin/git config --global --add safe.directory         
+  /__w/efo/efo\n2026-04-15T10:06:10.8163157Z [command]/usr/bin/git config --  
+  local --name-only --get-regexp core\.sshCommand\n2026-04-15T10:06:10.       
+  8213364Z [command]/usr/bin/git submodule foreach --recursive sh -c \"git    
+  config --local --name-only --get-regexp 'core\.sshCommand' \u0026\u0026 git 
+  config --local --unset-all 'core.sshCommand' || :\"\n2026-04-15T10:06:10.   
+  8410488Z [command]/usr/bin/git config --local --name-only --get-regexp http\.
+  https\:\/\/github\.com\/\.extraheader\n2026-04-15T10:06:10.8441809Z http.   
+  https://github.com/.extraheader\n2026-04-15T10:06:10.8443300Z               
+  [command]/usr/bin/git config --local --unset-all http.https://github.com/.  
+  extraheader\n2026-04-15T10:06:10.8474662Z [command]/usr/bin/git submodule   
+  foreach --recursive sh -c \"git config --local --name-only --get-regexp     
+  'http\.https\:\/\/github\.com\/\.extraheader' \u0026\u0026 git config --    
+  local --unset-all 'http.https://github.com/.extraheader' || :\"\n2026-04-   
+  15T10:06:10.8698388Z [command]/usr/bin/git config --local --name-only --get-
+  regexp ^includeIf\.gitdir:\n2026-04-15T10:06:10.8724388Z                    
+  [command]/usr/bin/git submodule foreach --recursive git config --local --   
+  show-origin --name-only --get-regexp remote.origin.url\n2026-04-15T10:06:10.
+  9035143Z Stop and remove container:                                         
+  e0559dbbfa994d70b854b1540721c60e_obolibraryodkfullv151_454d81\n2026-04-     
+  15T10:06:10.9038601Z ##[command]/usr/bin/docker rm --force                  
+  e02b1c5a505303e37a268f8510f3a5a48be36d87b28d647127765b73419272e6\n2026-04-  
+  15T10:06:11.1809696Z                                                        
+  e02b1c5a505303e37a268f8510f3a5a48be36d87b28d647127765b73419272e6\n2026-04-  
+  15T10:06:11.1837962Z Remove container network:                              
+  github_network_48c6280d2f354ebe8129476f9a67dc82\n2026-04-15T10:06:11.       
+  1841159Z ##[command]/usr/bin/docker network rm                              
+  github_network_48c6280d2f354ebe8129476f9a67dc82\n2026-04-15T10:06:11.       
+  2750169Z github_network_48c6280d2f354ebe8129476f9a67dc82\n2026-04-          
+  15T10:06:11.2803668Z Cleaning up orphan processes\n2026-04-15T10:06:11.     
+  3051726Z ##[warning]Node.js 20 actions are deprecated. The following actions
+  are running on Node.js 20 and may not work as expected: actions/checkout@v4.
+  Actions will be forced to run with Node.js 24 by default starting June 2nd, 
+  2026. Node.js 20 will be removed from the runner on September 16th, 2026.   
+  Please check if updated versions of these actions are available that support
+  Node.js 24. To opt into Node.js 24 now, set the                             
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner  
+  or in your workflow file. Once Node.js 24 becomes the default, you can      
+  temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true.
+  For more information see: https://github.blog/changelog/2025-09-19-         
+  deprecation-of-node-20-on-github-actions-runners/",                         
+          "message": "Job logs content retrieved successfully",               
+          "original_length": 520                                              
+        }                                                                     
+      ],                                                                      
+      "message": "Retrieved logs for 1 failed jobs",                          
+      "return_format": {                                                      
+        "content": true,                                                      
+        "urls": false                                                         
+      },                                                                      
+      "run_id": 24448010290,                                                  
+      "total_jobs": 1                                                         
+    }
+
+
+Input:
+
+{                                                                         
+      "failed_only": true,                                                    
+      "owner": "EBISPOT",                                                     
+      "repo": "efo",                                                          
+      "return_content": true,                                                 
+      "run_id": 24448010290,                                                  
+      "tail_lines": 100                                                       
+    }
+
+
+The new failure is the check_mondo_obsoletes check:                         
+                                                                              
+  • MONDO_0012017 is deprecated → replaced by MONDO_0700325 (not in import    
+  list)                                                                       
+  • MONDO_0700044 is deprecated → replaced by MONDO_0014337 (not in import    
+  list)                                                                       
+                                                                              
+  Let me investigate:
+
+Bash: Read the check_mondo_import_obsoletes script
+$ cd /home/runner/work/efo/efo && cat                                     
+  src/scripts/check_mondo_import_obsoletes.py 2>/dev/null | head -60          
+    #!/usr/bin/env python3                                                    
+    """                                                                       
+    QC: Check if any MONDO terms in the import term list are obsolete in the  
+    Mondo mirror, and verify their replacements are also in the term list.    
+                                                                              
+    Usage:                                                                    
+        python3 check_mondo_import_obsoletes.py <mondo_mirror_owl>            
+  <mondo_terms_txt> [-o <output_tsv>]                                         
+                                                                              
+    Exit codes:                                                               
+        0 - No issues found (or all replacements are already in the term list)
+        1 - Obsolete terms found whose replacements are NOT in the term list  
+    """                                                                       
+                                                                              
+    import re                                                                 
+    import sys                                                                
+                                                                              
+                                                                              
+    def parse_mondo_owl_deprecations(mondo_owl_path):                         
+        """Parse mondo.owl (OWL Functional Syntax) for deprecated terms and   
+  their replacements.                                                         
+                                                                              
+        Returns:                                                              
+            deprecated: set of deprecated IRIs                                
+            replaced_by: dict of deprecated IRI -> replacement IRI            
+        """                                                                   
+        deprecated = set()                                                    
+        replaced_by = {}                                                      
+                                                                              
+        # For OWL Functional Syntax, look for:                                
+        #   AnnotationAssertion(owl:deprecated <IRI> "true"^^xsd:boolean)     
+        #   AnnotationAssertion(obo:IAO_0100001 <IRI> <replacement_IRI>)      
+        deprecated_re = re.compile(                                           
+            r'AnnotationAssertion(owl:deprecated\s+'                          
+            r'<?([^>\s]+)>?\s+"true"')                                        
+        replaced_by_re = re.compile(                                          
+            r'AnnotationAssertion(obo:IAO_0100001\s+'                         
+            r'<?([^>\s]+)>?\s+<?([^>\s]+)>?\s*)')                             
+                                                                              
+        # Also handle RDF/XML format                                          
+        rdf_about_re = re.compile(r'rdf:about="([^"]+)"')                     
+        rdf_deprecated_re = re.compile(                                       
+            r'<owl:deprecated[^>]*>true</owl:deprecated>')                    
+        rdf_iao_resource_re = re.compile(                                     
+            r'<obo:IAO_0100001 rdf:resource="([^"]+)"')                       
+        rdf_iao_text_re = re.compile(                                         
+            r'<obo:IAO_0100001>([^<]+)</obo:IAO_0100001>')                    
+                                                                              
+        current_class = None                                                  
+        is_deprecated = False                                                 
+        replacement = None                                                    
+                                                                              
+        with open(mondo_owl_path, 'r') as f:                                  
+            for line in f:                                                    
+                # OWL Functional Syntax                                       
+                m = deprecated_re.search(line)                                
+                if m:                                                         
+                    deprecated.add(m.group(1))                                
+                                                                              
+                m = replaced_by_re.search(line)                               
+                if m:                                                         
+                    replaced_by[m.group(1)] = m.group(2)                      
+    <exited with exit code 0>
+
+Bash: Check if these MONDO terms were added by us
+$ cd /home/runner/work/efo/efo && grep "MONDO_0012017|MONDO_0700044"      
+  src/ontology/iri_dependencies/mondo_terms.txt && echo "---" && git log --   
+  oneline -5 -- src/ontology/iri_dependencies/mondo_terms.txt                 
+    http://purl.obolibrary.org/obo/MONDO_0012017                              
+    http://purl.obolibrary.org/obo/MONDO_0700044                              
+    ---                                                                       
+    ce4b309 Import MONDO_0006507 (hereditary hemochromatosis) for bronze      
+  diabetes parent (#2672)                                                     
+    b57c618 Import MONDO and HP terms for EVA-EFO import 26/03 (#2672)        
+    f5f8e22 (grafted) Merge pull request #2670 from EBISPOT/copilot/add-      
+  anatomical-region-term                                                      
+    <exited with exit code 0>
+
+Bash: Check which commit added these deprecated MONDO terms
+$ cd /home/runner/work/efo/efo && git show b57c618 --                     
+  src/ontology/iri_dependencies/mondo_terms.txt | grep "MONDO_0012017|        
+  MONDO_0700044"                                                              
+                                                                              
+    <exited with exit code 1>
+
+Bash: Check if these terms were pre-existing before our changes
+$ cd /home/runner/work/efo/efo && git log --all --oneline --              
+  src/ontology/iri_dependencies/mondo_terms.txt | head -5 && echo "---" && git
+  show f5f8e22 -- src/ontology/iri_dependencies/mondo_terms.txt | grep        
+  "MONDO_0012017|MONDO_0700044" | head -5                                     
+    ce4b309 Import MONDO_0006507 (hereditary hemochromatosis) for bronze      
+  diabetes parent (#2672)                                                     
+    b57c618 Import MONDO and HP terms for EVA-EFO import 26/03 (#2672)        
+    f5f8e22 Merge pull request #2670 from EBISPOT/copilot/add-anatomical-     
+  region-term                                                                 
+    ---                                                                       
+    +http://purl.obolibrary.org/obo/MONDO_0012017                             
+    +http://purl.obolibrary.org/obo/MONDO_0700044                             
+    <exited with exit code 0>
+
+Bash: Check if b57c618 added these terms
+$ cd /home/runner/work/efo/efo && git show b57c618 --                     
+  src/ontology/iri_dependencies/mondo_terms.txt | grep "^+.*MONDO_0012017|^+. 
+  *MONDO_0700044"                                                             
+                                                                              
+    <exited with exit code 1>
+
+Bash: Find which commit added MONDO_0012017 and MONDO_0700044
+$ cd /home/runner/work/efo/efo && git log --all --follow -p --            
+  src/ontology/iri_dependencies/mondo_terms.txt | grep "^+.*MONDO_0012017|^+. 
+  *MONDO_0700044|^commit" | head -20                                          
+    commit ce4b3095501f2b3b5c005fee845db7a71f244295                           
+    commit b57c618275c4d914f927fdde3c885672828e227b                           
+    commit f5f8e2220340b25d0e5b725f8a6dcaa4836fd69a                           
+    +http://purl.obolibrary.org/obo/MONDO_0012017                             
+    +http://purl.obolibrary.org/obo/MONDO_0700044                             
+    <exited with exit code 0>
+
+Bash: Check MONDO terms context from MONDO mirror
+$ cd /home/runner/work/efo/efo && curl -sL --max-time 30 "http://purl.    
+  obolibrary.org/obo/mondo/mondo-base.owl" | grep -A20 "MONDO_0012017|        
+  MONDO_0700044|MONDO_0700325|MONDO_0014337" | head -80                       
+    <!-- http://purl.obolibrary.org/obo/MONDO_0012017 -->                     
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/MONDO_0012017">  
+            <obo:IAO_0000231 rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_TermsMerged"/>                                                
+            <obo:IAO_0000233 rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#anyURI">https://github.com/monarch-                      
+  initiative/mondo/issues/114</obo:IAO_0000233>                               
+            <obo:IAO_0000233 rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#anyURI">https://github.com/monarch-                      
+  initiative/mondo/issues/9816</obo:IAO_0000233>                              
+            <obo:IAO_0100001 rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_0700325"/>                                                    
+            <oboInOwl:id>MONDO:0012017</oboInOwl:id>                          
+            <rdfs:label>obsolete Parkes Weber syndrome</rdfs:label>           
+            <owl:deprecated rdf:datatype="http://www.w3.                      
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+        </owl:Class>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://purl.obolibrary.org/obo/MONDO_0012018 -->                 
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/MONDO_0012018">  
+            <obo:IAO_0000231 rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_TermsMerged"/>                                                
+            <obo:IAO_0000233 rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#anyURI">https://github.com/monarch-                      
+  initiative/mondo/issues/6045</obo:IAO_0000233>                              
+            <obo:IAO_0100001 rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_0008409"/>                                                    
+            <oboInOwl:id>MONDO:0012018</oboInOwl:id>                          
+            <rdfs:label>obsolete myopathy, myosin storage, autosomal          
+  dominant</rdfs:label>                                                       
+            <owl:deprecated rdf:datatype="http://www.w3.                      
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+        </owl:Class>                                                          
+                                                                              
+                                                                              
+                                                                              
+    --                                                                        
+        <!-- http://purl.obolibrary.org/obo/MONDO_0014337 -->                 
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/MONDO_0014337">  
+            <owl:equivalentClass>                                             
+                <owl:Class>                                                   
+                    <owl:intersectionOf rdf:parseType="Collection">           
+                        <rdf:Description rdf:about="http://purl.obolibrary.   
+  org/obo/MONDO_0000904"/>                                                    
+                        <rdf:Description rdf:nodeID="genid242255"/>           
+                    </owl:intersectionOf>                                     
+                </owl:Class>                                                  
+            </owl:equivalentClass>                                            
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_0000904"/>                                                    
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_0100153"/>                                                    
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_0100500"/>                                                    
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_0100516"/>                                                    
+            <rdfs:subClassOf rdf:nodeID="genid242255"/>                       
+            <obo:IAO_0000115>Any complex cortical dysplasia with other brain  
+  malformations in which the cause of the disease is a mutation in the TUBB2A 
+  gene.</obo:IAO_0000115>                                                     
+            <obo:IAO_0000233 rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#anyURI">https://github.com/monarch-                      
+  initiative/mondo/issues/9748</obo:IAO_0000233>                              
+            <mondo:curated_content_resource rdf:datatype="http://www.w3.      
+  org/2001/XMLSchema#anyURI">https://www.malacards.                           
+  org/card/cortical_dysplasia_complex_with_other_brain_malformations_5</mondo:curated_content_resource>
+            <oboInOwl:hasDbXref>DOID:0090135</oboInOwl:hasDbXref>             
+            <oboInOwl:hasDbXref>GARD:0027070</oboInOwl:hasDbXref>             
+            <oboInOwl:hasDbXref>GARD:0027859</oboInOwl:hasDbXref>             
+            <oboInOwl:hasDbXref>MEDGEN:816737</oboInOwl:hasDbXref>            
+    --                                                                        
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0014337"/>                                                    
+            <owl:annotatedProperty rdf:resource="http://www.w3.org/2000/01/rdf-
+  schema#subClassOf"/>                                                        
+            <owl:annotatedTarget rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0000904"/>                                                    
+            <oboInOwl:source>DOID:0090135</oboInOwl:source>                   
+            <oboInOwl:source>MONDO:Redundant</oboInOwl:source>                
+            <oboInOwl:source>OMIM:615763</oboInOwl:source>                    
+        </owl:Axiom>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0014337"/>                                                    
+            <owl:annotatedProperty rdf:resource="http://www.w3.org/2000/01/rdf-
+  schema#subClassOf"/>                                                        
+            <owl:annotatedTarget rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0100153"/>                                                    
+            <oboInOwl:source>https://clinicalgenome.                          
+  org/affiliation/40006/</oboInOwl:source>                                    
+        </owl:Axiom>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0014337"/>                                                    
+            <owl:annotatedProperty rdf:resource="http://www.w3.org/2000/01/rdf-
+  schema#subClassOf"/>                                                        
+            <owl:annotatedTarget rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0100516"/>                                                    
+            <oboInOwl:source>https://clinicalgenome.                          
+  org/affiliation/40006/</oboInOwl:source>                                    
+        </owl:Axiom>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0014337"/>                                                    
+            <owl:annotatedProperty rdf:resource="http://www.w3.org/2000/01/rdf-
+  schema#subClassOf"/>                                                        
+            <owl:annotatedTarget rdf:nodeID="genid242255"/>                   
+            <oboInOwl:source>OMIM:615763</oboInOwl:source>                    
+        </owl:Axiom>                                                          
+        <owl:Axiom>                                                           
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0014337"/>                                                    
+            <owl:annotatedProperty rdf:resource="http://purl.obolibrary.      
+  org/obo/IAO_0000115"/>                                                      
+    <exited with exit code 0>
+
+Bash: Check MONDO_0700044 and its replacement MONDO_0700325
+$ cd /home/runner/work/efo/efo && curl -sL --max-time 30 "http://purl.    
+  obolibrary.org/obo/mondo/mondo-base.owl" | grep -A20 "MONDO_0700044|        
+  MONDO_0700325" | head -60                                                   
+    <obo:IAO_0100001 rdf:resource="http://purl.obolibrary.                    
+  org/obo/MONDO_0700325"/>                                                    
+            <oboInOwl:id>MONDO:0012017</oboInOwl:id>                          
+            <rdfs:label>obsolete Parkes Weber syndrome</rdfs:label>           
+            <owl:deprecated rdf:datatype="http://www.w3.                      
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+        </owl:Class>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://purl.obolibrary.org/obo/MONDO_0012018 -->                 
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/MONDO_0012018">  
+            <obo:IAO_0000231 rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_TermsMerged"/>                                                
+            <obo:IAO_0000233 rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#anyURI">https://github.com/monarch-                      
+  initiative/mondo/issues/6045</obo:IAO_0000233>                              
+            <obo:IAO_0100001 rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_0008409"/>                                                    
+            <oboInOwl:id>MONDO:0012018</oboInOwl:id>                          
+            <rdfs:label>obsolete myopathy, myosin storage, autosomal          
+  dominant</rdfs:label>                                                       
+            <owl:deprecated rdf:datatype="http://www.w3.                      
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+        </owl:Class>                                                          
+                                                                              
+                                                                              
+                                                                              
+    --                                                                        
+        <!-- http://purl.obolibrary.org/obo/MONDO_0700044 -->                 
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/MONDO_0700044">  
+            <obo:IAO_0000231 rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_TermsMerged"/>                                                
+            <obo:IAO_0000233 rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#anyURI">https://github.com/monarch-                      
+  initiative/mondo/issues/9748</obo:IAO_0000233>                              
+            <obo:IAO_0100001 rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_0014337"/>                                                    
+            <oboInOwl:id>MONDO:0700044</oboInOwl:id>                          
+            <rdfs:label>obsolete TUBB2A-related tubulinopathy</rdfs:label>    
+            <owl:deprecated rdf:datatype="http://www.w3.                      
+  org/2001/XMLSchema#boolean">true</owl:deprecated>                           
+        </owl:Class>                                                          
+                                                                              
+                                                                              
+                                                                              
+        <!-- http://purl.obolibrary.org/obo/MONDO_0700045 -->                 
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/MONDO_0700045">  
+            <owl:equivalentClass>                                             
+                <owl:Class>                                                   
+                    <owl:intersectionOf rdf:parseType="Collection">           
+                        <rdf:Description rdf:about="http://purl.obolibrary.   
+  org/obo/MONDO_0005550"/>                                                    
+                        <owl:Restriction>                                     
+                            <owl:onProperty rdf:resource="http://purl.        
+  obolibrary.org/obo/RO_0014001"/>                                            
+                            <owl:someValuesFrom rdf:resource="http://purl.    
+  obolibrary.org/obo/NCBITaxon_3110"/>                                        
+    --                                                                        
+        <!-- http://purl.obolibrary.org/obo/MONDO_0700325 -->                 
+                                                                              
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/MONDO_0700325">  
+            <rdfs:subClassOf rdf:resource="http://purl.obolibrary.            
+  org/obo/MONDO_0024287"/>                                                    
+            <obo:IAO_0000115>A rare congenital complex vascular malformation  
+  syndrome characterized by overgrowth of a limb (most commonly a leg)        
+  involving bones and soft tissue, in association with capillary malformations
+  usually in the form of port-wine stains and multiple arteriovenous fistulas 
+  with high-flow arteriovenous shunting. The latter can also lead to other    
+  severe complications including abnormal bleeding and heart failure.         
+  Lymphatic malformations may also be present.</obo:IAO_0000115>              
+            <obo:IAO_0000233 rdf:datatype="http://www.w3.                     
+  org/2001/XMLSchema#anyURI">https://github.com/monarch-                      
+  initiative/mondo/issues/9816</obo:IAO_0000233>                              
+            <terms:creator rdf:resource="https://orcid.org/0000-0002-4142-    
+  7153"/>                                                                     
+            <oboInOwl:hasDbXref>Orphanet:90307</oboInOwl:hasDbXref>           
+            <oboInOwl:hasExactSynonym>PWS</oboInOwl:hasExactSynonym>          
+            <oboInOwl:id>MONDO:0700325</oboInOwl:id>                          
+            <rdfs:comment>OMIM merged its original &quot;Parkes Weber         
+  syndrome&quot; (PWS) entry (OMIM:608355) into &apos;capillary malformation- 
+  arteriovenous malformation 1&apos; (CM-AVM1, MONDO:0020783, OMIM:608354);   
+  they mention that it is a specific type of CMAVM. However, PWS is a distinct
+  clinical syndrome with documented genetic overlap with CM-AVM1 (RASA1; not  
+  all PWS cases are caused by variation in RASA1) and potentially CM-AVM2     
+  (EPHB4). PWS patients present with distinctive clinical features: a large   
+  congenital cutaneous capillary malformation (port-wine stain) affecting an  
+  entire limb, combined with multiple micro-AVFs and excessive soft-tissue and
+  skeletal overgrowth of that affected limb. This limb overgrowth—involving   
+  both bone and soft tissue—is the defining feature that distinguishes Parkes 
+  Weber syndrome from other CM-AVM1 presentations. [https://orcid.org/0000-   
+  0001-9310-0163, DOI:10.1097/JOVA.0000000000000076]</rdfs:comment>           
+            <rdfs:label>Parkes Weber syndrome</rdfs:label>                    
+            <skos:exactMatch rdf:resource="http://www.orpha.                  
+  net/ORDO/Orphanet_90307"/>                                                  
+        </owl:Class>                                                          
+    <exited with exit code 0>
+
+
+Now I understand the issue. The deprecated MONDO terms were pre-existing in 
+  the repository (added before our PR), but the CI check is failing because   
+  their replacement terms aren't in the import list. I need to:               
+                                                                              
+  1. Add MONDO_0700325 (Parkes Weber syndrome) as replacement for             
+  MONDO_0012017                                                               
+  2. Add MONDO_0014337 (TUBB2A-related complex cortical dysplasia) as         
+  replacement for MONDO_0700044
+
+Bash: Verify replacements are not already in mondo_terms.txt
+$ grep "MONDO_0700325|MONDO_0014337"                                      
+  /home/runner/work/efo/efo/src/ontology/iri_dependencies/mondo_terms.txt     
+                                                                              
+    <exited with exit code 1>
+
+Bash: Add replacement MONDO terms to iri_dependencies
+$ echo "http://purl.obolibrary.org/obo/MONDO_0700325" >>                  
+  /home/runner/work/efo/efo/src/ontology/iri_dependencies/mondo_terms.txt &&  
+  echo "http://purl.obolibrary.org/obo/MONDO_0014337" >>                      
+  /home/runner/work/efo/efo/src/ontology/iri_dependencies/mondo_terms.txt &&  
+  echo "Done" && tail -5                                                      
+  /home/runner/work/efo/efo/src/ontology/iri_dependencies/mondo_terms.txt     
+    Done                                                                      
+    http://purl.obolibrary.org/obo/MONDO_0012506                              
+    http://purl.obolibrary.org/obo/MONDO_0013491                              
+    http://purl.obolibrary.org/obo/MONDO_0006507                              
+    http://purl.obolibrary.org/obo/MONDO_0700325                              
+    http://purl.obolibrary.org/obo/MONDO_0014337                              
+    <exited with exit code 0>
+
+
+Now I need to update the MONDO import to include these terms. Let me check  
+  the MONDO mirror and extract these terms:
+
+Bash: Check if MONDO mirror is available
+$ cd /home/runner/work/efo/efo && ls src/ontology/mirror/                 
+    ls: cannot access 'src/ontology/mirror/': No such file or directory       
+    <exited with exit code 2>
+
+Bash: Check mirror directory in ontology folder
+$ cd /home/runner/work/efo/efo/src/ontology && ls mirror/ 2>/dev/null ||  
+  echo "No mirror dir"                                                        
+    No mirror dir                                                             
+    <exited with exit code 0>
+
+Bash: Download MONDO mirror
+$ cd /home/runner/work/efo/efo/src/ontology && mkdir -p mirror && curl -sL --
+  max-time 180 "http://purl.obolibrary.org/obo/mondo/mondo-base.owl" >        
+  mirror/mondo.owl && wc -l mirror/mondo.owl && echo "MONDO downloaded"       
+    3497375 mirror/mondo.owl                                                  
+    MONDO downloaded                                                          
+    <exited with exit code 0>
+
+Bash: Check if replacement terms are in the combined mondo_terms.txt
+$ cd /home/runner/work/efo/efo/src/ontology && cat imports/mondo_terms.txt |
+  grep "MONDO_0700325|MONDO_0014337" | head -5                                
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check how imports/mondo_terms.txt is generated
+$ cd /home/runner/work/efo/efo/src/ontology && head -5 Makefile | head -3 
+  && grep "imports/mondo_terms.txt" Makefile | head -5                        
+    #EFO-MONDO                                                                
+    # ----------------------------------------                                
+    # Standard Constants                                                      
+    imports/mondo_import.owl: mirror/mondo.owl imports/mondo_terms.txt        
+  iri_dependencies/mondo_exclude.txt $(SRC)                                   
+    	$(ROBOT) extract -i $< -T imports/mondo_terms.txt --method BOT -O         
+  $(BASE)/$@ -o $@.tmp.owl                                                    
+    <exited with exit code 0>
+
+Bash: Find how imports/mondo_terms.txt is generated
+$ cd /home/runner/work/efo/efo/src/ontology && grep "imports/mondo_terms. 
+  txt:" Makefile | head -5                                                    
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check Makefile recipe for imports terms.txt
+$ cd /home/runner/work/efo/efo/src/ontology && grep -A3 "imports/%_terms. 
+  txt" Makefile | head -10                                                    
+    IMPORTS_OWL = $(patsubst %, imports/%_import.owl,$(IMPORTS)) $(patsubst %,
+  imports/%_terms.txt,$(IMPORTS))                                             
+                                                                              
+    # Make this target to regenerate ALL                                      
+    all_imports: $(IMPORTS_OWL)                                               
+    --                                                                        
+    imports/%_bot.owl: mirror/%.owl imports/%_terms.txt                       
+    	$(ROBOT) extract -i $< -T imports/$*_terms.txt --method BOT -O $(BASE)/$@ -
+  o $@                                                                        
+                                                                              
+    # Use ROBOT, driven entirely by terms lists NOT from source ontology      
+    imports/%_import.owl: imports/%_bot.owl imports/%_terms.txt $(SRC)        
+    <exited with exit code 0>
+
+Bash: Find how iri_dependencies/mondo_terms.txt feeds into imports/mondo_terms.txt
+$ cd /home/runner/work/efo/efo/src/ontology && grep -A3 "iri_dependencies.
+  *mondo|cat iri_dep" Makefile | head -20                                     
+    imports/mondo_import.owl: mirror/mondo.owl imports/mondo_terms.txt        
+  iri_dependencies/mondo_exclude.txt $(SRC)                                   
+    	$(ROBOT) extract -i $< -T imports/mondo_terms.txt --method BOT -O         
+  $(BASE)/$@ -o $@.tmp.owl                                                    
+    	$(ROBOT) query -i $@.tmp.owl -q $(SPARQLDIR)/hgnc_terms.sparql $@.hgnc.   
+  tsv 2>/dev/null || true                                                     
+    	@if [ -s $@.hgnc.tsv ]; then \                                            
+    --                                                                        
+    			cat $@.hgnc.txt >> iri_dependencies/mondo_exclude.txt; \                  
+    			sort -u -o iri_dependencies/mondo_exclude.txt                             
+  iri_dependencies/mondo_exclude.txt; \                                       
+    		fi; \                                                                     
+    	fi                                                                        
+    	$(ROBOT) remove -i $@.tmp.owl -T iri_dependencies/mondo_exclude.txt --    
+  term rdfs:comment -o $@                                                     
+    	rm -f $@.tmp.owl $@.hgnc.tsv $@.hgnc.txt                                  
+    .PRECIOUS: imports/mondo_import.owl                                       
+    	                                                                          
+    --                                                                        
+    check_mondo_obsoletes: mirror/mondo.owl iri_dependencies/mondo_terms.txt  
+    	python3 ../scripts/check_mondo_import_obsoletes.py $<                     
+  iri_dependencies/mondo_terms.txt -o reports/mondo_obsolete_import_check.tsv 
+                                                                              
+    DIFF_REPORTS=efo.owl                                                      
+    DIFF_REPORTS_FILES=$(patsubst %, qc/diff_%_latest_release.txt,            
+  $(DIFF_REPORTS))                                                            
+    <exited with exit code 0>
+
+Bash: Check how imports/mondo_terms.txt is generated from iri_dependencies
+$ cd /home/runner/work/efo/efo/src/ontology && grep "imports/mondo_terms. 
+  txt|mondo_terms" Makefile | head -10                                        
+    imports/mondo_import.owl: mirror/mondo.owl imports/mondo_terms.txt        
+  iri_dependencies/mondo_exclude.txt $(SRC)                                   
+    	$(ROBOT) extract -i $< -T imports/mondo_terms.txt --method BOT -O         
+  $(BASE)/$@ -o $@.tmp.owl                                                    
+    check_mondo_obsoletes: mirror/mondo.owl iri_dependencies/mondo_terms.txt  
+    	python3 ../scripts/check_mondo_import_obsoletes.py $<                     
+  iri_dependencies/mondo_terms.txt -o reports/mondo_obsolete_import_check.tsv 
+    <exited with exit code 0>
+
+Bash: Find how imports/mondo_terms.txt is generated
+$ cd /home/runner/work/efo/efo/src/ontology && grep "imports/mondo_terms. 
+  txt:" Makefile || grep "cat.*mondo" Makefile | head -5                      
+    cat $@.hgnc.txt >> iri_dependencies/mondo_exclude.txt; \                  
+    <exited with exit code 0>
+
+Bash: Check contents and format of imports/mondo_terms.txt
+$ head -5 /home/runner/work/efo/efo/src/ontology/imports/mondo_terms.txt  
+  && echo "---" && wc -l                                                      
+  /home/runner/work/efo/efo/src/ontology/imports/mondo_terms.txt              
+    BFO:0000050                                                               
+    RO:0000052                                                                
+    http://purl.obolibrary.org/obo/HP_0012828                                 
+    http://purl.obolibrary.org/obo/MONDO_0000001                              
+    http://purl.obolibrary.org/obo/MONDO_0000004                              
+    ---                                                                       
+    12381 /home/runner/work/efo/efo/src/ontology/imports/mondo_terms.txt      
+    <exited with exit code 0>
+
+Bash: Find the cat command that generates imports/mondo_terms.txt
+$ cd /home/runner/work/efo/efo/src/ontology && grep "^cat" Makefile | head -
+  10                                                                          
+                                                                              
+    <exited with exit code 0>
+
+Bash: Find the full recipe for generating imports/mondo_terms.txt
+$ cd /home/runner/work/efo/efo/src/ontology && grep -B5                   
+  "imports/mondo_import.owl" Makefile | head -20                              
+    $(ROBOT) convert -i $< -f owl -o $(TMPDIR)/normalise && mv                
+  $(TMPDIR)/normalise $<                                                      
+                                                                              
+    imports/%_terms.txt: iri_dependencies/%_terms.txt iri_dependencies/efo-   
+  relations.txt                                                               
+    	cat $^ | sort | uniq > $@                                                 
+                                                                              
+    imports/mondo_import.owl: mirror/mondo.owl imports/mondo_terms.txt        
+  iri_dependencies/mondo_exclude.txt $(SRC)                                   
+    --                                                                        
+    			sort -u -o iri_dependencies/mondo_exclude.txt                             
+  iri_dependencies/mondo_exclude.txt; \                                       
+    		fi; \                                                                     
+    	fi                                                                        
+    	$(ROBOT) remove -i $@.tmp.owl -T iri_dependencies/mondo_exclude.txt --    
+  term rdfs:comment -o $@                                                     
+    	rm -f $@.tmp.owl $@.hgnc.tsv $@.hgnc.txt                                  
+    .PRECIOUS: imports/mondo_import.owl                                       
+    --                                                                        
+    #	sed '1s/^/A oboInOwl:hasDbXref\tID\t\t\n/' $< | sed '1s/^/Mondo ID\tEFO  
+  id\tMondo Label\tEFO label\n/' | sed 's/http:\/\/purl.obolibrary.           
+  org\/obo\/MONDO_/MONDO:/g' > $@                                             
+                                                                              
+    #components/mondo_efo_mappings.owl: mirror/mondo.owl                      
+  components/mondo_efo_mappings.template.tsv                                  
+    #	$(ROBOT) --prefix "oboInOwl: http://www.geneontology.                    
+  org/formats/oboInOwl#" template --input $< --template                       
+  components/mondo_efo_mappings.template.tsv -o $@                            
+                                                                              
+    #components/mondo_efo_import.owl: components/mondo_efo_mappings.tsv       
+  imports/mondo_import.owl components/mondo_efo_mappings.owl                  
+    <exited with exit code 0>
+
+Bash: Confirm replacement terms are not yet in imports/mondo_terms.txt
+$ cd /home/runner/work/efo/efo/src/ontology && grep "MONDO_0700325|       
+  MONDO_0014337" imports/mondo_terms.txt                                      
+                                                                              
+    <exited with exit code 1>
+
+Bash: Add replacement terms to imports/mondo_terms.txt
+$ echo "http://purl.obolibrary.org/obo/MONDO_0700325" >>                  
+  /home/runner/work/efo/efo/src/ontology/imports/mondo_terms.txt && echo      
+  "http://purl.obolibrary.org/obo/MONDO_0014337" >>                           
+  /home/runner/work/efo/efo/src/ontology/imports/mondo_terms.txt && echo      
+  "Done" && wc -l /home/runner/work/efo/efo/src/ontology/imports/mondo_terms. 
+  txt                                                                         
+    Done                                                                      
+    12383 /home/runner/work/efo/efo/src/ontology/imports/mondo_terms.txt      
+    <exited with exit code 0>
+
+
+Now let me rebuild the MONDO import to include these two new replacement    
+  terms:
+
+Bash: Rebuild mondo_import.owl with replacement terms
+$ cd /home/runner/work/efo/efo/src/ontology && make imports/mondo_import. 
+  owl 2>&1 | tail -10                                                         
+    <command started in background with shellId: 26>
+
+Read logs from Bash session
+Bash: Verify new terms are in the rebuilt mondo_import.owl
+$ cd /home/runner/work/efo/efo && grep "MONDO_0700325|MONDO_0014337"      
+  src/ontology/imports/mondo_import.owl | head -5                             
+    <obo:IAO_0100001 rdf:resource="http://purl.obolibrary.                    
+  org/obo/MONDO_0700325"/>                                                    
+        <!-- http://purl.obolibrary.org/obo/MONDO_0014337 -->                 
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/MONDO_0014337">  
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0014337"/>                                                    
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0014337"/>                                                    
+    <exited with exit code 0>
+
+Bash: Verify MONDO_0700325 is in the rebuilt mondo_import.owl
+$ cd /home/runner/work/efo/efo && grep "MONDO_0700325"                    
+  src/ontology/imports/mondo_import.owl | head -10                            
+    <obo:IAO_0100001 rdf:resource="http://purl.obolibrary.                    
+  org/obo/MONDO_0700325"/>                                                    
+        <!-- http://purl.obolibrary.org/obo/MONDO_0700325 -->                 
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/MONDO_0700325">  
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0700325"/>                                                    
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0700325"/>                                                    
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0700325"/>                                                    
+            <owl:annotatedSource rdf:resource="http://purl.obolibrary.        
+  org/obo/MONDO_0700325"/>                                                    
+    <exited with exit code 0>
+
+
+Now let me run the check locally to verify:
+
+Bash: Run the check locally to verify the fix
+$ cd /home/runner/work/efo/efo/src/ontology && python3 ..                 
+  /scripts/check_mondo_import_obsoletes.py mirror/mondo.owl                   
+  iri_dependencies/mondo_terms.txt 2>&1 | tail -20                            
+    Loaded 12381 terms from iri_dependencies/mondo_terms.txt                  
+    Parsing mirror/mondo.owl for deprecations...                              
+      Found 3966 deprecated terms in Mondo                                    
+      Found 2217 replaced_by mappings                                         
+                                                                              
+    Deprecated terms in import list: 648                                      
+                                                                              
+    Summary:                                                                  
+      Total imported terms: 12381                                             
+      Deprecated in Mondo: 648                                                
+      Missing replacements in term list: 0                                    
+      No replacement defined: 473                                             
+                                                                              
+    WARNING: 473 deprecated terms have no replacement defined in Mondo (see   
+  report for details).                                                        
+                                                                              
+    All actionable checks passed.                                             
+    <exited with exit code 0>
+
+
+The check now passes (exit code 0). Let me verify the git diff:
+
+Bash: Review the changes
+$ cd /home/runner/work/efo/efo && git diff --stat && echo "---" && git    
+  diff src/ontology/iri_dependencies/mondo_terms.txt | tail -10               
+    src/ontology/imports/mondo_terms.txt          | 2 ++                      
+     src/ontology/iri_dependencies/mondo_terms.txt | 2 ++                     
+     2 files changed, 4 insertions(+)                                         
+    ---                                                                       
+    diff --git a/src/ontology/iri_dependencies/mondo_terms.txt                
+  b/src/ontology/iri_dependencies/mondo_terms.txt                             
+    index d433f0e..82f2614 100644                                             
+    --- a/src/ontology/iri_dependencies/mondo_terms.txt                       
+    +++ b/src/ontology/iri_dependencies/mondo_terms.txt                       
+    @@ -12377,3 +12377,5 @@ http://purl.obolibrary.org/obo/MONDO_0009391      
+     http://purl.obolibrary.org/obo/MONDO_0012506                             
+     http://purl.obolibrary.org/obo/MONDO_0013491                             
+     http://purl.obolibrary.org/obo/MONDO_0006507                             
+    +http://purl.obolibrary.org/obo/MONDO_0700325                             
+    +http://purl.obolibrary.org/obo/MONDO_0014337                             
+    <exited with exit code 0>
+
+Bash: Check git status
+$ cd /home/runner/work/efo/efo && git status --short                      
+    M src/ontology/imports/mondo_terms.txt                                    
+     M src/ontology/iri_dependencies/mondo_terms.txt                          
+    <exited with exit code 0>
+
+
+The mondo_import.owl itself is not in the diff. Let me check if it changed:
+
+Bash: Check if mondo_import.owl changed
+$ cd /home/runner/work/efo/efo && git diff --stat                         
+  src/ontology/imports/mondo_import.owl                                       
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check mondo_import.owl status
+$ cd /home/runner/work/efo/efo && git status                              
+  src/ontology/imports/mondo_import.owl                                       
+    On branch copilot/add-efo-import-from-eva                                 
+    Your branch is up to date with 'origin/copilot/add-efo-import-from-eva'.  
+                                                                              
+    nothing to commit, working tree clean                                     
+    <exited with exit code 0>
+
+Bash: Check overall git status
+$ cd /home/runner/work/efo/efo && git status                              
+    On branch copilot/add-efo-import-from-eva                                 
+    Your branch is up to date with 'origin/copilot/add-efo-import-from-eva'.  
+                                                                              
+    Changes not staged for commit:                                            
+      (use "git add <file>..." to update what will be committed)              
+      (use "git restore <file>..." to discard changes in working directory)   
+    	modified:   src/ontology/imports/mondo_terms.txt                          
+    	modified:   src/ontology/iri_dependencies/mondo_terms.txt                 
+                                                                              
+    no changes added to commit (use "git add" and/or "git commit -a")         
+    <exited with exit code 0>
+
+Bash: Verify new terms are in mondo_import.owl (not tracked)
+$ cd /home/runner/work/efo/efo && grep "MONDO_0700325|MONDO_0014337"      
+  src/ontology/imports/mondo_import.owl | head -3                             
+    <obo:IAO_0100001 rdf:resource="http://purl.obolibrary.                    
+  org/obo/MONDO_0700325"/>                                                    
+        <!-- http://purl.obolibrary.org/obo/MONDO_0014337 -->                 
+        <owl:Class rdf:about="http://purl.obolibrary.org/obo/MONDO_0014337">  
+    <exited with exit code 0>
+
+Bash: Check if mondo_import.owl is tracked by git
+$ cd /home/runner/work/efo/efo && git ls-files                            
+  src/ontology/imports/mondo_import.owl                                       
+                                                                              
+    <exited with exit code 0>
+
+Bash: Check if mondo_import.owl is in gitignore
+$ cd /home/runner/work/efo/efo && cat .gitignore | grep "mondo"           
+    src/ontology/imports/mondo_remove.owl                                     
+    src/ontology/mondo.owl                                                    
+    src/ontology/components/mondo_efo_mappings.template.tsv                   
+    src/ontology/components/mondo_efo_mappings.owl                            
+    src/ontology/components/mondo_efo_import.owl                              
+    src/ontology/imports/mondo_import.owl                                     
+    <exited with exit code 0>
+
+
+mondo_import.owl is gitignored - the CI rebuilds it from scratch using the  
+  mirror. So I only need to commit the iri_dependencies/mondo_terms.txt and   
+  imports/mondo_terms.txt files. The CI will regenerate mondo_import.owl using
+  the updated mondo_terms.txt files.
+
+Progress update: Fix CI check_mondo_obsoletes: add replacement IRIs for deprecated MONDO terms
+
+MONDO_0012017 (obsolete Parkes Weber syndrome) is deprecated in MONDO
+with replacement MONDO_0700325 (Parkes Weber syndrome).
+MONDO_0700044 (obsolete TUBB2A-related tubulinopathy) is deprecated with
+replacement MONDO_0014337 (TUBB2A-related complex cortical dysplasia).
+
+Added both replacement IRIs to iri_dependencies/mondo_terms.txt and
+imports/mondo_terms.txt so the check_mondo_obsoletes QC check passes."
+
+[x] Import ~89 new MONDO terms from EVA/ClinVar spreadsheet (issue #2672)   
+  [x] Import 5 new HP terms from EVA/ClinVar spreadsheet                      
+  [x] Import MONDO_0006507 (hereditary hemochromatosis) as parent for bronze  
+  diabetes                                                                    
+  [x] Curate 5 new EFO terms with minimum 2 PMIDs each (via EFO-curator)      
+  [x] Add EFO_0920091 bronze diabetes (parent: MONDO_0006507)                 
+  [x] Add EFO_0920092 prenatal anemia (parent: MONDO_0002280)                 
+  [x] Add EFO_0920093 mitochondrial hepato-encephalopathy (parent:            
+  MONDO_0044970)                                                              
+  [x] Add EFO_0920094 refractory epilepsy (parent: MONDO_0005027)             
+  [x] Add EFO_0920095 bullous lung disease (parent: MONDO_0004849)            
+  [x] Normalize ontology file                                                 
+  [x] Fix CI QC: GO_0004092 no-label violation (add to go_import.owl with     
+  label "carnitine O-acetyltransferase activity")                             
+  [x] Fix CI QC: HP_0032373 dangling violation (add parent HP:0010970 in      
+  subclasses.csv)                                                             
+  [x] Fix CI check_mondo_obsoletes: add MONDO_0700325 (replacement for        
+  MONDO_0012017) and MONDO_0014337 (replacement for MONDO_0700044) to         
+  mondo_terms.txt
+
+Call to reply_to_comment
+
+Input:
+
+{                                                                         
+      "comment_id": "4251133404",                                             
+      "reply": "Fixed in commit 6209faf.\n\nThe `check_mondo_obsoletes` check 
+  was failing because two MONDO terms in the import list are deprecated in    
+  current MONDO with replacements not yet in EFO's import list:\n-            
+  `MONDO_0012017` (obsolete Parkes Weber syndrome) → replaced by              
+  `MONDO_0700325`\n- `MONDO_0700044` (obsolete TUBB2A-related tubulinopathy) →
+  replaced by `MONDO_0014337`\n\nAdded both replacement IRIs to               
+  `iri_dependencies/mondo_terms.txt` and `imports/mondo_terms.txt`. The local 
+  `check_mondo_obsoletes` script now passes with 0 missing replacements."     
+    }
+
+
+The new CI failure (check_mondo_obsoletes) has been fixed in commit 6209faf.
+  The issue was that the CI check downloads a fresh MONDO mirror and validates
+  that all deprecated MONDO terms in EFO's import list have their replacement 
+  terms also imported. Two pre-existing MONDO terms became deprecated in the  
+  current MONDO version:                                                      
+                                                                              
+  • MONDO_0012017 (obsolete Parkes Weber syndrome) → now replaced by          
+  MONDO_0700325 (Parkes Weber syndrome)                                       
+  • MONDO_0700044 (obsolete TUBB2A-related tubulinopathy) → now replaced by   
+  MONDO_0014337 (TUBB2A-related complex cortical dysplasia)                   
+                                                                              
+  The fix adds both replacement IRIs to iri_dependencies/mondo_terms.txt and  
+  imports/mondo_terms.txt. The CI will regenerate mondo_import.owl from the   
+  updated terms list.
+

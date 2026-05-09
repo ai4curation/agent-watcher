@@ -1,0 +1,1253 @@
+Clone repository EBISPOT/efo
+Start 'playwright' MCP server
+Start 'github-mcp-server' MCP server
+Start 'ols4' MCP server
+Start 'artl-mcp' MCP server
+Call to search_code_subagent
+
+Input:
+
+{                                                                         
+      "query": "EFO_0920061 perimenopausal term definition in efo-edit.owl and
+  examples of updating definitions for existing terms"                        
+    }
+
+View repository
+.dockerignore                                                            
+     .git                                                                     
+     .github                                                                  
+     .gitignore                                                               
+     .gitlab-ci.yml                                                           
+     .travis.yml                                                              
+     .venv                                                                    
+     .vscode                                                                  
+     CONTRIBUTING.md                                                          
+     Dockerfile                                                               
+     ExFactor Ontology release notes.txt                                      
+     README.md                                                                
+     bin                                                                      
+     deployment.yml                                                           
+     docs                                                                     
+     efo-base.owl                                                             
+     efo.gif                                                                  
+     issue_template.md                                                        
+     ols                                                                      
+     src                                                                      
+     tools
+
+View README.md
+
+Image: Build Status →                                                       
+  https://github.com/EBISPOT/efo/actions/workflows/qc.yml/badge.svg           
+  https://github.com/EBISPOT/efo/actions/workflows/qc.yml                     
+                                                                              
+  # EFO                                                                       
+                                                                              
+  Image: alt text → /efo.gif?raw=true                                         
+                                                                              
+  The Experimental Factor Ontology (EFO) provides a systematic description of 
+  many experimental variables available in EBI databases, and for projects    
+  such as the NHGRI-EBI GWAS catalog https://www.ebi.ac.uk/gwas/. It combines 
+  parts of several biological ontologies, such as UBERON anatomy              
+  http://uberon.github.io/, ChEBI chemical compounds                          
+  https://www.ebi.ac.uk/chebi/, Cell Ontology                                 
+  https://github.com/obophenotype/cell-ontology and, most recently, the       
+  Monarch                                                                     
+  Disease Ontology (MONDO) http://obofoundry.org/ontology/mondo.html. The     
+  scope of EFO is to support the annotation, analysis and visualization of    
+  data handled by many groups at the EBI and as the core ontology for Open    
+  Targets http://www.opentargets.org/. EFO is developed by the EMBL-EBI       
+  Samples, Phenotypes and Ontologies Team http://www.ebi.ac.uk/about/spot-team
+  (SPOT). We also add terms for external users when requested. If you are new 
+  to ontologies, there is a short introduction                                
+  http://ontogenesis.knowledgeblog.org/66 on the subject available and a blog 
+  post by James Malone on what ontologies are for                             
+  http://drjamesmalone.blogspot.co.uk/2012/06/common-ontology-questions-1-what-
+  is-                                                                         
+  it.html.                                                                    
+                                                                              
+  ## Browse EFO                                                               
+                                                                              
+  You can explore EFO 3 in the EMBL-EBI Ontology Lookup Service               
+  https://www.ebi.ac.uk/ols/ontologies/efo                                    
+                                                                              
+  ## Versions                                                                 
+                                                                              
+  ### Changes to EFO in version 3                                             
+                                                                              
+  The disease branch of EFO has undergone major restructuring in order to     
+  improve classification based on current medical understanding and in        
+  alignment with existing domain ontologies. This has been achieved through   
+  mapping the EFO disease and disease staging branches to the Monarch Disease 
+  Ontology http://www.obofoundry.org/ontology/mondo.html (MONDO) - using the  
+  Ontology X-ref Service https://www.ebi.ac.uk/spot/oxo/ (OxO) - and importing
+  these mapped MONDO terms into EFO. All existing EFO terms have retained the 
+  EFO ID. The MONDO ID for each mapped term is available within the           
+  annotations as a cross reference. Any new terms imported from MONDO have    
+  retained their MONDO IDs.                                                   
+                                                                              
+  All mapped terms (EFO terms and their MONDO mapped term) can be found in the
+  mondo_efo_mappings.tsv file situated in the imports folder. This file       
+  contains on each line: the URI of the MONDO term, the URI of the EFO term,  
+  the MONDO label and the EFO label for each mapped pair. All terms that are  
+  mapped must be added to this file in order for the MONDO term to be         
+  extracted and merged into EFO. Additionally, all MONDO terms to be extracted
+  that are listed in the mappings file are contained in the mondo_terms.txt   
+  file.                                                                       
+                                                                              
+  Consequently, this will now allow us to import MONDO terms and receive      
+  requests to import terms that exist in MONDO. This will be done through     
+  adding these terms to the mondo_terms.txt file, which, in turn, extracts all
+  terms listed in this file from MONDO in an import file which is then merged 
+  with EFO.                                                                   
+                                                                              
+  Any terms that are imported and are not under the desired parent class can  
+  be manipulated through the subclass.csv file. This automatically corrects   
+  the term classification during the editing pipeline to the desired          
+  classification.                                                             
+                                                                              
+  Changes in annotation properties are:                                       
+                                                                              
+  • Alternative_term http://www.ebi.ac.uk/efo/alternative_term has been       
+  replaced by has_exact_synonym http://www.geneontology.                      
+  org/formats/oboInOwl#hasExactSynonym                                        
+      • This will allow us to use the spectrum of synonym annotation including
+      has_broad_synonym http://www.geneontology.                              
+      org/formats/oboInOwl#hasBroadSynonym and has_narrow_synonym http://www. 
+      geneontology.org/formats/oboInOwl#hasNarrowSynonym more effectively to  
+      provide further information per each term.                              
+  • Bioportal_provenance http://www.ebi.ac.uk/efo/bioportal_provenance has    
+  been removed from EFO3 entirely.                                            
+      • This has cleaned up annotations, removing the imported fingerprints   
+      from bioportal provenance from previous importing.                      
+  • All definition citations have been replaced by database_cross_reference   
+  http://www.geneontology.org/formats/oboInOwl#hasDbXref.                     
+  • Deprecated terms are no longer children of obsolete class (http://www.    
+  geneontology.org/formats/oboInOwl#ObsoleteClass), instead, they are given   
+  the annotation property owl:Deprecated (http://www.w3.                      
+  org/2002/07/owl#deprecated).                                                
+                                                                              
+  ### Stable release versions                                                 
+                                                                              
+  The latest version of the ontology can always be found attached to each EFO 
+  3 release, found here:                                                      
+                                                                              
+  https://github.com/EBISPOT/efo/releases                                     
+  https://github.com/EBISPOT/efo/releases                                     
+                                                                              
+  This is the asserted ontology and requires an OWL-DL reasoner to view the   
+  inferred classification.                                                    
+                                                                              
+  ### Editors' version                                                        
+                                                                              
+  Editors of this ontology should use the edit version, efo2 src/ontology/efo-
+  edit.owl https://github.com/EBISPOT/efo/blob/efo2/src/ontology/efo-edit.owl 
+                                                                              
+  ## Term requests and contact                                                
+                                                                              
+  Submit new terms or report bugs using our issue tracker                     
+  https://github.com/EBISPOT/efo/issues, or join EFO mailing list             
+  https://listserver.ebi.ac.uk/mailman/listinfo/efo-users for announcement and
+  monthly update.                                                             
+                                                                              
+  ## Acknowledgements                                                         
+                                                                              
+  This ontology repository was created using the ontology starter kit         
+  https://github.com/INCATools/ontology-starter-kit
+
+Call to glob
+
+Input:
+
+{                                                                         
+      "path": "/home/runner/work/efo/efo",                                    
+      "pattern": "**/Makefile"                                                
+    }
+
+View src/ontology/Makefile
+#EFO-MONDO                                                               
+     # ----------------------------------------                               
+     # Standard Constants                                                     
+     # ----------------------------------------                               
+     # these can be overwritten on the command line                           
+                                                                              
+     OBO=http://www.ebi.ac.uk                                                 
+     ONT=efo                                                                  
+     BASE=$(OBO)/$(ONT)                                                       
+     SRC=$(ONT)-edit.owl                                                      
+     BUILDDIR=build                                                           
+     RELEASEDIR=../..                                                         
+     ROBOT= ../../bin/robot                                                   
+     EFO2OBO= ../../bin/efo2obo                                               
+     OWLTOOLS= ../../bin/owltools                                             
+     USECAT= --use-catalog                                                    
+     SPARQLDIR = ../sparql                                                    
+     MONDO = ../templates/mondo.obo                                           
+     UPPER = ./imports/upper_class.owl                                        
+     PARENTSGENERATED = ./results/efoparents.owl                              
+     GENERATED = ./results/efo-mondo-generated.owl                            
+     EFOPREFIX = "EFO: http://www.ebi.ac.uk/efo/EFO_"                         
+     EFO2PREFIX = "EFO2: http://www.ebi.ac.uk/efo/"                           
+     ORDOPREFIX = "Orphanet: http://www.orpha.net/ORDO/Orphanet_"             
+     MONDOPREFIX = "MONDO: http://purl.obolibrary.org/obo/MONDO_"             
+     UBERONPREFIX = "UBERON: http://purl.obolibrary.org/obo/UBERON_"          
+     HPPREFIX = "HP: http://purl.obolibrary.org/obo/HP_"                      
+     CLPREFIX = "CL: http://purl.obolibrary.org/obo/CL_"                      
+     CLPREFIX = "Orphanet: http://www.orpha.net/ORDO/Orphanet_"               
+     BFOPREFIX = "BFO: http://purl.obolibrary.org/obo/BFO_"                   
+     ECTOPREFIX = "ECTO: http://purl.obolibrary.org/obo/ECTO_"                
+     EFOPREPRO = $(BUILDDIR)/efo-edit-release.owl                             
+     EFOFIXER = ../../bin/efo-fixer.jar                                       
+     MIRRORDIR=./mirror                                                       
+     HANCESTROGENERATED= ./build/efo-hancestro                                
+     TMPDIR = tmp                                                             
+     # ----------------------------------------                               
+     # Top-level targets                                                      
+     # ----------------------------------------                               
+                                                                              
+     all: all_imports all_gwas all_components release qc                      
+     qc: sparql_test all_reports label_synonym_dup_check check_mondo_obsoletes
+     gh_actions: qc $(BUILDDIR)/$(ONT).owl                                    
+                                                                              
+     # ----------------------------------------                               
+     # Mirror                                                                 
+     # ----------------------------------------                               
+                                                                              
+     # Currently obtained using the get_mirrors script                        
+     # (mondo, hancestro and uberon)                                          
+                                                                              
+     # ----------------------------------------                               
+     # Imports                                                                
+     # ----------------------------------------                               
+                                                                              
+     IMPORTS = mondo hancestro uberon hp cl fbbt obi oba chebi pr go ecto gsso
+  fbbi                                                                        
+     IMPORTS_OWL = $(patsubst %, imports/%_import.owl,$(IMPORTS)) $(patsubst %,
+  imports/%_terms.txt,$(IMPORTS))                                             
+                                                                              
+     # Make this target to regenerate ALL                                     
+     all_imports: $(IMPORTS_OWL)                                              
+                                                                              
+     imports/%_bot.owl: mirror/%.owl imports/%_terms.txt                      
+     	$(ROBOT) extract -i $< -T imports/$*_terms.txt --method BOT -O           
+  $(BASE)/$@ -o $@                                                            
+                                                                              
+     # Use ROBOT, driven entirely by terms lists NOT from source ontology     
+     imports/%_import.owl: imports/%_bot.owl imports/%_terms.txt $(SRC)       
+     	$(ROBOT) filter -i $< --term-file imports/$*_terms.txt --select          
+  "annotations ontology anonymous self" --trim true --signature true -O       
+  $(BASE)/$@ -o $@                                                            
+     .PRECIOUS: imports/%_import.owl                                          
+                                                                              
+     # Normalize source ontology                                              
+     normalize_src: $(SRC)                                                    
+     	$(ROBOT) convert -i $< -f owl -o $(TMPDIR)/normalise && mv               
+  $(TMPDIR)/normalise $<                                                      
+                                                                              
+     imports/%_terms.txt: iri_dependencies/%_terms.txt iri_dependencies/efo-  
+  relations.txt                                                               
+     	cat $^ | sort | uniq > $@                                                
+                                                                              
+     imports/mondo_import.owl: mirror/mondo.owl imports/mondo_terms.txt       
+  iri_dependencies/mondo_exclude.txt $(SRC)                                   
+     	$(ROBOT) extract -i $< -T imports/mondo_terms.txt --method BOT -O        
+  $(BASE)/$@ -o $@.tmp.owl                                                    
+     	$(ROBOT) query -i $@.tmp.owl -q $(SPARQLDIR)/hgnc_terms.sparql $@.hgnc.  
+  tsv 2>/dev/null || true                                                     
+     	@if [ -s $@.hgnc.tsv ]; then \                                           
+     		tail -n +2 $@.hgnc.tsv | sed 's/[<>]//g' | grep -v '^$$' > $@.hgnc.txt;  
+  \                                                                           
+     		if [ -s $@.hgnc.txt ]; then \                                            
+     			echo "Auto-excluding $$(wc -l < $@.hgnc.txt | tr -d ' ') HGNC terms      
+  from mondo import"; \                                                       
+     			cat $@.hgnc.txt >> iri_dependencies/mondo_exclude.txt; \                 
+     			sort -u -o iri_dependencies/mondo_exclude.txt                            
+  iri_dependencies/mondo_exclude.txt; \                                       
+     		fi; \                                                                    
+     	fi                                                                       
+     	$(ROBOT) remove -i $@.tmp.owl -T iri_dependencies/mondo_exclude.txt --   
+  term rdfs:comment -o $@                                                     
+     	rm -f $@.tmp.owl $@.hgnc.tsv $@.hgnc.txt                                 
+     .PRECIOUS: imports/mondo_import.owl                                      
+     	                                                                         
+     imports/hancestro_import.owl: mirror/hancestro.owl                       
+  imports/hancestro_terms.txt iri_dependencies/hancestro_exclude.txt $(SRC)   
+     	$(ROBOT) extract -i $< -T imports/hancestro_terms.txt --method BOT -O    
+  $(BASE)/$@ remove -T iri_dependencies/hancestro_exclude.txt -o $@           
+     .PRECIOUS: imports/hancestro_import.owl                                  
+     	                                                                         
+     imports/oba_import.owl: imports/oba_bot.owl imports/oba_terms.txt $(SRC) 
+     	$(ROBOT) filter -i $< --term-file imports/oba_terms.txt --term           
+  RO:0000052 --select "annotations ontology anonymous self" --trim true --    
+  signature true -O $(BASE)/$@ -o $@                                          
+     .PRECIOUS: imports/%_import.owl                                          
+                                                                              
+     # Change the parent of imported PR terms to "protein" (ChEBI:36080) to   
+  match existing EFO terms, rather than PR:000000001                          
+     # We also need to map to resolve some conflicts with ChEBI and proteins  
+  that already exist in EFO so we don't end up with duplicates.               
+     #                                                                        
+     imports/pr_import.owl: mirror/pr.owl imports/pr_terms.txt                
+  iri_dependencies/pr_exclude.txt $(SRC)                                      
+     	$(ROBOT) extract -i $< -T imports/pr_terms.txt --method BOT --copy-      
+  ontology-annotations true -O $(BASE)/$@ rename --mappings pr_efo_map.tsv    
+  remove -T iri_dependencies/pr_exclude.txt -o $@                             
+     .PRECIOUS: imports/pr_import.owl                                         
+                                                                              
+     # ----------------------------------------                               
+     # Pipeline for removing a merged ontology                                
+     # and replacing by dynamic import                                        
+     # ----------------------------------------                               
+                                                                              
+     # 1. make seed of all terms currently used in EFO edit, for example all  
+  HP terms.                                                                   
+     # For this you need to create the respective xyz_terms.sparql query.     
+                                                                              
+     # this is only used to create initial term list and then never again     
+     %_terms_in_src: $(SRC) $(SPARQLDIR)/%_terms.sparql                       
+     	$(ROBOT) query -i $< -q $(SPARQLDIR)/$*_terms.sparql                     
+  iri_dependencies/$*_terms.txt                                               
+                                                                              
+     build/filtered-%-mirror.owl: mirror/%.owl iri_dependencies/%_terms.txt   
+     	$(ROBOT) filter -i mirror/$*.owl -T iri_dependencies/$*_terms.txt --trim 
+  false -o $@                                                                 
+                                                                              
+     build/efo-edit-without-%.owl: $(SRC) build/filtered-%-mirror.owl         
+     	$(ROBOT) remove -i $< --select imports --trim false unmerge -i           
+  build/filtered-$*-mirror.owl -o $@                                          
+                                                                              
+     build/remaining-%.ofn: build/efo-edit-without-%.owl                      
+  iri_dependencies/%_terms.txt                                                
+     	$(ROBOT) filter -i $< --term-file iri_dependencies/$*_terms.txt --trim   
+  false -o $@                                                                 
+                                                                              
+     #These are only the x-refs that are NOT in the ontology mirror           
+     build/preserve-axioms-%.ttl: build/remaining-%.ofn                       
+     	$(ROBOT) query -i $< -c $(SPARQLDIR)/preserve_$*_axioms.sparql $@        
+                                                                              
+     build/preserve-axioms-%.owl: build/preserve-axioms-%.ttl                 
+     	$(ROBOT) convert -i $< -f owl -o $@                                      
+                                                                              
+     # 2. Dump all axioms from the ontology apart from the set of preserved   
+  axioms.                                                                     
+     # Preserved axioms are extracted using the preserve_xyz_axioms.sparql    
+  query (for example xrefs.)                                                  
+                                                                              
+     dump_%: $(SRC) build/preserve-axioms-%.owl                               
+     	$(ROBOT) remove -i $< -T iri_dependencies/$*_terms.txt --axioms          
+  "annotation" --trim true  --preserve-structure false \                      
+     		remove -T iri_dependencies/$*_terms.txt --trim false --preserve-         
+  structure false \                                                           
+     		merge -i build/preserve-axioms-$*.owl --collapse-import-closure false    
+  convert -f ofn -o $(SRC)                                                    
+     		                                                                         
+     build/efo-edit-functional.owl: $(SRC)                                    
+     	$(ROBOT) convert -i $(SRC) -f ofn -o $@                                  
+                                                                              
+     efo_edit_git_diff.txt:                                                   
+     	git diff $(SRC) > efo_edit_git_diff.txt                                  
+     	                                                                         
+     EFO_MASTER=https://raw.githubusercontent.                                
+  com/EBISPOT/efo/master/src/ontology/efo-edit.owl                            
+                                                                              
+     master-$(SRC):                                                           
+     	wget $(EFO_MASTER) -O $@                                                 
+                                                                              
+     efo_edit_robot_diff.txt: master-$(SRC) $(SRC)                            
+     	$(ROBOT) diff --left $(SRC) --right master-$(SRC) -o $@                  
+                                                                              
+     edit_diff: efo_edit_git_diff.txt efo_edit_robot_diff.txt                 
+                                                                              
+                                                                              
+                                                                              
+     # ----------------------------------------                               
+     # Components                                                             
+     # ----------------------------------------                               
+                                                                              
+     D2P_SOURCES=hpoa mondo-owl                                               
+     D2P_RAW=$(foreach V,$(D2P_SOURCES), components/d2p_$V.ttl)               
+                                                                              
+     COMPONENTS=subclasses import_replaced_by anatomagram_lung                
+  anatomagram_kidney anatomagram_pancreas anatomagram_liver                   
+     COMPONENT_FILES=$(patsubst %, components/%.owl, $(COMPONENTS))           
+     FOREIGN_AXIOMS=hancestro uberon                                          
+     FOREIGN_AXIOM_FILES=$(patsubst %, components/efo_%.owl,                  
+  $(FOREIGN_AXIOMS))                                                          
+     FOREIGN_AXIOM_FILES_DIFF=$(patsubst %, qc/diff_efo-%.txt,                
+  $(FOREIGN_AXIOMS))                                                          
+                                                                              
+     components/subclasses.owl: ../templates/subclasses.csv                   
+     	$(ROBOT) template --template $< --prefix $(MONDOPREFIX) --prefix "snap:  
+  http://www.ifomis.org/bfo/1.1/snap#" --prefix $(EFOPREFIX) --prefix         
+  $(UBERONPREFIX) --prefix $(HPPREFIX) --prefix $(ECTOPREFIX) --ontology-iri  
+  "http://www.ebi.ac.uk/efo/components/subclasses.owl" -o $@                  
+                                                                              
+     components/d2p_%.ttl: mirror/%.owl                                       
+     	$(ROBOT) query -f ttl -i $< --query $(SPARQLDIR)/d2p-$*.ru $@            
+                                                                              
+     components/import_replaced_by.owl: ../templates/import_replaced_by.csv   
+     	$(ROBOT) template --template $< --prefix $(MONDOPREFIX) --prefix "snap:  
+  http://www.ifomis.org/bfo/1.1/snap#" --prefix $(EFOPREFIX) --prefix         
+  $(UBERONPREFIX) --prefix $(HPPREFIX) --ontology-iri "http://www.ebi.ac.     
+  uk/efo/components/import_replaced_by.owl" -o $@                             
+                                                                              
+     # mondo_efo_import pipeline — REMOVED in v3.88.0, replaced by direct     
+  mondo_import.owl                                                            
+     #components/efo-rename.tsv: components/mondo_efo_mappings.tsv            
+  components/disease_to_phenotype_merged_signature.tsv                        
+     #	python3 ../scripts/rename_tsv_subset.py $^ $@                           
+                                                                              
+     # If you change the relation in the sparql query, make sure you add the  
+  new relation here as well.                                                  
+     components/legal_diseases.txt: $(SRC)                                    
+  components/disease_to_phenotype_merged.owl                                  
+     	$(ROBOT) merge --catalog catalog-v001.xml -i $< query -q                 
+  $(SPARQLDIR)/efo-diseases.sparql $@.efo.txt                                 
+     	$(ROBOT) query -i components/disease_to_phenotype_merged.owl -q          
+  $(SPARQLDIR)/hp_terms.sparql $@.hp.txt                                      
+     	cat $@.efo.txt $@.hp.txt > $@ && rm $@.hp.txt $@.efo.txt                 
+     	echo "http://purl.org/dc/elements/1.1/source" >> $@                      
+     	echo "http://www.w3.org/2004/02/skos/core#related" >> $@                 
+                                                                              
+     components/disease_to_phenotype_merged_signature.tsv:                    
+  components/disease_to_phenotype_merged.owl                                  
+     	$(ROBOT) query -i $< -q $(SPARQLDIR)/terms.sparql $@                     
+                                                                              
+     components/disease_to_phenotype_merged.owl: $(D2P_RAW)                   
+     	$(ROBOT) merge $(addprefix -i , $(D2P_RAW)) \                            
+     		annotate --ontology-iri "http://www.ebi.ac.uk/efo/$@" -o $@              
+                                                                              
+     components/disease_to_phenotype.owl:                                     
+  components/disease_to_phenotype_merged.owl components/legal_diseases.txt    
+     	$(ROBOT) merge -i $< \                                                   
+     		remove -T components/legal_diseases.txt --select complement --trim true  
+  \                                                                           
+     		query --update $(SPARQLDIR)/remove-stray-classes.ru \                    
+     		annotate --ontology-iri "http://www.ebi.ac.uk/efo/$@" -o $@              
+                                                                              
+     #components/mondo_efo_mappings.template.tsv:                             
+  components/mondo_efo_mappings.tsv                                           
+     #	sed '1s/^/A oboInOwl:hasDbXref\tID\t\t\n/' $< | sed '1s/^/Mondo ID\tEFO 
+  id\tMondo Label\tEFO label\n/' | sed 's/http:\/\/purl.obolibrary.           
+  org\/obo\/MONDO_/MONDO:/g' > $@                                             
+                                                                              
+     #components/mondo_efo_mappings.owl: mirror/mondo.owl                     
+  components/mondo_efo_mappings.template.tsv                                  
+     #	$(ROBOT) --prefix "oboInOwl: http://www.geneontology.                   
+  org/formats/oboInOwl#" template --input $< --template                       
+  components/mondo_efo_mappings.template.tsv -o $@                            
+                                                                              
+     #components/mondo_efo_import.owl: components/mondo_efo_mappings.tsv      
+  imports/mondo_import.owl components/mondo_efo_mappings.owl                  
+     #	java -jar ../../bin/mondo-id-switch.jar components/mondo_efo_mappings.  
+  tsv imports/mondo_import.owl $@ &&\                                         
+     #	$(ROBOT) -v merge -i $@ -i components/mondo_efo_mappings.owl \          
+     #		annotate --ontology-iri http://www.ebi.ac.                              
+  uk/efo/components/mondo_efo_import.owl -o $@.ofn && mv $@.ofn $@            
+                                                                              
+     components/efo_terms.txt: $(SRC) $(SPARQLDIR)/efo_terms.sparql           
+     	$(ROBOT) query --input $< --select $(SPARQLDIR)/efo_terms.sparql $@.tmp  
+  &&\                                                                         
+     	cat $@.tmp  | sort | uniq > $@ &&\                                       
+     	rm $@.tmp                                                                
+                                                                              
+     qc/%_terms.txt: mirror/%.owl $(SPARQLDIR)/%_terms.sparql                 
+     	$(ROBOT) query --input $< --select $(SPARQLDIR)/$*_terms.sparql $@.tmp   
+  &&\                                                                         
+     	cat $@.tmp  | sort | uniq > $@ &&\                                       
+     	rm $@.tmp                                                                
+     .PRECIOUS: qc/%_terms.txt                                                
+     	                                                                         
+     components/efo_foreign_preserve_terms.txt: $(SRC)                        
+  $(SPARQLDIR)/efo_foreign_preserve_terms.sparql                              
+     	$(ROBOT) query --input $< --select                                       
+  $(SPARQLDIR)/efo_foreign_preserve_terms.sparql $@.tmp &&\                   
+     	cat $@.tmp  | sort | uniq > $@ &&\                                       
+     	rm $@.tmp                                                                
+                                                                              
+     components/efo_%.owl: $(SRC) qc/%_terms.txt components/efo_terms.txt     
+  components/efo_foreign_preserve_terms.txt                                   
+     	$(ROBOT) filter -i $< --term-file qc/$*_terms.txt --trim false \         
+     	remove -T components/efo_foreign_preserve_terms.txt \                    
+     	remove -T components/efo_terms.txt -o $@                                 
+                                                                              
+     qc/efo_no_%.owl: $(SRC) components/efo_%.owl                             
+     	$(ROBOT) remove --catalog catalog-v001.xml -i $< --select imports        
+  unmerge -i components/efo_$*.owl -o $@                                      
+     .PRECIOUS: qc/efo_no_%.owl                                               
+                                                                              
+     qc/diff_efo-%.txt: $(SRC) qc/efo_no_%.owl                                
+     	$(ROBOT) diff --catalog catalog-v001.xml --left $< --right qc/efo_no_$*. 
+  owl -o $@                                                                   
+                                                                              
+     all_components: $(COMPONENT_FILES)                                       
+                                                                              
+     foreign_axioms: $(FOREIGN_AXIOM_FILES)                                   
+                                                                              
+     foreign_axiom_diff: $(FOREIGN_AXIOM_FILES_DIFF)                          
+     	                                                                         
+     nuclear_strike: $(SRC) foreign_axiom_diff                                
+     	cp $(SRC) cp-$(SRC)                                                      
+     	$(ROBOT) merge -i $< $(addprefix unmerge -i , $(FOREIGN_AXIOM_FILES))    
+  convert -f ofn -o $(SRC)                                                    
+                                                                              
+     # ----------------------------------------                               
+     # ORPHANET REPLACEMENT                                                   
+     # ----------------------------------------
+
+Call to rg
+
+Input:
+
+{                                                                         
+      "-n": true,                                                             
+      "head_limit": 120,                                                      
+      "output_mode": "content",                                               
+      "path": "/home/runner/work/efo/efo/src/ontology/Makefile",              
+      "pattern": "^sparql_test:|^label_synonym_dup_check:|                    
+  ^check_mondo_obsoletes:|^[a-zA-Z0-9_\-]+:"                                  
+    }
+
+View src/ontology/Makefile
+#$(BUILDDIR)/OTAR_tagged.owl: $(BUILDDIR)/OTAR_terms.owl                 
+     #	$(ROBOT) query --input $(BUILDDIR)/OTAR_terms.owl --query               
+  $(SPARQLDIR)/OTAR_therapeutic_areas.sparql $@                               
+                                                                              
+                                                                              
+     # ----------------------------------------                               
+     # Release                                                                
+     # ----------------------------------------                               
+     # copy from staging area (this directory) to top-level                   
+     release: $(BUILDDIR)/$(ONT).owl $(BUILDDIR)/$(ONT).obo $(BUILDDIR)/$(ONT).
+  json $(BUILDDIR)/$(ONT)-base.owl                                            
+     	cp $^ $(RELEASEDIR)                                                      
+     	                                                                         
+     $(BUILDDIR)/$(ONT).owl: $(SRC) imports/mondo_import.owl                  
+     	$(ROBOT) merge -i $< \                                                   
+     	reason -s true -m false -r hermit -v --equivalent-classes-allowed        
+  asserted-only \                                                             
+     	annotate -a owl:versionInfo `cat version.txt` -a rdfs:comment `date +%Y- 
+  %m-%d` -O $(BASE)/$(ONT).owl -V  $(BASE)/releases/v`cat version.txt`/$(ONT).
+  owl -o $@                                                                   
+                                                                              
+     $(BUILDDIR)/$(ONT).obo: $(BUILDDIR)/$(ONT).owl                           
+     	$(ROBOT) annotate -i $< --ontology-iri http://www.ebi.ac.uk/efo/efo.owl --
+  version-iri http://www.ebi.ac.uk/efo/releases/v`cat version.txt`/efo.owl \  
+     	convert --check false -f obo -o $@                                       
+     	                                                                         
+     $(BUILDDIR)/$(ONT).json: $(BUILDDIR)/$(ONT).owl                          
+     	$(ROBOT) annotate -i $< --ontology-iri http://www.ebi.ac.uk/efo/efo.owl --
+  version-iri http://www.ebi.ac.uk/efo/releases/v`cat version.txt`/efo.owl \  
+     	convert -f json -o $@                                                    
+                                                                              
+     $(BUILDDIR)/$(ONT)-base.owl: build/efo.owl                               
+     	$(ROBOT) remove --input build/efo.owl \                                  
+     		--base-iri 'http://www.ebi.ac.uk/efo/EFO_' \                             
+     		--axioms external \                                                      
+     		--preserve-structure false \                                             
+     		--trim false \                                                           
+     		annotate -a owl:versionInfo `cat version.txt` -a rdfs:comment `date +%Y- 
+  %m-%d` -O $(BASE)/$(ONT)-base.owl -V  $(BASE)/releases/v`cat version.       
+  txt`/$(ONT)-base.owl --output $@                                            
+                                                                              
+     # ----------------------------------------                               
+     # Sparql queries: Q/C                                                    
+     # ----------------------------------------                               
+                                                                              
+     # these live in the ../sparql directory, and have suffix -violation.     
+  sparql                                                                      
+     # adding the name here will make the violation check live                
+     VCHECKS = duplicate-label  nolabels multiple-label no-webulous-uris no-  
+  urigen-uris no-www-uris no-dangling id-length deprecated obsolete-replaced- 
+  whitespace wrong_efo_purl                                                   
+                                                                              
+     # run all violation checks                                               
+     VQUERIES = $(foreach V,$(VCHECKS),$(SPARQLDIR)/$V-violation.sparql)      
+     sparql_test: $(BUILDDIR)/$(ONT).owl                                      
+     	$(ROBOT) verify -i $< --queries $(VQUERIES) -O reports/                  
+                                                                              
+     # ----------------------------------------                               
+     # Sparql queries: Reports                                                
+     # ----------------------------------------                               
+                                                                              
+     REPORTS = basic-report class-count-by-prefix edges xrefs obsoletes       
+  synonyms obsolete_gwas                                                      
+     REPORT_ARGS = $(foreach V,$(REPORTS),-s $(SPARQLDIR)/$V.sparql reports/$V.
+  tsv)                                                                        
+     all_reports: $(BUILDDIR)/$(ONT).owl                                      
+     	$(ROBOT) query -f tsv -i $< $(REPORT_ARGS)                               
+                                                                              
+     # ----------------------------------------                               
+     # Label/synonym duplicate check                                          
+     # ----------------------------------------                               
+                                                                              
+     $(BUILDDIR)/label-synonym-data.tsv: $(BUILDDIR)/$(ONT).owl               
+     	$(ROBOT) query -f tsv -i $< -q $(SPARQLDIR)/label-synonym-dup-extract.   
+  sparql $@                                                                   
+                                                                              
+     label_synonym_dup_check: $(BUILDDIR)/label-synonym-data.tsv              
+     	python3 ../scripts/detect_label_synonym_duplicates.py $< -o              
+  reports/label-synonym-duplicates.tsv                                        
+                                                                              
+     # ----------------------------------------                               
+     # Mondo import obsolescence check                                        
+     # ----------------------------------------                               
+                                                                              
+     check_mondo_obsoletes: mirror/mondo.owl iri_dependencies/mondo_terms.txt 
+     	python3 ../scripts/check_mondo_import_obsoletes.py $<                    
+  iri_dependencies/mondo_terms.txt -o reports/mondo_obsolete_import_check.tsv 
+                                                                              
+     DIFF_REPORTS=efo.owl                                                     
+     DIFF_REPORTS_FILES=$(patsubst %, qc/diff_%_latest_release.txt,           
+  $(DIFF_REPORTS))                                                            
+     ENTITY_DIFF_FILES=$(patsubst %, qc/diff_%_entities.txt, $(DIFF_REPORTS)) 
+     	                                                                         
+     qc/diff_%_latest_release.txt: $(BUILDDIR)/%                              
+     	$(ROBOT) diff --left $< --right-iri https://www.ebi.ac.uk/efo/$* -o $@   
+     	                                                                         
+     qc/current_%_entities.txt: $(BUILDDIR)/%                                 
+     	$(ROBOT) query --input $< --select $(SPARQLDIR)/all_classes.sparql $@.   
+  tmp &&\                                                                     
+     	cat $@.tmp  | sort | uniq > $@ &&\                                       
+     	rm $@.tmp                                                                
+     .PRECIOUS: qc/current_%_entities.txt                                     
+                                                                              
+     #$(BUILDDIR)/efo.owl:                                                    
+     #	echo "skipped"                                                          
+     	                                                                         
+     #$(BUILDDIR)/efo.obo:                                                    
+     #	echo "skipped"
+
+Bash: Run baseline ontology QC sparql test before changes
+$ cd /home/runner/work/efo/efo/src/ontology && make sparql_test           
+    Makefile:95: warning: overriding recipe for target '.PRECIOUS'            
+    Makefile:91: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:229: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:95: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:387: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:229: warning: ignoring old recipe for target '.PRECIOUS'         
+    make: *** No rule to make target 'mirror/mondo.owl', needed by            
+  'imports/mondo_import.owl'.  Stop.                                          
+    <exited with exit code 2>
+
+Call to glob
+
+Input:
+
+{                                                                         
+      "path": "/home/runner/work/efo/efo",                                    
+      "pattern": "**/get_mirrors.sh"                                          
+    }
+
+View src/ontology
+Makefile                                                                 
+     README-editors.md                                                        
+     bubastis.sh                                                              
+     catalog-v001.xml                                                         
+     components                                                               
+     efo-3-edit.owl                                                           
+     efo-diff.txt                                                             
+     efo-edit.owl                                                             
+     efo-idranges.owl                                                         
+     efo-relations.txt                                                        
+     efo-upper.owl                                                            
+     get_mirrors.sh                                                           
+     imports                                                                  
+     iri_dependencies                                                         
+     issue_1948.owl                                                           
+     mass_obsolete_oba.py                                                     
+     migration2019                                                            
+     neoplasm.Makefile                                                        
+     oboconverter.sh                                                          
+     odk.sh                                                                   
+     ontology-config.json                                                     
+     pr_efo_map.tsv                                                           
+     qc                                                                       
+     reports                                                                  
+     sparql                                                                   
+     validation_flags.owl                                                     
+     version.txt
+
+Bash: Download ontology mirror files required for builds
+$ cd /home/runner/work/efo/efo/src/ontology && ./get_mirrors.sh           
+    Fetching MONDO...                                                         
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   352  100   352    0     0   2828      0 --:--:-- --:--:-- --:--:--   
+  2838                                                                        
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--   
+  0                                                                           
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0                                                                           
+     57  216M   57  125M    0     0   107M      0  0:00:02  0:00:01  0:00:01  
+  107M100  216M  100  216M    0     0   122M      0  0:00:01  0:00:01 --:--:--
+  153M                                                                        
+    Fetching UBERON...                                                        
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   343  100   343    0     0  18977      0 --:--:-- --:--:-- --:--:--   
+  20176                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0                                                                           
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0                                                                           
+      6 93.9M    6 6589k    0     0  16.5M      0  0:00:05 --:--:--  0:00:05  
+  16.5M100 93.9M  100 93.9M    0     0   132M      0 --:--:-- --:--:-- --:--:--
+  272M                                                                        
+    Fetching HPO...                                                           
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   357  100   357    0     0  21444      0 --:--:-- --:--:-- --:--:--   
+  22312                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0                                                                           
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0                                                                           
+    100 72.6M  100 72.6M    0     0   124M      0 --:--:-- --:--:-- --:--:--  
+  124M                                                                        
+    Fetching MONDO (OWL Version)...                                           
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   347  100   347    0     0  18690      0 --:--:-- --:--:-- --:--:--   
+  19277                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--   
+  0                                                                           
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0                                                                           
+     92  230M   92  213M    0     0   197M      0  0:00:01  0:00:01 --:--:--  
+  197M100  230M  100  230M    0     0   203M      0  0:00:01  0:00:01 --:--:--
+  311M                                                                        
+    Fetching CHEBI...                                                         
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   328  100   328    0     0  18237      0 --:--:-- --:--:-- --:--:--   
+  19294                                                                       
+      0  773M    0  759k    0     0   782k      0  0:16:52 --:--:--  0:16:52  
+  782k  5  773M    5 42.2M    0     0  21.8M      0  0:00:35  0:00:01  0:00:34
+  43.0M 19  773M   19  154M    0     0  52.6M      0  0:00:14  0:00:02        
+  0:00:12 78.3M 33  773M   33  262M    0     0  66.6M      0  0:00:11  0:00:03
+  0:00:08 88.2M 48  773M   48  376M    0     0  76.1M      0  0:00:10  0:00:04
+  0:00:06 94.6M 63  773M   63  489M    0     0  82.5M      0  0:00:09  0:00:05
+  0:00:04 98.4M 75  773M   75  585M    0     0  84.3M      0  0:00:09  0:00:06
+  0:00:03  108M 83  773M   83  646M    0     0  81.4M      0  0:00:09  0:00:07
+  0:00:02 98.3M 91  773M   91  710M    0     0  79.4M      0  0:00:09  0:00:08
+  0:00:01 89.5M100  773M  100  773M    0     0  78.0M      0  0:00:09  0:00:09 --
+  :--:-- 79.9M                                                                
+    Fetching PR...                                                            
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   328  100   328    0     0  15686      0 --:--:-- --:--:-- --:--:--   
+  15619100   328  100   328    0     0  15498      0 --:--:-- --:--:-- --:--:--
+  14909                                                                       
+    curl: (6) Could not resolve host: proconsortium.org                       
+    Fetching ECTO...                                                          
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   370  100   370    0     0  20856      0 --:--:-- --:--:-- --:--:--   
+  21764                                                                       
+    100 65536    0 65536    0     0  66314      0 --:--:-- --:--:-- --:--:--  
+  66314100 35.2M    0 35.2M    0     0  32.5M      0 --:--:--  0:00:01 --:--:--
+  374M                                                                        
+    Fetching CL...                                                            
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   346  100   346    0     0  19136      0 --:--:-- --:--:-- --:--:--   
+  20352                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0                                                                           
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0                                                                           
+    100 62.8M  100 62.8M    0     0   107M      0 --:--:-- --:--:-- --:--:--  
+  107M                                                                        
+    Fetching GSSO...                                                          
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   335  100   335    0     0  16044      0 --:--:-- --:--:-- --:--:--   
+  16750                                                                       
+    100 98304    0 98304    0     0   157k      0 --:--:-- --:--:-- --:--:--  
+  157k100 20.1M    0 20.1M    0     0  29.6M      0 --:--:-- --:--:-- --:--:--
+  278M                                                                        
+    Fetching HPOA from Monarch...                                             
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   162  100   162    0     0    357      0 --:--:-- --:--:-- --:--:--   
+  357                                                                         
+    Fetching HANCESTRO...                                                     
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100 2092k    0 2092k    0     0  16.8M      0 --:--:-- --:--:-- --:--:-- 16.
+  8M                                                                          
+    Fetching FBbt...                                                          
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   371  100   371    0     0  20466      0 --:--:-- --:--:-- --:--:--   
+  20611                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--   
+  0                                                                           
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0                                                                           
+    100  114M  100  114M    0     0   193M      0 --:--:-- --:--:-- --:--:--  
+  193M                                                                        
+    Fetching OBI...                                                           
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   339  100   339    0     0  20529      0 --:--:-- --:--:-- --:--:--   
+  21187                                                                       
+    100 9596k    0 9596k    0     0  27.3M      0 --:--:-- --:--:-- --:--:--  
+  27.3M                                                                       
+    Fetching OBA...                                                           
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   356  100   356    0     0  17742      0 --:--:-- --:--:-- --:--:--   
+  18736                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--   
+  0                                                                           
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0                                                                           
+    100  158M  100  158M    0     0   184M      0 --:--:-- --:--:-- --:--:--  
+  184M                                                                        
+    Fetching FBBI...                                                          
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100    31  100    31    0     0  10319      0 --:--:-- --:--:-- --:--:--   
+  15500                                                                       
+    Fetching GO...                                                            
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time    
+  Current                                                                     
+                                     Dload  Upload   Total   Spent    Left    
+  Speed                                                                       
+      0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--  
+  0100   317  100   317    0     0  15254      0 --:--:-- --:--:-- --:--:--   
+  15850                                                                       
+    curl: (6) Could not resolve host: current.geneontology.org                
+    <exited with exit code 6>
+
+Bash: Run available QC check that does not require missing mirrors
+$ cd /home/runner/work/efo/efo/src/ontology && make check_mondo_obsoletes 
+    Makefile:95: warning: overriding recipe for target '.PRECIOUS'            
+    Makefile:91: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:229: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:95: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:387: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:229: warning: ignoring old recipe for target '.PRECIOUS'         
+    python3 ../scripts/check_mondo_import_obsoletes.py mirror/mondo.owl       
+  iri_dependencies/mondo_terms.txt -o reports/mondo_obsolete_import_check.tsv 
+    Loaded 12291 terms from iri_dependencies/mondo_terms.txt                  
+    Parsing mirror/mondo.owl for deprecations...                              
+      Found 3966 deprecated terms in Mondo                                    
+      Found 2217 replaced_by mappings                                         
+                                                                              
+    Deprecated terms in import list: 648                                      
+                                                                              
+    Report written to: reports/mondo_obsolete_import_check.tsv                
+                                                                              
+    Summary:                                                                  
+      Total imported terms: 12291                                             
+      Deprecated in Mondo: 648                                                
+      Missing replacements in term list: 0                                    
+      No replacement defined: 473                                             
+                                                                              
+    WARNING: 473 deprecated terms have no replacement defined in Mondo (see   
+  report for details).                                                        
+                                                                              
+    All actionable checks passed.                                             
+    <exited with exit code 0>
+
+Progress update: chore: outline plan for perimenopausal definition update
+
+[x] Understand issue context and locate EFO_0920061 in the ontology         
+  [x] Run baseline validation commands available in this environment (noting  
+  any external mirror/network blockers)                                       
+  [ ] Update only the definition text for EFO_0920061 to reflect peri-        
+  menopause as covering time around the final menstrual period                
+  [ ] Normalize the edited ontology source file                               
+  [ ] Run targeted post-change validation for the edited ontology file        
+  [ ] Run final parallel validation and report completion
+
+Call to rg
+
+Input:
+
+{                                                                         
+      "-n": true,                                                             
+      "head_limit": 50,                                                       
+      "output_mode": "content",                                               
+      "path": "/home/runner/work/efo/efo/src/ontology/efo-edit.owl",          
+      "pattern": "EFO_0920061|perimenopausal|premenopausal|postmenopausal"    
+    }
+
+Call to rg
+
+Input:
+
+{                                                                         
+      "output_mode": "count",                                                 
+      "path": "/home/runner/work/efo/efo/src/ontology/efo-edit.owl",          
+      "pattern": "IAO_0000115"                                                
+    }
+
+View src/ontology/efo-edit.owl
+<owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920059"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>CosMx SMI is a high-plex in situ analysis   
+  platform to provide spatial multiomics with formalin-fixed paraffin-embedded
+  (FFPE) and fresh frozen (FF) tissue samples at cellular and subcellular     
+  resolution.</owl:annotatedTarget>                                           
+             <oboInOwl:hasDbXref>PMID:36203011</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41006245</oboInOwl:hasDbXref>           
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0920060 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920060">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0001272"/>                                                       
+             <obo:IAO_0000115>The reproductive years when a person has regular
+  menstrual periods, without experiencing any symptoms of perimenopause or    
+  menopause.</obo:IAO_0000115>                                                
+             <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+             <oboInOwl:hasDbXref>NCIt:C15491</oboInOwl:hasDbXref>             
+             <oboInOwl:hasExactSynonym>pre-                                   
+  menopausal</oboInOwl:hasExactSynonym>                                       
+             <oboInOwl:hasRelatedSynonym>pre-                                 
+  menopause</oboInOwl:hasRelatedSynonym>                                      
+                                                                              
+  <oboInOwl:hasRelatedSynonym>premenopause</oboInOwl:hasRelatedSynonym>       
+             <rdfs:label>premenopausal</rdfs:label>                           
+             <rdfs:seeAlso>https://github.                                    
+  com/EBISPOT/efo/issues/2652</rdfs:seeAlso>                                  
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920060"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>The reproductive years when a person has    
+  regular menstrual periods, without experiencing any symptoms of             
+  perimenopause or menopause.</owl:annotatedTarget>                           
+             <oboInOwl:hasDbXref>PMID:40622713</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41836154</oboInOwl:hasDbXref>           
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0920061 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920061">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0001272"/>                                                       
+             <obo:IAO_0000115>The transitional phase before menopause,        
+  characterized by declining and fluctuating estrogen levels and associated   
+  symptoms such as irregular menstrual periods, hot flashes, night sweats, and
+  mood changes. This phase typically begins several years before menopause and
+  ends with the last menstrual period.</obo:IAO_0000115>                      
+             <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2026-03-24T23:18:42Z</dc:date>                 
+             <oboInOwl:hasDbXref>HP:0040406</oboInOwl:hasDbXref>              
+             <oboInOwl:hasDbXref>NCIt:C15692</oboInOwl:hasDbXref>             
+                                                                              
+  <oboInOwl:hasExactSynonym>perimenopause</oboInOwl:hasExactSynonym>          
+             <oboInOwl:hasRelatedSynonym>peri-                                
+  menopausal</oboInOwl:hasRelatedSynonym>                                     
+             <oboInOwl:hasRelatedSynonym>peri-                                
+  menopause</oboInOwl:hasRelatedSynonym>                                      
+             <rdfs:label xml:lang="en">perimenopausal</rdfs:label>            
+             <rdfs:seeAlso>https://github.                                    
+  com/EBISPOT/efo/issues/2653</rdfs:seeAlso>                                  
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920061"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>The transitional phase before menopause,    
+  characterized by declining and fluctuating estrogen levels and associated   
+  symptoms such as irregular menstrual periods, hot flashes, night sweats, and
+  mood changes. This phase typically begins several years before menopause and
+  ends with the last menstrual period.</owl:annotatedTarget>                  
+             <oboInOwl:hasDbXref>PMID:41807917</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41829913</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41836925</oboInOwl:hasDbXref>           
+         </owl:Axiom>                                                         
+                                                                              
+                                                                              
+                                                                              
+         <!-- http://www.ebi.ac.uk/efo/EFO_0920062 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920062">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0002694"/>                                                       
+             <obo:IAO_0000115>The activity or process of determining,         
+  analyzing, or predicting all or part of an organism&apos;s phenotype.       
+  </obo:IAO_0000115>                                                          
+             <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2026-03-25T13:45:35Z</dc:date>                 
+             <rdfs:label xml:lang="en">phenotyping</rdfs:label>               
+             <rdfs:seeAlso>https://github.                                    
+  com/EBISPOT/efo/issues/2351</rdfs:seeAlso>                                  
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920062"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>
+
+Bash: Normalize efo-edit.owl after definition update
+$ cd /home/runner/work/efo/efo/src/ontology && make normalize_src         
+    Makefile:95: warning: overriding recipe for target '.PRECIOUS'            
+    Makefile:91: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:229: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:95: warning: ignoring old recipe for target '.PRECIOUS'          
+    Makefile:387: warning: overriding recipe for target '.PRECIOUS'           
+    Makefile:229: warning: ignoring old recipe for target '.PRECIOUS'         
+    ../../bin/robot convert -i efo-edit.owl -f owl -o tmp/normalise && mv     
+  tmp/normalise efo-edit.owl                                                  
+    org.semanticweb.owlapi.model.UnloadableImportException: Could not load    
+  imported ontology: <http://www.ebi.ac.uk/efo/imports/mondo_import.owl>      
+  Cause: /home/runner/work/efo/efo/src/ontology/imports/mondo_import.owl (No  
+  such file or directory)                                                     
+    Use the -vvv option to show the stack trace.                              
+    Use the --help option to see usage information.                           
+    make: *** [Makefile:72: normalize_src] Error 1                            
+    <exited with exit code 2>
+
+View src/ontology/imports
+chebi_import.owl                                                         
+     chebi_terms.txt                                                          
+     cl_import.owl                                                            
+     cl_terms.txt                                                             
+     ecto_import.owl                                                          
+     ecto_terms.txt                                                           
+     fbbi_import.owl                                                          
+     fbbi_terms.txt                                                           
+     fbbt_import.owl                                                          
+     fbbt_terms.txt                                                           
+     go_import.owl                                                            
+     go_terms.txt                                                             
+     gsso_import.owl                                                          
+     gsso_terms.txt                                                           
+     gwas_import.owl                                                          
+     hancestro_import.owl                                                     
+     hp_import.owl                                                            
+     hp_terms.txt                                                             
+     mondo_terms.txt                                                          
+     oba_import.owl                                                           
+     oba_terms.txt                                                            
+     obi_import.owl                                                           
+     obi_terms.txt                                                            
+     pr_import.owl                                                            
+     pr_terms.txt                                                             
+     uberon_import.owl                                                        
+     uberon_terms.txt
+
+Bash: Check changed files after edit and failed normalization
+$ cd /home/runner/work/efo/efo && git --no-pager status --short           
+    M src/ontology/efo-edit.owl                                               
+    <exited with exit code 0>
+
+Call to rg
+
+Input:
+
+{                                                                         
+      "output_mode": "count",                                                 
+      "path": "/home/runner/work/efo/efo/src/ontology/efo-edit.owl",          
+      "pattern": "The transitional phase around menopause, beginning with     
+  changes in menstrual cycle length in the menopausal transition and ending 12
+  months after the final menstrual period\."                                  
+    }
+
+Call to rg
+
+Input:
+
+{                                                                         
+      "output_mode": "count",                                                 
+      "path": "/home/runner/work/efo/efo/src/ontology/efo-edit.owl",          
+      "pattern": "This phase typically begins several years before menopause  
+  and ends with the last menstrual period"                                    
+    }
+
+View src/ontology/efo-edit.owl
+<!-- http://www.ebi.ac.uk/efo/EFO_0920061 -->                        
+                                                                              
+         <owl:Class rdf:about="http://www.ebi.ac.uk/efo/EFO_0920061">         
+             <rdfs:subClassOf rdf:resource="http://www.ebi.ac.                
+  uk/efo/EFO_0001272"/>                                                       
+             <obo:IAO_0000115>The transitional phase around menopause,        
+  beginning with changes in menstrual cycle length in the menopausal          
+  transition and ending 12 months after the final menstrual period. It is     
+  characterized by declining and fluctuating estrogen levels and can include  
+  symptoms such as irregular menstrual periods, hot flashes, night sweats, and
+  mood changes.</obo:IAO_0000115>                                             
+             <obo:IAO_0000117>AI agent</obo:IAO_0000117>                      
+             <dc:date rdf:datatype="http://www.w3.                            
+  org/2001/XMLSchema#dateTime">2026-03-24T23:18:42Z</dc:date>                 
+             <oboInOwl:hasDbXref>HP:0040406</oboInOwl:hasDbXref>              
+             <oboInOwl:hasDbXref>NCIt:C15692</oboInOwl:hasDbXref>             
+                                                                              
+  <oboInOwl:hasExactSynonym>perimenopause</oboInOwl:hasExactSynonym>          
+             <oboInOwl:hasRelatedSynonym>peri-                                
+  menopausal</oboInOwl:hasRelatedSynonym>                                     
+             <oboInOwl:hasRelatedSynonym>peri-                                
+  menopause</oboInOwl:hasRelatedSynonym>                                      
+             <rdfs:label xml:lang="en">perimenopausal</rdfs:label>            
+             <rdfs:seeAlso>https://github.                                    
+  com/EBISPOT/efo/issues/2653</rdfs:seeAlso>                                  
+         </owl:Class>                                                         
+         <owl:Axiom>                                                          
+             <owl:annotatedSource rdf:resource="http://www.ebi.ac.            
+  uk/efo/EFO_0920061"/>                                                       
+             <owl:annotatedProperty rdf:resource="http://purl.obolibrary.     
+  org/obo/IAO_0000115"/>                                                      
+             <owl:annotatedTarget>The transitional phase around menopause,    
+  beginning with changes in menstrual cycle length in the menopausal          
+  transition and ending 12 months after the final menstrual period. It is     
+  characterized by declining and fluctuating estrogen levels and can include  
+  symptoms such as irregular menstrual periods, hot flashes, night sweats, and
+  mood changes.</owl:annotatedTarget>                                         
+             <oboInOwl:hasDbXref>PMID:41807917</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41829913</oboInOwl:hasDbXref>           
+             <oboInOwl:hasDbXref>PMID:41836925</oboInOwl:hasDbXref>           
+         </owl:Axiom>
+
+Bash: Validate edited ontology file is well-formed XML
+$ xmllint --noout /home/runner/work/efo/efo/src/ontology/efo-edit.owl     
+    bash: xmllint: command not found                                          
+    <exited with exit code 127>
+
+Bash: Parse efo-edit.owl with Python XML parser
+$ python3 - <<'PY'                                                        
+    import xml.etree.ElementTree as ET                                        
+    ET.parse('/home/runner/work/efo/efo/src/ontology/efo-edit.owl')           
+    print('XML parse OK')                                                     
+    PY                                                                        
+    XML parse OK                                                              
+    <exited with exit code 0>
+
+Progress update: fix: update perimenopausal definition to span around final menstrual period
+
+[x] Understand issue context and locate EFO_0920061 in the ontology         
+  [x] Run baseline validation commands available in this environment (noting  
+  any external mirror/network blockers)                                       
+  [x] Update only the definition text for EFO_0920061 to reflect peri-        
+  menopause as covering time around the final menstrual period                
+  [ ] Normalize the edited ontology source file                               
+  [x] Run targeted post-change validation for the edited ontology file        
+  [ ] Run final parallel validation and report completion
+
+Call to parallel_validation
+
+Input:
+
+{                                                                         
+      "prDescription": "Updates the textual definition for EFO_0920061        
+  (perimenopausal) in /home/runner/work/efo/efo/src/ontology/efo-edit.owl so  
+  it correctly spans around the final menstrual period instead of ending at it.
+  Keeps all existing metadata, hierarchy, synonyms, and xrefs unchanged. Also 
+  updates the corresponding owl:Axiom annotatedTarget definition text to      
+  remain synchronized with obo:IAO_0000115.",                                 
+      "prTitle": "[Update] Request for update to EFO_0920061 perimenopausal"  
+    }
+
+Progress update: chore: finalize validation for perimenopausal definition update
+
+[x] Understand issue context and locate EFO_0920061 in the ontology         
+  [x] Run baseline validation commands available in this environment (noting  
+  any external mirror/network blockers)                                       
+  [x] Update only the definition text for EFO_0920061 to reflect peri-        
+  menopause as covering time around the final menstrual period                
+  [ ] Normalize the edited ontology source file                               
+  [x] Run targeted post-change validation for the edited ontology file        
+  [x] Run final parallel validation and report completion
+
+
+Implemented a minimal, surgical update in:                                  
+                                                                              
+  • /home/runner/work/efo/efo/src/ontology/efo-edit.owl                       
+                                                                              
+  ### ✅ Change made                                                          
+                                                                              
+  Updated **EFO_****0920061 (perimenopausal)** definition text so it now      
+  correctly describes perimenopause as spanning **around** menopause (through 
+  12 months after the final menstrual period), not ending at the final        
+  menstrual period.                                                           
+                                                                              
+  I updated both:                                                             
+                                                                              
+  • <obo:IAO_0000115> definition                                              
+  • matching <owl:annotatedTarget> for the definition axiom                   
+                                                                              
+  ### ✅ Validation run                                                       
+                                                                              
+  • Baseline check attempted: make sparql_test (blocked initially by missing  
+  mirrors)                                                                    
+  • Downloaded mirrors with ./get_mirrors.sh (partially blocked by network DNS
+  for PR/GO hosts)                                                            
+  • Ran available QC check successfully: make check_mondo_obsoletes           
+  • Post-change targeted verification:                                        
+      • confirmed old text removed                                            
+      • confirmed new text appears in both required locations                 
+      • XML parse check passed via Python (xml.etree.ElementTree)             
+  • Final parallel_validation passed (Code Review + CodeQL step)              
+                                                                              
+  ### Note                                                                    
+                                                                              
+  make normalize_src could not run in this environment because                
+  imports/mondo_import.owl is missing locally (import resolution failure).
+

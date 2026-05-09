@@ -1,0 +1,343 @@
+Clone repository EBISPOT/efo
+Start 'playwright' MCP server
+Start 'github-mcp-server' MCP server
+Start 'ebi-kg' MCP server
+Start 'ols4' MCP server
+Start 'artl-mcp' MCP server
+
+
+
+View repository
+.dockerignore                                                            
+     .git                                                                     
+     .github                                                                  
+     .gitignore                                                               
+     .gitlab-ci.yml                                                           
+     .travis.yml                                                              
+     .venv                                                                    
+     .vscode                                                                  
+     CONTRIBUTING.md                                                          
+     Dockerfile                                                               
+     ExFactor Ontology release notes.txt                                      
+     README.md                                                                
+     bin                                                                      
+     deployment.yml                                                           
+     docs                                                                     
+     efo-base.owl                                                             
+     efo.gif                                                                  
+     issue_template.md                                                        
+     ols                                                                      
+     src                                                                      
+     tools
+
+Call to search_code_subagent
+
+Input:
+
+{                                                                         
+      "query": "UniProt EFO protein measurement mapping"                      
+    }
+
+Call to search_code_subagent
+
+Input:
+
+{                                                                         
+      "query": "uniprot xref cross reference protein"                         
+    }
+
+▶️ Begin subagent: explore
+Call to search_code_subagent
+
+Input:
+
+{                                                                         
+      "query": "protein measurement level SPARQL query"                       
+    }
+
+
+I'll help you analyze the repository structure and find the relevant        
+  information. Let me make all these searches in parallel.
+
+Call to grep
+
+Input:
+
+{                                                                         
+      "-i": true,                                                             
+      "head_limit": 30,                                                       
+      "output_mode": "content",                                               
+      "path": "/home/runner/work/efo/efo/src/ontology/efo-edit.owl",          
+      "pattern": "protein.*(measurement|level|concentration)"                 
+    }
+
+Call to grep
+
+Input:
+
+{                                                                         
+      "-i": true,                                                             
+      "head_limit": 30,                                                       
+      "output_mode": "content",                                               
+      "path": "/home/runner/work/efo/efo/src/ontology/efo-edit.owl",          
+      "pattern": "uniprot"                                                    
+    }
+
+Call to glob
+
+Input:
+
+{                                                                         
+      "pattern": "src/ontology/sparql/**/*.{sparql,rq}"                       
+    }
+
+Call to glob
+
+Input:
+
+{                                                                         
+      "pattern": "src/sparql/**/*.{sparql,rq}"                                
+    }
+
+View src/ontology
+Makefile                                                                 
+     README-editors.md                                                        
+     bubastis.sh                                                              
+     catalog-v001.xml                                                         
+     components                                                               
+     efo-3-edit.owl                                                           
+     efo-diff.txt                                                             
+     efo-edit.owl                                                             
+     efo-idranges.owl                                                         
+     efo-relations.txt                                                        
+     efo-upper.owl                                                            
+     get_mirrors.sh                                                           
+     imports                                                                  
+     iri_dependencies                                                         
+     issue_1948.owl                                                           
+     mass_obsolete_oba.py                                                     
+     migration2019                                                            
+     neoplasm.Makefile                                                        
+     oboconverter.sh                                                          
+     odk.sh                                                                   
+     ontology-config.json                                                     
+     pr_efo_map.tsv                                                           
+     qc                                                                       
+     reports                                                                  
+     sparql                                                                   
+     validation_flags.owl                                                     
+     version.txt
+
+View src/sparql
+OTAR_therapeutic_areas.sparql                                            
+     README.md                                                                
+     all_classes.sparql                                                       
+     basic-report.sparql                                                      
+     chebi_terms.sparql                                                       
+     cl_terms.sparql                                                          
+     class-count-by-prefix.sparql                                             
+     construct_slim.sparql                                                    
+     d2p-hpoa.ru                                                              
+     d2p-mondo-owl.ru                                                         
+     def-lacks-xref-violation.sparql                                          
+     defs-without-genus-no-isabout-to-subclass.ru                             
+     defs-without-genus-no-isabout.sparql                                     
+     defs-without-genus.sparql                                                
+     deprecated-violation.sparql                                              
+     deprecated_but_not_obsolete.sparql                                       
+     disease_staging_subclass.sparql                                          
+     disease_subclass.sparql                                                  
+     diseaseparentchild.sparql                                                
+     duplicate-label-violation.sparql                                         
+     edges.sparql                                                             
+     efo-diseases.sparql                                                      
+     efo_foreign_preserve_terms.sparql                                        
+     efo_terms.sparql                                                         
+     equivalent-classes-violation.sparql                                      
+     fbbt_terms.sparql                                                        
+     go_terms.sparql                                                          
+     gwas_trait.ru                                                            
+     hancestro_terms.sparql                                                   
+     hgnc_terms.sparql                                                        
+     hp_terms.sparql                                                          
+     id-length-violation.sparql                                               
+     inject-subset-declaration.sparql                                         
+     label-synonym-dup-extract.sparql                                         
+     measurement-biomarker.sparql                                             
+     measurement-is-about.sparql                                              
+     measurement-no-isabout.sparql                                            
+     mondo_terms.sparql                                                       
+     multiple-label-violation.sparql                                          
+     no-dangling-violation.sparql                                             
+     no-urigen-uris-violation.sparql                                          
+     no-webulous-uris-violation.sparql                                        
+     no-www-uris-violation.sparql                                             
+     nolabels-violation.sparql                                                
+     obi_terms.sparql                                                         
+     obsolete-replaced-whitespace-violation.sparql                            
+     obsolete_gwas.sparql                                                     
+     obsoletes.sparql                                                         
+     owldef-self-reference-violation.sparql                                   
+     owldef-violation.sparql                                                  
+     preserve_chebi_axioms.sparql                                             
+     preserve_cl_axioms.sparql                                                
+     preserve_fbbt_axioms.sparql                                              
+     preserve_hp_axioms.sparql                                                
+     preserve_obi_axioms.sparql                                               
+     redundant-subClassOf-violation.sparql                                    
+     remove-stray-classes.ru                                                  
+     subsets-labeled.sparql                                                   
+     synonyms.sparql                                                          
+     terms.sparql                                                             
+     trailing-whitespace-violation.sparql                                     
+     uberon_incl_supercl.sparql                                               
+     uberon_terms.sparql                                                      
+     wrong_efo_purl-violation.sparql                                          
+     xref-syntax-violation.sparql                                             
+     xrefs.sparql
+
+Call to grep
+
+Input:
+
+{                                                                         
+      "-i": true,                                                             
+      "head_limit": 40,                                                       
+      "output_mode": "content",                                               
+      "path": "/home/runner/work/efo/efo/src/ontology/Makefile",              
+      "pattern": "report|mapping|tsv"                                         
+    }
+
+
+Perfect! Here's a comprehensive summary of your findings:                   
+                                                                              
+  --------                                                                    
+                                                                              
+  ## 1. **SPARQL Queries**                                                    
+                                                                              
+  **src/sparql/ directory:** 59 .sparql files and 4 .ru files (Ruttabon       
+  format), including:                                                         
+                                                                              
+  • **Reporting queries:** basic-report.sparql, xrefs.sparql, synonyms.sparql,
+  edges.sparql, obsoletes.sparql, class-count-by-prefix.sparql                
+  • **Measurement-related:** measurement-biomarker.sparql, measurement-is-    
+  about.sparql, measurement-no-isabout.sparql                                 
+  • **Validation queries:** various *-violation.sparql files (def-lacks-xref, 
+  equivalent-classes, deprecated, xref-syntax, etc.)                          
+  • **Term extraction:** efo_terms.sparql, mondo_terms.sparql, go_terms.sparql,
+  uberon_terms.sparql, hgnc_terms.sparql, chebi_terms.sparql, etc.            
+                                                                              
+  **src/ontology/sparql/ directory:** 4 .sparql files:                        
+                                                                              
+  • efo_neoplasm.sparql                                                       
+  • efo_cancer.sparql                                                         
+  • synonyms.sparql                                                           
+  • labels.sparql                                                             
+                                                                              
+  --------                                                                    
+                                                                              
+  ## 2. **UniProt xref Annotations in efo-edit.owl**                          
+                                                                              
+  Yes, UniProt xrefs and citations exist extensively. Examples found (30      
+  lines):                                                                     
+                                                                              
+  • <oboInOwl:hasDbXref>uniprot:P02741</oboInOwl:hasDbXref> (direct xref      
+  format)                                                                     
+  • <oboInOwl:hasDbXref>https://www.uniprot.                                  
+  org/uniprotkb/P02647/entry</oboInOwl:hasDbXref> (URL format)                
+  • <efo:definition_citation>http://www.uniprot.                              
+  org/uniprot/J3KRQ0</efo:definition_citation> (definition citations)         
+  • Multiple protein measurement definitions cite UniProt: "C4BP measurement...
+  (Uniprot definition)", "vaspin... (Uniprot)"                                
+                                                                              
+  --------                                                                    
+                                                                              
+  ## 3. **Protein Measurement Terms in efo-edit.owl**                         
+                                                                              
+  Yes, many protein measurement terms exist (30 lines shown):                 
+                                                                              
+  • **C-reactive protein measurement** (with synonym "C-reactive protein      
+  level")                                                                     
+  • **Albumin measurement** - quantification in blood                         
+  • **Total blood protein measurement** - measures albumin and globulin       
+  • **Glycoprotein measurement**                                              
+  • **Protein C measurement** and **Protein S measurement**                   
+  • **C4b-binding protein levels/measurement**                                
+  • **Apolipoprotein A1/B measurement** (lipoproteins)                        
+  • **IGFBP-3 measurement** (insulin-like growth factor binding protein)      
+  • **Von Willebrand factor measurement**                                     
+  • Multiple factor and growth factor measurements                            
+                                                                              
+  --------                                                                    
+                                                                              
+  ## 4. **src/ontology/ Directory Structure**                                 
+                                                                              
+  Top-level contents:                                                         
+                                                                              
+  • **Config files:** Makefile, ontology-config.json, catalog-v001.xml, odk.sh
+  • **OWL files:** efo-edit.owl, efo-3-edit.owl, efo-upper.owl, efo-idranges. 
+  owl, validation_flags.owl, issue_1948.owl                                   
+  • **Directories:** components/, imports/, iri_dependencies/, sparql/, qc/,  
+  reports/, migration2019/                                                    
+  • **Scripts:** get_mirrors.sh, oboconverter.sh, mass_obsolete_oba.py,       
+  bubastis.sh                                                                 
+  • **Metadata:** README-editors.md, version.txt, efo-diff.txt, efo-relations.
+  txt, pr_efo_map.tsv                                                         
+                                                                              
+  --------                                                                    
+                                                                              
+  ## 5. **Report/Mapping Targets in Makefile**                                
+                                                                              
+  Key targets found:                                                          
+                                                                              
+  • **REPORTS variable:** REPORTS = basic-report class-count-by-prefix edges  
+  xrefs obsoletes synonyms obsolete_gwas                                      
+  • **all_****reports target:** Runs ROBOT query on SPARQL files to generate  
+  TSV reports:                                                                
+      • $(ROBOT) query -f tsv -i $< $(REPORT_ARGS) with files: basic-report.  
+      tsv, class-count-by-prefix.tsv, edges.tsv, xrefs.tsv, obsoletes.tsv,    
+      synonyms.tsv, obsolete_gwas.tsv                                         
+  • **label_****synonym_****dup_****check target:** Generates label-synonym-  
+  duplicates.tsv                                                              
+  • **mondo_****obsolete import check:** Generates mondo_obsolete_import_check.
+  tsv                                                                         
+  • **QC targets:** Uses verify command with verification queries outputting  
+  to reports/ directory                                                       
+  • **Diff reports:** Generates robot_diff.txt and robot_diff.md comparing    
+  releases                                                                    
+                                                                              
+  --------                                                                    
+                                                                              
+  ## 6. **Infrastructure for Mapping Tables**                                 
+                                                                              
+  Yes, substantial infrastructure exists:                                     
+                                                                              
+  • **ROBOT template system:** Uses .tsv template files with robot template   
+  command (e.g., pr_efo_map.tsv referenced)                                   
+  • **SPARQL-based extraction:** Labels.sparql, synonyms.sparql in            
+  src/ontology/sparql/ for extracting structured data                         
+  • **Python scripts:** detect_label_synonym_duplicates.py,                   
+  check_mondo_import_obsoletes.py in ../scripts/                              
+  • **TSV output pipeline:** ROBOT query command outputs directly to .tsv     
+  files with -f tsv flag                                                      
+  • **Diff infrastructure:** Can generate comparative TSV files for tracking  
+  changes between releases                                                    
+                                                                              
+  --------                                                                    
+                                                                              
+  ## 7. **src/sparql/ Directory Contents**                                    
+                                                                              
+  Contains **59 SPARQL files + 4 Ruttabon files**:                            
+                                                                              
+  • General ontology queries (all_classes, terms, edges)                      
+  • External ontology term extraction (mondo, go, uberon, chebi, hgnc, etc.)  
+  • Validation/violation checks (owldef, def-lacks-xref, deprecated,          
+  equivalent-classes, etc.)                                                   
+  • **Measurement-specific queries:** measurement-biomarker.sparql,           
+  measurement-is-about.sparql, measurement-no-isabout.sparql                  
+  • Disease-related: disease_subclass, disease_staging_subclass,              
+  diseaseparentchild, efo-diseases                                            
+  • Reporting: basic-report, xrefs, synonyms, obsoletes, class-count-by-prefix
+  • Specialized: OTAR_therapeutic_areas, construct_slim, label-synonym-dup-   
+  extract
+
