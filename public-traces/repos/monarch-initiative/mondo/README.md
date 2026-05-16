@@ -6,7 +6,7 @@
 - Trace payload bytes: 0
 - Unique stored trace bytes: 0
 - Stored trace bytes after compression: 0
-- Stored context bytes: 2424823
+- Stored context bytes: 2425496
 - Gzipped files: 0
 
 Trace files live under `../../../traces/monarch-initiative/mondo/`. Exact duplicate Action/Dragon payloads may be represented by a `duplicate_of` pointer in `manifest.json`. Trace payloads at or above the packaging threshold are stored as `.gz`.
