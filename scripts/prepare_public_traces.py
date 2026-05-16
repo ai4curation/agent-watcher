@@ -15,6 +15,23 @@ from typing import Any
 TRACE_FILES = {"agent.log", "log-trace.jsonl", "claude-execution-output.json"}
 CONTEXT_FILES = {"index.json", "summary.json", "pr.json", "run.json", "session.json"}
 EXCLUDED_PARTS = {"metadata", "logs", "artifact.zip"}
+INDEX_LIST_FIELDS = {
+    "errors",
+    "fetch_errors",
+    "prs",
+    "samples",
+    "skipped_runs",
+    "trace_summaries",
+    "workflows",
+}
+INDEX_MAX_COUNT_FIELDS = {
+    "candidate_run_count",
+    "inspected_runs",
+    "job_inspected_count",
+    "original_run_count",
+    "trace_job_run_count",
+    "visible_agent_task_count",
+}
 PROJECT_SLUGS = (
     "ai-gene-review",
     "cell-ontology",
@@ -369,14 +386,7 @@ def merge_index_file(existing_path: Path, new_path: Path) -> None:
 def merge_index_payload(existing: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
     merged = dict(existing)
     for key, value in incoming.items():
-        if key not in {
-            "errors",
-            "prs",
-            "samples",
-            "skipped_runs",
-            "trace_summaries",
-            "workflows",
-        }:
+        if key not in INDEX_LIST_FIELDS and key not in INDEX_MAX_COUNT_FIELDS and not key.endswith("_count"):
             merged[key] = value
 
     if "workflows" in existing or "workflows" in incoming:
@@ -390,6 +400,13 @@ def merge_index_payload(existing: dict[str, Any], incoming: dict[str, Any]) -> d
             existing.get("errors", []),
             incoming.get("errors", []),
         )
+
+    if "fetch_errors" in existing or "fetch_errors" in incoming:
+        merged["fetch_errors"] = merge_unique_values(
+            existing.get("fetch_errors", []),
+            incoming.get("fetch_errors", []),
+        )
+        merged["fetch_error_count"] = len(merged["fetch_errors"])
 
     if "skipped_runs" in existing or "skipped_runs" in incoming:
         skipped_runs = merge_by_identity(
@@ -427,24 +444,39 @@ def merge_index_payload(existing: dict[str, Any], incoming: dict[str, Any]) -> d
         )
         merged_summaries = summaries
         merged["trace_summaries"] = merged_summaries
-        if "samples" in existing or "samples" in incoming:
+        keep_samples = "samples" in existing or (
+            "samples" in incoming and "trace_summaries" not in existing
+        )
+        if keep_samples:
             merged["samples"] = merged_summaries
+        else:
+            merged.pop("samples", None)
         merged["trace_run_count"] = len(merged_summaries)
-        if "sample_count" in merged:
+        if keep_samples or "sample_count" in existing:
             merged["sample_count"] = len(merged_summaries)
         known_runs = len(merged_summaries) + len(merged.get("skipped_runs", []))
-        if "candidate_run_count" in merged:
-            merged["candidate_run_count"] = max(
-                int(merged.get("candidate_run_count") or 0),
-                known_runs,
-            )
-        if "inspected_runs" in merged:
-            merged["inspected_runs"] = max(
-                int(merged.get("inspected_runs") or 0),
-                known_runs,
-            )
+        if "candidate_run_count" in existing or "candidate_run_count" in incoming:
+            merged["candidate_run_count"] = known_runs
+        if "inspected_runs" in existing or "inspected_runs" in incoming:
+            merged["inspected_runs"] = known_runs
 
+    merge_max_count_fields(merged, existing, incoming)
     return merged
+
+
+def merge_max_count_fields(
+    merged: dict[str, Any],
+    existing: dict[str, Any],
+    incoming: dict[str, Any],
+) -> None:
+    for field in INDEX_MAX_COUNT_FIELDS:
+        values = [
+            value
+            for value in (existing.get(field), incoming.get(field), merged.get(field))
+            if isinstance(value, int)
+        ]
+        if values:
+            merged[field] = max(values)
 
 
 def merge_by_identity(

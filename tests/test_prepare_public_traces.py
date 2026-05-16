@@ -36,6 +36,7 @@ class PreparePublicTracesTestCase(unittest.TestCase):
     def test_action_index_merge_preserves_existing_order(self):
         existing = {
             "repo": "ai4curation/ai-gene-review",
+            "candidate_run_count": 3908,
             "trace_run_count": 2,
             "trace_summaries": [
                 {"run_id": "23415530555", "created_at": "2026-03-22T23:52:46Z"},
@@ -44,6 +45,12 @@ class PreparePublicTracesTestCase(unittest.TestCase):
         }
         incoming = {
             "repo": "ai4curation/ai-gene-review",
+            "candidate_run_count": 2,
+            "sample_count": 2,
+            "samples": [
+                {"run_id": "23415534239", "created_at": "2026-03-22T23:53:01Z"},
+                {"run_id": "23415530555", "created_at": "2026-03-22T23:52:46Z"},
+            ],
             "trace_run_count": 2,
             "trace_summaries": [
                 {"run_id": "23415534239", "created_at": "2026-03-22T23:53:01Z"},
@@ -58,6 +65,9 @@ class PreparePublicTracesTestCase(unittest.TestCase):
             ["23415530555", "23415534239"],
         )
         self.assertEqual(merged["trace_run_count"], 2)
+        self.assertEqual(merged["candidate_run_count"], 3908)
+        self.assertNotIn("samples", merged)
+        self.assertNotIn("sample_count", merged)
 
 
 if __name__ == "__main__":
