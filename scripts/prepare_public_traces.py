@@ -56,6 +56,7 @@ def main() -> int:
     args = parse_args()
     source = Path(args.source)
     dest = Path(args.dest)
+    catalog_dest = Path(args.catalog_dest) if args.catalog_dest else dest
     gzip_threshold = args.gzip_threshold_bytes
 
     if not source.exists():
@@ -64,9 +65,12 @@ def main() -> int:
     if dest.exists() and args.clean:
         shutil.rmtree(dest)
     dest.mkdir(parents=True, exist_ok=True)
+    if catalog_dest != dest and catalog_dest.exists():
+        shutil.rmtree(catalog_dest)
+    catalog_dest.mkdir(parents=True, exist_ok=True)
 
     repo_lookup = load_repo_lookup(source, Path(args.config) if args.config else None)
-    existing_manifest = load_existing_manifest(dest) if args.merge_existing else {}
+    existing_manifest = load_existing_manifest(dest, repo_lookup) if args.merge_existing else {}
     entries_by_key: dict[str, dict[str, Any]] = {}
     entry_order: list[str] = []
     canonical_trace_paths: dict[tuple[str, str, str, str], str] = {}
@@ -166,10 +170,10 @@ def main() -> int:
 
     manifest_source = existing_manifest.get("source", str(source)) if args.merge_existing else str(source)
     manifest = build_manifest(manifest_source, entries)
-    write_json(dest / "manifest.json", manifest)
-    write_tsv(dest / "MANIFEST.tsv", entries)
-    write_repo_indexes(dest / "repos", manifest)
-    write_readme(dest / "README.md", manifest)
+    write_json(catalog_dest / "manifest.json", manifest)
+    write_tsv(catalog_dest / "MANIFEST.tsv", entries)
+    write_repo_indexes(catalog_dest / "repos", manifest)
+    write_readme(catalog_dest / "README.md", manifest)
     print(
         f"prepared {dest}: traces={manifest['trace_file_count']} "
         f"unique_traces={manifest['unique_trace_file_count']} "
@@ -198,6 +202,13 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--clean", action="store_true", help="Delete destination before recreating it.")
     parser.add_argument(
+        "--catalog-dest",
+        help=(
+            "Directory for generated manifest, TSV, and repo catalogs. "
+            "Defaults to --dest for backwards-compatible local packaging."
+        ),
+    )
+    parser.add_argument(
         "--merge-existing",
         action="store_true",
         help="Merge newly prepared files into an existing destination manifest instead of replacing old entries.",
@@ -210,11 +221,129 @@ def should_skip(path: Path, source: Path) -> bool:
     return any(part in EXCLUDED_PARTS for part in relative.parts)
 
 
-def load_existing_manifest(dest: Path) -> dict[str, Any]:
+def load_existing_manifest(dest: Path, repo_lookup: dict[str, str]) -> dict[str, Any]:
     manifest_path = dest / "manifest.json"
-    if not manifest_path.exists():
+    if manifest_path.exists():
+        return dict(json.loads(manifest_path.read_text(encoding="utf-8")))
+    return build_existing_manifest_from_tree(dest, repo_lookup)
+
+
+def build_existing_manifest_from_tree(dest: Path, repo_lookup: dict[str, str]) -> dict[str, Any]:
+    traces_root = dest / "traces"
+    if not traces_root.exists():
         return {}
-    return dict(json.loads(manifest_path.read_text(encoding="utf-8")))
+
+    entries = []
+    for path in sorted(traces_root.rglob("*")):
+        if not path.is_file():
+            continue
+        payload_name = trace_payload_name(path)
+        if payload_name in TRACE_FILES:
+            kind = "trace"
+        elif payload_name in CONTEXT_FILES:
+            kind = "context"
+        else:
+            continue
+        entries.append(build_entry_from_public_path(dest, path, kind, payload_name, repo_lookup))
+    return build_manifest(str(dest), entries)
+
+
+def trace_payload_name(path: Path) -> str:
+    name = path.name
+    if name.endswith(".gz"):
+        return name.removesuffix(".gz")
+    return name
+
+
+def build_entry_from_public_path(
+    dest: Path,
+    path: Path,
+    kind: str,
+    payload_name: str,
+    repo_lookup: dict[str, str],
+) -> dict[str, Any]:
+    relative = path.relative_to(dest)
+    location = classify_public_path(relative, repo_lookup)
+    compressed = path.name.endswith(".gz")
+    stored_size = path.stat().st_size
+    stored_digest = sha256(path)
+    if compressed:
+        original_size, digest = gzip_payload_stats(path)
+        logical_path = str(relative.with_name(payload_name))
+    else:
+        original_size = stored_size
+        digest = stored_digest
+        logical_path = str(relative)
+
+    return {
+        "kind": kind,
+        "project": location["project"],
+        "repository": location["repository"],
+        "owner": location["owner"],
+        "repo": location["repo"],
+        "surface": location["surface"],
+        "path": str(relative),
+        "logical_path": logical_path,
+        "source_relative_path": str(location["source_relative_path"]),
+        "source": str(path),
+        "size_bytes": original_size,
+        "stored_size_bytes": stored_size,
+        "sha256": digest,
+        "stored_sha256": stored_digest,
+        "compressed": compressed,
+        "materialized": True,
+        "duplicate_of": None,
+    }
+
+
+def classify_public_path(relative: Path, repo_lookup: dict[str, str]) -> dict[str, Any]:
+    parts = relative.parts
+    if len(parts) < 5 or parts[0] != "traces":
+        raise ValueError(f"unexpected public trace path: {relative}")
+
+    owner, repo_name, surface = parts[1], parts[2], parts[3]
+    repository = f"{owner}/{repo_name}"
+    project = project_for_repository(repository, repo_lookup)
+    tail = Path(*parts[4:])
+    run_id = ""
+
+    if surface == "actions":
+        workflow_slug = parts[4]
+        project = project_from_slug(workflow_slug)
+        tail = Path(*parts[5:]) if len(parts) > 5 else Path()
+        run_id = parts[5] if len(parts) > 5 else ""
+        source_relative_path = Path("actions") / workflow_slug / tail
+    elif surface == "copilot":
+        source_relative_path = Path("copilot") / project / tail
+    elif surface == "dragon-prs":
+        for part in parts[4:]:
+            if part.startswith("run-") and part.removeprefix("run-").isdigit():
+                run_id = part.removeprefix("run-")
+                break
+        source_relative_path = Path("dragon-prs") / project / tail
+    else:
+        source_relative_path = relative
+
+    return {
+        "surface": surface,
+        "project": project,
+        "repository": repository,
+        "owner": owner,
+        "repo": repo_name,
+        "run_id": run_id,
+        "source_relative_path": source_relative_path,
+    }
+
+
+def project_for_repository(repository: str, repo_lookup: dict[str, str]) -> str:
+    repo_basename = repository.split("/", 1)[-1]
+    for project in PROJECT_SLUGS:
+        if repo_lookup.get(project) == repository:
+            return project
+    for slug, repo in repo_lookup.items():
+        if repo == repository and slug != repo_basename:
+            return slug
+    return repo_basename
 
 
 def entry_key(entry: dict[str, Any]) -> str:
@@ -376,6 +505,16 @@ def gzip_copy(source: Path, dest: Path) -> None:
             shutil.copyfileobj(input_handle, gzip_handle, length=1024 * 1024)
 
 
+def gzip_payload_stats(path: Path) -> tuple[int, str]:
+    digest = hashlib.sha256()
+    size = 0
+    with gzip.open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            size += len(chunk)
+            digest.update(chunk)
+    return size, digest.hexdigest()
+
+
 def merge_index_file(existing_path: Path, new_path: Path) -> None:
     existing = json.loads(existing_path.read_text(encoding="utf-8"))
     incoming = json.loads(new_path.read_text(encoding="utf-8"))
@@ -386,7 +525,12 @@ def merge_index_file(existing_path: Path, new_path: Path) -> None:
 def merge_index_payload(existing: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
     merged = dict(existing)
     for key, value in incoming.items():
-        if key not in INDEX_LIST_FIELDS and key not in INDEX_MAX_COUNT_FIELDS and not key.endswith("_count"):
+        if (
+            key not in merged
+            and key not in INDEX_LIST_FIELDS
+            and key not in INDEX_MAX_COUNT_FIELDS
+            and not key.endswith("_count")
+        ):
             merged[key] = value
 
     if "workflows" in existing or "workflows" in incoming:

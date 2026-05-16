@@ -148,6 +148,7 @@ jobs:
           python scripts/prepare_public_traces.py \
             --source build/trace-refresh/full-agent-history \
             --dest public-traces \
+            --catalog-dest build/trace-refresh/catalog \
             --config config/trace_targets.json \
             --merge-existing
 
@@ -159,7 +160,7 @@ jobs:
           from pathlib import Path
 
           root = Path("public-traces")
-          manifest = json.loads((root / "manifest.json").read_text())
+          manifest = json.loads((Path("build/trace-refresh/catalog") / "manifest.json").read_text())
           missing = []
           missing_duplicate_targets = []
           bad_paths = []
@@ -191,7 +192,7 @@ jobs:
         run: |
           set -euo pipefail
           pattern='(gh[opsu]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{20,}|pypi-[A-Za-z0-9_-]{20,}|npm_[A-Za-z0-9]{20,}|Authorization: (Bearer|token) [A-Za-z0-9._~+/-]{20,}|-----BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY-----)'
-          if rg -n -I --hidden "${pattern}" build/trace-refresh/full-agent-history public-traces; then
+          if rg -n -I --hidden "${pattern}" build/trace-refresh/full-agent-history build/trace-refresh/catalog public-traces; then
             echo "::error::Token-shaped secret pattern found in refreshed traces."
             exit 1
           fi
@@ -201,7 +202,7 @@ jobs:
           set -euo pipefail
           {
             printf '## Public Trace Refresh\n\n'
-            jq '{trace_file_count, unique_trace_file_count, deduplicated_trace_file_count, context_file_count, compressed_file_count, stored_trace_size_bytes, stored_context_size_bytes, trace_files_by_repository, unique_trace_files_by_repository}' public-traces/manifest.json
+            jq '{trace_file_count, unique_trace_file_count, deduplicated_trace_file_count, context_file_count, compressed_file_count, stored_trace_size_bytes, stored_context_size_bytes, trace_files_by_repository, unique_trace_files_by_repository}' build/trace-refresh/catalog/manifest.json
           } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Publish refreshed public traces

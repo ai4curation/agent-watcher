@@ -115,13 +115,14 @@ For incremental refreshes, mine recent traces into a temporary full-history-shap
 python scripts/prepare_public_traces.py \
   --source build/trace-refresh/full-agent-history \
   --dest public-traces \
+  --catalog-dest build/trace-refresh/catalog \
   --config config/trace_targets.json \
   --merge-existing
 ```
 
 `.github/workflows/refresh-public-traces.yml` runs this path on a schedule and commits validated trace updates directly to `main` with `[skip ci]`. The scheduled path refreshes Actions and Dragon PR traces. Copilot agent-task logs are opt-in via manual workflow dispatch. If branch protection blocks `GITHUB_TOKEN` pushes to `main`, configure a `WATCHER_PUBLISH_TOKEN` secret with contents write access.
 
-`public-traces/` is organized by GitHub repository path under `traces/OWNER/REPO/`, with per-repository indexes under `repos/OWNER/REPO/`. Exact duplicate trace payloads found through both Actions and Dragon-PR mining are stored once and represented with `duplicate_of` pointers in `manifest.json`. Run a final secret scan before publishing, even for traces retrieved from public GitHub surfaces.
+`public-traces/` is organized by GitHub repository path under `traces/OWNER/REPO/`. Generated catalogs such as `manifest.json`, `MANIFEST.tsv`, and per-repository manifests are intentionally written outside the committed trace tree during automation, because they are derived data and cause unnecessary churn. Run a final secret scan before publishing, even for traces retrieved from public GitHub surfaces.
 By default, materialized trace payloads at or above 1 MiB are stored as `.gz`; use `--gzip-threshold-bytes 0` to disable that.
 
 ## Retrieval Paths
