@@ -1,0 +1,245 @@
+name: Refresh Public Agent Traces
+
+on:
+  schedule:
+    - cron: "42 10 * * *"
+  workflow_dispatch:
+    inputs:
+      limit_prs:
+        description: Recent Dragon/Copilot PRs to inspect per repository
+        required: false
+        type: string
+        default: "100"
+      limit_runs:
+        description: Recent workflow runs to inspect per workflow
+        required: false
+        type: string
+        default: "80"
+      max_workflow_pages:
+        description: Workflow-run pages to scan when mapping Dragon run numbers
+        required: false
+        type: string
+        default: "20"
+      include_copilot:
+        description: Also refresh Copilot agent-task logs
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-public-agent-traces
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    env:
+      LIMIT_PRS: ${{ github.event_name == 'workflow_dispatch' && inputs.limit_prs || '100' }}
+      LIMIT_RUNS: ${{ github.event_name == 'workflow_dispatch' && inputs.limit_runs || '80' }}
+      MAX_WORKFLOW_PAGES: ${{ github.event_name == 'workflow_dispatch' && inputs.max_workflow_pages || '20' }}
+      INCLUDE_COPILOT: ${{ github.event_name == 'workflow_dispatch' && inputs.include_copilot || 'false' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile trace tooling
+        run: python -m py_compile scripts/prepare_public_traces.py skills/gh-trace-miner/scripts/*.py
+
+      - name: Mine recent Dragon PR traces
+        env:
+          GH_TOKEN: ${{ secrets.WATCHER_SOURCE_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          python skills/gh-trace-miner/scripts/mine_dragon_pr_traces.py \
+            --config config/trace_targets.json \
+            --all-targets \
+            --limit-prs "${LIMIT_PRS}" \
+            --max-workflow-pages "${MAX_WORKFLOW_PAGES}" \
+            --out-dir build/trace-refresh/full-agent-history/dragon-prs
+
+      - name: Mine recent ai-agent workflow traces
+        env:
+          GH_TOKEN: ${{ secrets.WATCHER_SOURCE_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          python skills/gh-trace-miner/scripts/mine_traces.py \
+            --config config/trace_targets.json \
+            --all-targets \
+            --workflow ai-agent.yml \
+            --limit-runs "${LIMIT_RUNS}" \
+            --max-samples 0 \
+            --out-dir build/trace-refresh/full-agent-history/actions
+
+      - name: Mine recent Claude review workflow traces
+        env:
+          GH_TOKEN: ${{ secrets.WATCHER_SOURCE_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          python skills/gh-trace-miner/scripts/mine_traces.py \
+            --repo ai4curation/ai-gene-review \
+            --slug ai-gene-review-claude-code-review \
+            --workflow claude-code-review.yml \
+            --limit-runs "${LIMIT_RUNS}" \
+            --skip-artifact-check \
+            --max-samples 0 \
+            --out-dir build/trace-refresh/full-agent-history/actions
+          python skills/gh-trace-miner/scripts/mine_traces.py \
+            --repo monarch-initiative/dismech \
+            --slug dismech-claude-code-review \
+            --workflow claude-code-review.yml \
+            --limit-runs "${LIMIT_RUNS}" \
+            --skip-artifact-check \
+            --max-samples 0 \
+            --out-dir build/trace-refresh/full-agent-history/actions
+
+      - name: Mine recent Claude workflow traces
+        env:
+          GH_TOKEN: ${{ secrets.WATCHER_SOURCE_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          python skills/gh-trace-miner/scripts/mine_traces.py \
+            --repo ai4curation/ai-gene-review \
+            --slug ai-gene-review-claude \
+            --workflow claude.yml \
+            --limit-runs "${LIMIT_RUNS}" \
+            --skip-artifact-check \
+            --max-samples 0 \
+            --out-dir build/trace-refresh/full-agent-history/actions
+          python skills/gh-trace-miner/scripts/mine_traces.py \
+            --repo monarch-initiative/dismech \
+            --slug dismech-claude \
+            --workflow claude.yml \
+            --limit-runs "${LIMIT_RUNS}" \
+            --skip-artifact-check \
+            --max-samples 0 \
+            --out-dir build/trace-refresh/full-agent-history/actions
+
+      - name: Optionally mine Copilot traces
+        if: env.INCLUDE_COPILOT == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.WATCHER_SOURCE_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          python skills/gh-trace-miner/scripts/mine_copilot_traces.py \
+            --config config/trace_targets.json \
+            --all-targets \
+            --limit-prs "${LIMIT_PRS}" \
+            --max-sessions 100 \
+            --out-dir build/trace-refresh/full-agent-history/copilot
+
+      - name: Merge into public trace bundle
+        run: |
+          set -euo pipefail
+          python scripts/prepare_public_traces.py \
+            --source build/trace-refresh/full-agent-history \
+            --dest public-traces \
+            --config config/trace_targets.json \
+            --merge-existing
+
+      - name: Validate trace bundle
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("public-traces")
+          manifest = json.loads((root / "manifest.json").read_text())
+          missing = []
+          missing_duplicate_targets = []
+          bad_paths = []
+          unknown_repos = []
+
+          for entry in manifest["files"]:
+              path_parts = Path(entry["path"]).parts
+              if len(path_parts) < 5 or path_parts[0] != "traces":
+                  bad_paths.append(entry["path"])
+              if entry["repository"].startswith("unknown/") or "/unknown" in entry["repository"]:
+                  unknown_repos.append(entry["repository"])
+              if entry["materialized"] and not (root / entry["path"]).is_file():
+                  missing.append(entry["path"])
+              if entry.get("duplicate_of") and not (root / entry["duplicate_of"]).is_file():
+                  missing_duplicate_targets.append(entry["duplicate_of"])
+
+          problems = {
+              "missing": missing[:20],
+              "missing_duplicate_targets": missing_duplicate_targets[:20],
+              "bad_paths": bad_paths[:20],
+              "unknown_repos": sorted(set(unknown_repos))[:20],
+          }
+          if any(problems.values()):
+              raise SystemExit(json.dumps(problems, indent=2))
+          PY
+          find public-traces -name '*.gz' -print0 | xargs -0 --no-run-if-empty gzip -t
+
+      - name: Scan trace bundle for token-shaped secrets
+        run: |
+          set -euo pipefail
+          pattern='(gh[opsu]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{20,}|pypi-[A-Za-z0-9_-]{20,}|npm_[A-Za-z0-9]{20,}|Authorization: (Bearer|token) [A-Za-z0-9._~+/-]{20,}|-----BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY-----)'
+          if rg -n -I --hidden "${pattern}" build/trace-refresh/full-agent-history public-traces; then
+            echo "::error::Token-shaped secret pattern found in refreshed traces."
+            exit 1
+          fi
+
+      - name: Summarize refresh
+        run: |
+          set -euo pipefail
+          {
+            printf '## Public Trace Refresh\n\n'
+            jq '{trace_file_count, unique_trace_file_count, deduplicated_trace_file_count, context_file_count, compressed_file_count, stored_trace_size_bytes, stored_context_size_bytes, trace_files_by_repository, unique_trace_files_by_repository}' public-traces/manifest.json
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Open or update trace refresh pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_BRANCH: automation/refresh-public-traces
+          PR_TITLE: Refresh public agent traces
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- public-traces)" ]; then
+            echo "No public trace changes detected."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B "${PR_BRANCH}"
+          git add public-traces
+          git commit -m "${PR_TITLE}"
+          git push --force origin "${PR_BRANCH}"
+
+          body_file=build/trace-refresh/pr-body.md
+          mkdir -p "$(dirname "${body_file}")"
+          {
+            printf 'Automated refresh of `public-traces` from recent GitHub-visible agent traces.\n\n'
+            printf 'Validation completed in workflow run: %s\n\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            printf '```json\n'
+            jq '{trace_file_count, unique_trace_file_count, deduplicated_trace_file_count, context_file_count, compressed_file_count, stored_trace_size_bytes, trace_files_by_repository}' public-traces/manifest.json
+            printf '\n```\n'
+          } > "${body_file}"
+
+          existing_pr="$(gh pr list \
+            --repo "${GITHUB_REPOSITORY}" \
+            --head "${GITHUB_REPOSITORY_OWNER}:${PR_BRANCH}" \
+            --state open \
+            --json number \
+            --jq '.[0].number // ""')"
+          if [ -n "${existing_pr}" ]; then
+            gh pr edit "${existing_pr}" --repo "${GITHUB_REPOSITORY}" --body-file "${body_file}" --title "${PR_TITLE}"
+          else
+            gh pr create --repo "${GITHUB_REPOSITORY}" --base main --head "${PR_BRANCH}" --title "${PR_TITLE}" --body-file "${body_file}"
+          fi

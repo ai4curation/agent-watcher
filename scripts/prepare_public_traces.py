@@ -49,8 +49,19 @@ def main() -> int:
     dest.mkdir(parents=True, exist_ok=True)
 
     repo_lookup = load_repo_lookup(source, Path(args.config) if args.config else None)
-    entries: list[dict[str, Any]] = []
+    existing_manifest = load_existing_manifest(dest) if args.merge_existing else {}
+    entries_by_key: dict[str, dict[str, Any]] = {}
+    entry_order: list[str] = []
     canonical_trace_paths: dict[tuple[str, str, str, str], str] = {}
+    if args.merge_existing:
+        for entry in existing_manifest.get("files", []):
+            key = entry_key(entry)
+            entries_by_key[key] = entry
+            entry_order.append(key)
+            trace_key = trace_key_for_entry(entry)
+            if trace_key and entry.get("materialized") and (dest / entry["path"]).exists():
+                canonical_trace_paths.setdefault(trace_key, entry["path"])
+
     for path in sorted(source.rglob("*")):
         if not path.is_file() or should_skip(path, source):
             continue
@@ -77,7 +88,8 @@ def main() -> int:
         logical_path = str(location["output"])
         should_compress = kind == "trace" and gzip_threshold > 0 and original_size >= gzip_threshold
         stored_logical_path = f"{logical_path}.gz" if should_compress else logical_path
-        duplicate_of = canonical_trace_paths.get(trace_key) if trace_key else None
+        canonical_path = canonical_trace_paths.get(trace_key) if trace_key else None
+        duplicate_of = canonical_path if canonical_path and canonical_path != stored_logical_path else None
         if duplicate_of:
             output_path = duplicate_of
             materialized = False
@@ -96,29 +108,40 @@ def main() -> int:
                 canonical_trace_paths[trace_key] = output_path
 
         stored_size = stored_path.stat().st_size
-        entries.append(
-            {
-                "kind": kind,
-                "project": location["project"],
-                "repository": location["repository"],
-                "owner": location["owner"],
-                "repo": location["repo"],
-                "surface": location["surface"],
-                "path": output_path,
-                "logical_path": logical_path,
-                "source_relative_path": str(relative),
-                "source": str(path),
-                "size_bytes": original_size,
-                "stored_size_bytes": stored_size,
-                "sha256": digest,
-                "stored_sha256": sha256(stored_path),
-                "compressed": should_compress,
-                "materialized": materialized,
-                "duplicate_of": duplicate_of,
-            }
+        entry = {
+            "kind": kind,
+            "project": location["project"],
+            "repository": location["repository"],
+            "owner": location["owner"],
+            "repo": location["repo"],
+            "surface": location["surface"],
+            "path": output_path,
+            "logical_path": logical_path,
+            "source_relative_path": str(relative),
+            "source": str(path),
+            "size_bytes": original_size,
+            "stored_size_bytes": stored_size,
+            "sha256": digest,
+            "stored_sha256": sha256(stored_path),
+            "compressed": should_compress,
+            "materialized": materialized,
+            "duplicate_of": duplicate_of,
+        }
+        key = entry_key(entry)
+        if key not in entries_by_key:
+            entry_order.append(key)
+        entries_by_key[key] = entry
+
+    if args.merge_existing:
+        entries = [entries_by_key[key] for key in entry_order if key in entries_by_key]
+    else:
+        entries = sorted(
+            entries_by_key.values(),
+            key=lambda entry: (entry["source_relative_path"], entry["path"]),
         )
 
-    manifest = build_manifest(source, entries)
+    manifest_source = existing_manifest.get("source", str(source)) if args.merge_existing else str(source)
+    manifest = build_manifest(manifest_source, entries)
     write_json(dest / "manifest.json", manifest)
     write_tsv(dest / "MANIFEST.tsv", entries)
     write_repo_indexes(dest / "repos", manifest)
@@ -150,12 +173,67 @@ def parse_args() -> argparse.Namespace:
         help="Optional target config used to resolve short slugs to OWNER/REPO paths.",
     )
     parser.add_argument("--clean", action="store_true", help="Delete destination before recreating it.")
+    parser.add_argument(
+        "--merge-existing",
+        action="store_true",
+        help="Merge newly prepared files into an existing destination manifest instead of replacing old entries.",
+    )
     return parser.parse_args()
 
 
 def should_skip(path: Path, source: Path) -> bool:
     relative = path.relative_to(source)
     return any(part in EXCLUDED_PARTS for part in relative.parts)
+
+
+def load_existing_manifest(dest: Path) -> dict[str, Any]:
+    manifest_path = dest / "manifest.json"
+    if not manifest_path.exists():
+        return {}
+    return dict(json.loads(manifest_path.read_text(encoding="utf-8")))
+
+
+def entry_key(entry: dict[str, Any]) -> str:
+    return "\t".join(
+        [
+            entry.get("kind", ""),
+            entry.get("repository", ""),
+            entry.get("source_relative_path", ""),
+            entry.get("logical_path", ""),
+        ]
+    )
+
+
+def trace_key_for_entry(entry: dict[str, Any]) -> tuple[str, str, str, str] | None:
+    if entry.get("kind") != "trace":
+        return None
+    repository = entry.get("repository")
+    digest = entry.get("sha256")
+    logical_path = entry.get("logical_path") or entry.get("path")
+    run_id = run_id_from_entry_path(entry)
+    if not repository or not digest or not logical_path or not run_id:
+        return None
+    return (repository, run_id, Path(logical_path).name, digest)
+
+
+def run_id_from_entry_path(entry: dict[str, Any]) -> str:
+    parts = Path(entry.get("source_relative_path") or "").parts
+    if parts:
+        surface = parts[0]
+        if surface == "actions" and len(parts) > 2:
+            return parts[2]
+        if surface == "dragon-prs" and len(parts) > 3 and parts[3].startswith("run-"):
+            return parts[3].removeprefix("run-")
+
+    path_parts = Path(entry.get("logical_path") or entry.get("path") or "").parts
+    if "actions" in path_parts:
+        index = path_parts.index("actions")
+        if len(path_parts) > index + 2:
+            return path_parts[index + 2]
+    for part in path_parts:
+        if part.startswith("run-") and part.removeprefix("run-").isdigit():
+            return part.removeprefix("run-")
+    return ""
 
 
 def load_repo_lookup(source: Path, config: Path | None) -> dict[str, str]:
@@ -282,7 +360,7 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def build_manifest(source: Path, entries: list[dict[str, Any]]) -> dict[str, Any]:
+def build_manifest(source: str, entries: list[dict[str, Any]]) -> dict[str, Any]:
     by_surface: Counter[str] = Counter()
     by_project: Counter[str] = Counter()
     by_repository: Counter[str] = Counter()
@@ -325,7 +403,7 @@ def build_manifest(source: Path, entries: list[dict[str, Any]]) -> dict[str, Any
             stored_context_size += entry["stored_size_bytes"]
 
     return {
-        "source": str(source),
+        "source": source,
         "file_count": len(entries),
         "materialized_file_count": sum(1 for entry in entries if entry["materialized"]),
         "trace_file_count": sum(1 for entry in entries if entry["kind"] == "trace"),
