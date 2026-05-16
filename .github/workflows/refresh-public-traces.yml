@@ -28,7 +28,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 concurrency:
   group: refresh-public-agent-traces
@@ -50,6 +49,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: main
+          token: ${{ secrets.WATCHER_PUBLISH_TOKEN || github.token }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -203,11 +204,9 @@ jobs:
             jq '{trace_file_count, unique_trace_file_count, deduplicated_trace_file_count, context_file_count, compressed_file_count, stored_trace_size_bytes, stored_context_size_bytes, trace_files_by_repository, unique_trace_files_by_repository}' public-traces/manifest.json
           } >> "${GITHUB_STEP_SUMMARY}"
 
-      - name: Open or update trace refresh pull request
+      - name: Publish refreshed public traces
         env:
-          GH_TOKEN: ${{ secrets.WATCHER_PR_TOKEN || secrets.WATCHER_SOURCE_TOKEN || github.token }}
-          PR_BRANCH: automation/refresh-public-traces
-          PR_TITLE: Refresh public agent traces
+          PUBLISH_BRANCH: main
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain -- public-traces)" ]; then
@@ -217,33 +216,7 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -B "${PR_BRANCH}"
           git add public-traces
-          git commit -m "${PR_TITLE}"
-          git push --force origin "${PR_BRANCH}"
-
-          body_file=build/trace-refresh/pr-body.md
-          mkdir -p "$(dirname "${body_file}")"
-          {
-            printf 'Automated refresh of `public-traces` from recent GitHub-visible agent traces.\n\n'
-            printf 'Validation completed in workflow run: %s\n\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-            printf '```json\n'
-            jq '{trace_file_count, unique_trace_file_count, deduplicated_trace_file_count, context_file_count, compressed_file_count, stored_trace_size_bytes, trace_files_by_repository}' public-traces/manifest.json
-            printf '\n```\n'
-          } > "${body_file}"
-
-          existing_pr="$(gh pr list \
-            --repo "${GITHUB_REPOSITORY}" \
-            --head "${PR_BRANCH}" \
-            --state open \
-            --json number \
-            --jq '.[0].number // ""')"
-          if [ -n "${existing_pr}" ]; then
-            if ! gh pr edit "${existing_pr}" --repo "${GITHUB_REPOSITORY}" --body-file "${body_file}" --title "${PR_TITLE}"; then
-              echo "::warning::Trace refresh branch was pushed, but PR update failed. Check WATCHER_PR_TOKEN or repository Actions permissions."
-            fi
-          else
-            if ! gh pr create --repo "${GITHUB_REPOSITORY}" --base main --head "${PR_BRANCH}" --title "${PR_TITLE}" --body-file "${body_file}"; then
-              echo "::warning::Trace refresh branch was pushed, but PR creation failed. Open ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/new/${PR_BRANCH} manually, enable Actions PR creation, or set WATCHER_PR_TOKEN."
-            fi
-          fi
+          git commit -m "Refresh public agent traces [skip ci]"
+          git pull --rebase origin "${PUBLISH_BRANCH}"
+          git push origin "HEAD:${PUBLISH_BRANCH}"
