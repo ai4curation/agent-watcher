@@ -3,13 +3,13 @@
 This directory is a compact publishable copy of agent traces mined from GitHub-visible execution surfaces.
 
 - Source: `build/full-agent-history`
-- Trace files: 3037
-- Unique stored trace files: 2690
-- Context files: 7392
-- Trace payload bytes: 217187740
-- Unique stored trace payload bytes: 122837805
-- Stored trace payload bytes after deduplication and compression: 79420756
-- Stored context bytes: 13679999
+- Trace files: 3046
+- Unique stored trace files: 2699
+- Context files: 7421
+- Trace payload bytes: 218728624
+- Unique stored trace payload bytes: 124378689
+- Stored trace payload bytes after deduplication and compression: 80961640
+- Stored context bytes: 13718631
 - Gzipped files: 3
 
 `traces/` is organized by GitHub repository path (`owner/repo`), then by retrieval surface (`actions`, `copilot`, `dragon-prs`).
