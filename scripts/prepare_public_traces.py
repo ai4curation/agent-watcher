@@ -97,7 +97,14 @@ def main() -> int:
         else:
             output = dest / stored_logical_path
             output.parent.mkdir(parents=True, exist_ok=True)
-            if should_compress:
+            if (
+                args.merge_existing
+                and kind == "context"
+                and path.name == "index.json"
+                and output.exists()
+            ):
+                merge_index_file(output, path)
+            elif should_compress:
                 gzip_copy(path, output)
             else:
                 link_or_copy(path, output)
@@ -350,6 +357,154 @@ def gzip_copy(source: Path, dest: Path) -> None:
             mtime=0,
         ) as gzip_handle:
             shutil.copyfileobj(input_handle, gzip_handle, length=1024 * 1024)
+
+
+def merge_index_file(existing_path: Path, new_path: Path) -> None:
+    existing = json.loads(existing_path.read_text(encoding="utf-8"))
+    incoming = json.loads(new_path.read_text(encoding="utf-8"))
+    merged = merge_index_payload(existing, incoming)
+    write_json(existing_path, merged)
+
+
+def merge_index_payload(existing: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
+    merged = dict(existing)
+    for key, value in incoming.items():
+        if key not in {
+            "errors",
+            "prs",
+            "samples",
+            "skipped_runs",
+            "trace_summaries",
+            "workflows",
+        }:
+            merged[key] = value
+
+    if "workflows" in existing or "workflows" in incoming:
+        merged["workflows"] = merge_unique_values(
+            existing.get("workflows", []),
+            incoming.get("workflows", []),
+        )
+
+    if "errors" in existing or "errors" in incoming:
+        merged["errors"] = merge_unique_values(
+            existing.get("errors", []),
+            incoming.get("errors", []),
+        )
+
+    if "skipped_runs" in existing or "skipped_runs" in incoming:
+        skipped_runs = merge_by_identity(
+            existing.get("skipped_runs", []),
+            incoming.get("skipped_runs", []),
+            identity_fields=("run_id", "id"),
+        )
+        merged["skipped_runs"] = skipped_runs
+        merged["skipped_run_count"] = len(merged["skipped_runs"])
+
+    if "prs" in existing or "prs" in incoming:
+        prs = merge_by_identity(
+            existing.get("prs", []),
+            incoming.get("prs", []),
+            identity_fields=("number",),
+        )
+        merged["prs"] = prs
+        if "copilot_pr_count" in merged or any(
+            "sessions" in pr or "candidate_sessions" in pr for pr in merged["prs"]
+        ):
+            refresh_copilot_counts(merged)
+        else:
+            refresh_dragon_counts(merged)
+
+    if (
+        "samples" in existing
+        or "samples" in incoming
+        or "trace_summaries" in existing
+        or "trace_summaries" in incoming
+    ):
+        summaries = merge_by_identity(
+            existing.get("trace_summaries", existing.get("samples", [])),
+            incoming.get("trace_summaries", incoming.get("samples", [])),
+            identity_fields=("run_id", "id"),
+        )
+        merged_summaries = summaries
+        merged["trace_summaries"] = merged_summaries
+        if "samples" in existing or "samples" in incoming:
+            merged["samples"] = merged_summaries
+        merged["trace_run_count"] = len(merged_summaries)
+        if "sample_count" in merged:
+            merged["sample_count"] = len(merged_summaries)
+        known_runs = len(merged_summaries) + len(merged.get("skipped_runs", []))
+        if "candidate_run_count" in merged:
+            merged["candidate_run_count"] = max(
+                int(merged.get("candidate_run_count") or 0),
+                known_runs,
+            )
+        if "inspected_runs" in merged:
+            merged["inspected_runs"] = max(
+                int(merged.get("inspected_runs") or 0),
+                known_runs,
+            )
+
+    return merged
+
+
+def merge_by_identity(
+    existing: list[dict[str, Any]],
+    incoming: list[dict[str, Any]],
+    *,
+    identity_fields: tuple[str, ...],
+) -> list[dict[str, Any]]:
+    by_identity: dict[str, dict[str, Any]] = {}
+    existing_order: list[str] = []
+    incoming_new_order: list[str] = []
+    # Preserve existing order to avoid full-index churn; prepend only newly seen items.
+    for item in existing:
+        identity = item_identity(item, identity_fields)
+        if identity not in by_identity:
+            existing_order.append(identity)
+        by_identity[identity] = item
+    for item in incoming:
+        identity = item_identity(item, identity_fields)
+        if identity not in by_identity:
+            incoming_new_order.append(identity)
+        by_identity[identity] = item
+    return [by_identity[identity] for identity in [*incoming_new_order, *existing_order]]
+
+
+def item_identity(item: dict[str, Any], fields: tuple[str, ...]) -> str:
+    for field in fields:
+        value = item.get(field)
+        if value not in (None, ""):
+            return f"{field}:{value}"
+    return json.dumps(item, sort_keys=True)
+
+
+def merge_unique_values(existing: list[Any], incoming: list[Any]) -> list[Any]:
+    values: list[Any] = []
+    seen: set[str] = set()
+    for value in [*existing, *incoming]:
+        key = json.dumps(value, sort_keys=True)
+        if key not in seen:
+            values.append(value)
+            seen.add(key)
+    return values
+
+
+def refresh_dragon_counts(index: dict[str, Any]) -> None:
+    prs = index.get("prs", [])
+    index["pr_count"] = len(prs)
+    index["trace_pr_count"] = sum(1 for pr in prs if pr.get("trace_summaries"))
+    index["missing_trace_count"] = sum(1 for pr in prs if not pr.get("trace_summaries"))
+
+
+def refresh_copilot_counts(index: dict[str, Any]) -> None:
+    prs = index.get("prs", [])
+    sessions = [session for pr in prs for session in pr.get("sessions", [])]
+    index["copilot_pr_count"] = len(prs)
+    index["session_pr_count"] = sum(1 for pr in prs if pr.get("sessions"))
+    index["session_count"] = len(sessions)
+    index["log_count"] = sum(
+        1 for session in sessions if session.get("log_path") or session.get("log_bytes")
+    )
 
 
 def sha256(path: Path) -> str:

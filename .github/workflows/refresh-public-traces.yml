@@ -205,7 +205,7 @@ jobs:
 
       - name: Open or update trace refresh pull request
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.WATCHER_PR_TOKEN || secrets.WATCHER_SOURCE_TOKEN || github.token }}
           PR_BRANCH: automation/refresh-public-traces
           PR_TITLE: Refresh public agent traces
         run: |
@@ -239,7 +239,11 @@ jobs:
             --json number \
             --jq '.[0].number // ""')"
           if [ -n "${existing_pr}" ]; then
-            gh pr edit "${existing_pr}" --repo "${GITHUB_REPOSITORY}" --body-file "${body_file}" --title "${PR_TITLE}"
+            if ! gh pr edit "${existing_pr}" --repo "${GITHUB_REPOSITORY}" --body-file "${body_file}" --title "${PR_TITLE}"; then
+              echo "::warning::Trace refresh branch was pushed, but PR update failed. Check WATCHER_PR_TOKEN or repository Actions permissions."
+            fi
           else
-            gh pr create --repo "${GITHUB_REPOSITORY}" --base main --head "${PR_BRANCH}" --title "${PR_TITLE}" --body-file "${body_file}"
+            if ! gh pr create --repo "${GITHUB_REPOSITORY}" --base main --head "${PR_BRANCH}" --title "${PR_TITLE}" --body-file "${body_file}"; then
+              echo "::warning::Trace refresh branch was pushed, but PR creation failed. Open ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/new/${PR_BRANCH} manually, enable Actions PR creation, or set WATCHER_PR_TOKEN."
+            fi
           fi
