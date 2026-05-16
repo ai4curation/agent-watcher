@@ -234,7 +234,7 @@ jobs:
 
           existing_pr="$(gh pr list \
             --repo "${GITHUB_REPOSITORY}" \
-            --head "${GITHUB_REPOSITORY_OWNER}:${PR_BRANCH}" \
+            --head "${PR_BRANCH}" \
             --state open \
             --json number \
             --jq '.[0].number // ""')"
