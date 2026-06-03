@@ -177,12 +177,30 @@ jobs:
               if entry.get("duplicate_of") and not (root / entry["duplicate_of"]).is_file():
                   missing_duplicate_targets.append(entry["duplicate_of"])
 
+          max_index_bytes = 1024 * 1024
+          max_total_index_bytes = 5 * 1024 * 1024
+          index_sizes = [
+              (path.relative_to(root), path.stat().st_size)
+              for path in root.rglob("index.json")
+          ]
+          oversized_indexes = [
+              f"{path} ({size} bytes)"
+              for path, size in index_sizes
+              if size > max_index_bytes
+          ]
+          total_index_bytes = sum(size for _, size in index_sizes)
+
           problems = {
               "missing": missing[:20],
               "missing_duplicate_targets": missing_duplicate_targets[:20],
               "bad_paths": bad_paths[:20],
               "unknown_repos": sorted(set(unknown_repos))[:20],
+              "oversized_indexes": oversized_indexes[:20],
           }
+          if total_index_bytes > max_total_index_bytes:
+              problems["total_index_bytes"] = [
+                  f"{total_index_bytes} > {max_total_index_bytes}"
+              ]
           if any(problems.values()):
               raise SystemExit(json.dumps(problems, indent=2))
           PY

@@ -26,12 +26,52 @@ INDEX_LIST_FIELDS = {
 }
 INDEX_MAX_COUNT_FIELDS = {
     "candidate_run_count",
+    "error_count",
+    "fetch_error_count",
     "inspected_runs",
     "job_inspected_count",
+    "log_count",
     "original_run_count",
+    "session_count",
+    "session_pr_count",
+    "skipped_run_count",
     "trace_job_run_count",
     "visible_agent_task_count",
 }
+PUBLIC_INDEX_RECENT_DIAGNOSTIC_LIMIT = 20
+PUBLIC_INDEX_TRACE_SUMMARY_FIELDS = (
+    "run_id",
+    "created_at",
+    "event",
+    "conclusion",
+    "trace_record_count",
+    "artifact_trace_files",
+    "session_ids",
+    "type_counts",
+    "log_error",
+)
+PUBLIC_INDEX_TRACE_JOB_FIELDS = ("id", "name", "conclusion")
+PUBLIC_INDEX_SKIPPED_RUN_FIELDS = (
+    "run_id",
+    "created_at",
+    "event",
+    "conclusion",
+    "skipped_reason",
+)
+PUBLIC_INDEX_FETCH_ERROR_FIELDS = ("run_id", "error")
+PUBLIC_INDEX_PR_FIELDS = (
+    "number",
+    "url",
+    "state",
+    "title",
+    "created_at",
+    "updated_at",
+    "head_ref",
+    "issue_number",
+    "run_number",
+    "run_ids",
+    "missing_reason",
+)
 PROJECT_SLUGS = (
     "ai-gene-review",
     "cell-ontology",
@@ -118,13 +158,8 @@ def main() -> int:
         else:
             output = dest / stored_logical_path
             output.parent.mkdir(parents=True, exist_ok=True)
-            if (
-                args.merge_existing
-                and kind == "context"
-                and path.name == "index.json"
-                and output.exists()
-            ):
-                merge_index_file(output, path)
+            if kind == "context" and path.name == "index.json":
+                write_public_index_file(output, path, merge_existing=args.merge_existing)
             elif should_compress:
                 gzip_copy(path, output)
             else:
@@ -515,11 +550,136 @@ def gzip_payload_stats(path: Path) -> tuple[int, str]:
     return size, digest.hexdigest()
 
 
+def write_public_index_file(
+    output_path: Path,
+    source_path: Path,
+    *,
+    merge_existing: bool,
+) -> None:
+    incoming = json.loads(source_path.read_text(encoding="utf-8"))
+    if merge_existing and output_path.exists():
+        existing = json.loads(output_path.read_text(encoding="utf-8"))
+        payload = merge_index_payload(existing, incoming)
+    else:
+        payload = incoming
+    write_json(output_path, compact_public_index_payload(payload))
+
+
 def merge_index_file(existing_path: Path, new_path: Path) -> None:
-    existing = json.loads(existing_path.read_text(encoding="utf-8"))
-    incoming = json.loads(new_path.read_text(encoding="utf-8"))
-    merged = merge_index_payload(existing, incoming)
-    write_json(existing_path, merged)
+    write_public_index_file(existing_path, new_path, merge_existing=True)
+
+
+def compact_public_index_payload(index: dict[str, Any]) -> dict[str, Any]:
+    compact: dict[str, Any] = {}
+    for key, value in index.items():
+        if key in {
+            "errors",
+            "fetch_errors",
+            "sample_count",
+            "samples",
+            "skipped_runs",
+        }:
+            continue
+        if key == "trace_summaries":
+            compact[key] = [compact_trace_summary(summary) for summary in value]
+        elif key == "prs":
+            compact[key] = [compact_pr_summary(pr) for pr in value]
+        elif key == "recent_skipped_runs":
+            compact[key] = [
+                compact_skipped_run(run)
+                for run in value[:PUBLIC_INDEX_RECENT_DIAGNOSTIC_LIMIT]
+            ]
+        elif key == "recent_fetch_errors":
+            compact[key] = [
+                compact_fetch_error(error)
+                for error in value[:PUBLIC_INDEX_RECENT_DIAGNOSTIC_LIMIT]
+            ]
+        else:
+            compact[key] = value
+
+    skipped_run_ids = merge_identity_values(
+        string_values(index.get("skipped_run_ids", [])),
+        item_field_values(index.get("skipped_runs", []), ("run_id", "id")),
+    )
+    if skipped_run_ids:
+        compact["skipped_run_ids"] = skipped_run_ids
+        compact["skipped_run_count"] = max_int(
+            index.get("skipped_run_count"),
+            len(skipped_run_ids),
+        )
+
+    fetch_error_keys = merge_identity_values(
+        string_values(index.get("fetch_error_keys", [])),
+        item_identity_values(index.get("fetch_errors", []), ("run_id", "id")),
+    )
+    if fetch_error_keys:
+        compact["fetch_error_keys"] = fetch_error_keys
+        compact["fetch_error_count"] = max_int(
+            index.get("fetch_error_count"),
+            len(fetch_error_keys),
+        )
+
+    errors = index.get("errors", [])
+    if errors:
+        compact["error_count"] = max_int(index.get("error_count"), len(errors))
+        compact["recent_errors"] = errors[:PUBLIC_INDEX_RECENT_DIAGNOSTIC_LIMIT]
+
+    if index.get("skipped_runs"):
+        compact["recent_skipped_runs"] = [
+            compact_skipped_run(run)
+            for run in index["skipped_runs"][:PUBLIC_INDEX_RECENT_DIAGNOSTIC_LIMIT]
+        ]
+    if index.get("fetch_errors"):
+        compact["recent_fetch_errors"] = [
+            compact_fetch_error(error)
+            for error in index["fetch_errors"][:PUBLIC_INDEX_RECENT_DIAGNOSTIC_LIMIT]
+        ]
+
+    if "trace_summaries" in compact:
+        compact["trace_run_count"] = max_int(
+            index.get("trace_run_count"),
+            len(compact["trace_summaries"]),
+        )
+
+    compact["public_index_compacted"] = True
+    return compact
+
+
+def compact_pr_summary(pr: dict[str, Any]) -> dict[str, Any]:
+    compact = compact_fields(pr, PUBLIC_INDEX_PR_FIELDS)
+    if "trace_summaries" in pr:
+        compact["trace_summaries"] = [
+            compact_trace_summary(summary) for summary in pr.get("trace_summaries", [])
+        ]
+    if pr.get("errors"):
+        compact["recent_errors"] = pr["errors"][:PUBLIC_INDEX_RECENT_DIAGNOSTIC_LIMIT]
+    return compact
+
+
+def compact_trace_summary(summary: dict[str, Any]) -> dict[str, Any]:
+    compact = compact_fields(summary, PUBLIC_INDEX_TRACE_SUMMARY_FIELDS)
+    trace_job = summary.get("trace_job")
+    if isinstance(trace_job, dict):
+        compact_trace_job = compact_fields(trace_job, PUBLIC_INDEX_TRACE_JOB_FIELDS)
+        if compact_trace_job:
+            compact["trace_job"] = compact_trace_job
+    return compact
+
+
+def compact_skipped_run(run: dict[str, Any]) -> dict[str, Any]:
+    return compact_fields(run, PUBLIC_INDEX_SKIPPED_RUN_FIELDS)
+
+
+def compact_fetch_error(error: dict[str, Any]) -> dict[str, Any]:
+    return compact_fields(error, PUBLIC_INDEX_FETCH_ERROR_FIELDS)
+
+
+def compact_fields(payload: dict[str, Any], fields: tuple[str, ...]) -> dict[str, Any]:
+    return {
+        field: payload[field]
+        for field in fields
+        if field in payload and payload[field] not in (None, "", [], {})
+    }
 
 
 def merge_index_payload(existing: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
@@ -544,22 +704,58 @@ def merge_index_payload(existing: dict[str, Any], incoming: dict[str, Any]) -> d
             existing.get("errors", []),
             incoming.get("errors", []),
         )
+        merged["error_count"] = max_int(
+            existing.get("error_count"),
+            incoming.get("error_count"),
+            len(merged["errors"]),
+        )
 
-    if "fetch_errors" in existing or "fetch_errors" in incoming:
-        merged["fetch_errors"] = merge_unique_values(
+    if any(
+        key in existing or key in incoming
+        for key in ("fetch_errors", "fetch_error_keys", "fetch_error_count")
+    ):
+        fetch_errors = merge_unique_values(
             existing.get("fetch_errors", []),
             incoming.get("fetch_errors", []),
         )
-        merged["fetch_error_count"] = len(merged["fetch_errors"])
+        if fetch_errors:
+            merged["fetch_errors"] = fetch_errors
+        fetch_error_keys = merge_identity_values(
+            identity_values_from_index(existing, "fetch_error_keys", "fetch_errors"),
+            identity_values_from_index(incoming, "fetch_error_keys", "fetch_errors"),
+        )
+        if fetch_error_keys:
+            merged["fetch_error_keys"] = fetch_error_keys
+        merged["fetch_error_count"] = max_int(
+            existing.get("fetch_error_count"),
+            incoming.get("fetch_error_count"),
+            len(fetch_errors),
+            len(fetch_error_keys),
+        )
 
-    if "skipped_runs" in existing or "skipped_runs" in incoming:
+    if any(
+        key in existing or key in incoming
+        for key in ("skipped_runs", "skipped_run_ids", "skipped_run_count")
+    ):
         skipped_runs = merge_by_identity(
             existing.get("skipped_runs", []),
             incoming.get("skipped_runs", []),
             identity_fields=("run_id", "id"),
         )
-        merged["skipped_runs"] = skipped_runs
-        merged["skipped_run_count"] = len(merged["skipped_runs"])
+        if skipped_runs:
+            merged["skipped_runs"] = skipped_runs
+        skipped_run_ids = merge_identity_values(
+            run_id_values_from_index(existing, "skipped_run_ids", "skipped_runs"),
+            run_id_values_from_index(incoming, "skipped_run_ids", "skipped_runs"),
+        )
+        if skipped_run_ids:
+            merged["skipped_run_ids"] = skipped_run_ids
+        merged["skipped_run_count"] = max_int(
+            existing.get("skipped_run_count"),
+            incoming.get("skipped_run_count"),
+            len(skipped_runs),
+            len(skipped_run_ids),
+        )
 
     if "prs" in existing or "prs" in incoming:
         prs = merge_by_identity(
@@ -595,10 +791,17 @@ def merge_index_payload(existing: dict[str, Any], incoming: dict[str, Any]) -> d
             merged["samples"] = merged_summaries
         else:
             merged.pop("samples", None)
-        merged["trace_run_count"] = len(merged_summaries)
+        merged["trace_run_count"] = max_int(
+            existing.get("trace_run_count"),
+            incoming.get("trace_run_count"),
+            len(merged_summaries),
+        )
         if keep_samples or "sample_count" in existing:
             merged["sample_count"] = len(merged_summaries)
-        known_runs = len(merged_summaries) + len(merged.get("skipped_runs", []))
+        skipped_run_count = merged.get("skipped_run_count")
+        if not isinstance(skipped_run_count, int):
+            skipped_run_count = len(merged.get("skipped_runs", []))
+        known_runs = len(merged_summaries) + skipped_run_count
         if "candidate_run_count" in existing or "candidate_run_count" in incoming:
             merged["candidate_run_count"] = known_runs
         if "inspected_runs" in existing or "inspected_runs" in incoming:
@@ -652,6 +855,76 @@ def item_identity(item: dict[str, Any], fields: tuple[str, ...]) -> str:
         if value not in (None, ""):
             return f"{field}:{value}"
     return json.dumps(item, sort_keys=True)
+
+
+def identity_values_from_index(
+    index: dict[str, Any],
+    value_field: str,
+    item_field: str,
+) -> list[str]:
+    return merge_identity_values(
+        string_values(index.get(value_field, [])),
+        item_identity_values(index.get(item_field, []), ("run_id", "id")),
+    )
+
+
+def run_id_values_from_index(
+    index: dict[str, Any],
+    value_field: str,
+    item_field: str,
+) -> list[str]:
+    return merge_identity_values(
+        string_values(index.get(value_field, [])),
+        item_field_values(index.get(item_field, []), ("run_id", "id")),
+    )
+
+
+def item_field_values(items: Any, fields: tuple[str, ...]) -> list[str]:
+    if not isinstance(items, list):
+        return []
+    values: list[str] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        for field in fields:
+            value = item.get(field)
+            if value not in (None, ""):
+                values.append(str(value))
+                break
+    return values
+
+
+def item_identity_values(items: Any, fields: tuple[str, ...]) -> list[str]:
+    if not isinstance(items, list):
+        return []
+    return [item_identity(item, fields) for item in items if isinstance(item, dict)]
+
+
+def string_values(values: Any) -> list[str]:
+    if not isinstance(values, list):
+        return []
+    return [value for value in values if isinstance(value, str) and value]
+
+
+def merge_identity_values(existing: list[str], incoming: list[str]) -> list[str]:
+    existing_unique: list[str] = []
+    incoming_new: list[str] = []
+    seen: set[str] = set()
+    for value in existing:
+        if value in seen:
+            continue
+        existing_unique.append(value)
+        seen.add(value)
+    for value in incoming:
+        if value in seen:
+            continue
+        incoming_new.append(value)
+        seen.add(value)
+    return [*incoming_new, *existing_unique]
+
+
+def max_int(*values: Any) -> int:
+    return max((value for value in values if isinstance(value, int)), default=0)
 
 
 def merge_unique_values(existing: list[Any], incoming: list[Any]) -> list[Any]:

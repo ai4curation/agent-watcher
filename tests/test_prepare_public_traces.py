@@ -4,7 +4,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.prepare_public_traces import load_existing_manifest, merge_index_payload
+from scripts.prepare_public_traces import (
+    compact_public_index_payload,
+    load_existing_manifest,
+    merge_index_payload,
+)
 
 
 class PreparePublicTracesTestCase(unittest.TestCase):
@@ -75,6 +79,98 @@ class PreparePublicTracesTestCase(unittest.TestCase):
         self.assertFalse(merged["from_artifacts"])
         self.assertNotIn("samples", merged)
         self.assertNotIn("sample_count", merged)
+
+    def test_compact_public_index_payload_drops_full_diagnostics(self):
+        raw = {
+            "repo": "monarch-initiative/dismech",
+            "sample_count": 1,
+            "samples": [{"run_id": "123"}],
+            "trace_run_count": 1,
+            "trace_summaries": [
+                {
+                    "run_id": "123",
+                    "run_url": "https://github.com/monarch-initiative/dismech/actions/runs/123",
+                    "title": "Long workflow title",
+                    "trace_record_count": 2,
+                    "trace_job": {
+                        "id": 456,
+                        "name": "claude-review",
+                        "conclusion": "success",
+                        "html_url": "https://github.com/monarch-initiative/dismech/actions/jobs/456",
+                    },
+                    "type_counts": {"result": 1, "system": 1},
+                }
+            ],
+            "skipped_run_count": 2,
+            "skipped_runs": [
+                {
+                    "run_id": "125",
+                    "created_at": "2026-06-02T12:00:00Z",
+                    "title": "Skipped title",
+                    "skipped_reason": "no trace artifact and no trace-like job",
+                },
+                {"run_id": "124", "skipped_reason": "no trace artifact"},
+            ],
+            "fetch_error_count": 1,
+            "fetch_errors": [{"run_id": "126", "error": "HTTP 502"}],
+        }
+
+        compact = compact_public_index_payload(raw)
+
+        self.assertTrue(compact["public_index_compacted"])
+        self.assertNotIn("samples", compact)
+        self.assertNotIn("sample_count", compact)
+        self.assertNotIn("skipped_runs", compact)
+        self.assertNotIn("fetch_errors", compact)
+        self.assertEqual(compact["skipped_run_ids"], ["125", "124"])
+        self.assertEqual(compact["fetch_error_keys"], ["run_id:126"])
+        self.assertEqual(len(compact["recent_skipped_runs"]), 2)
+        self.assertNotIn("title", compact["recent_skipped_runs"][0])
+
+        trace_summary = compact["trace_summaries"][0]
+        self.assertNotIn("title", trace_summary)
+        self.assertNotIn("run_url", trace_summary)
+        self.assertEqual(
+            trace_summary["trace_job"],
+            {"id": 456, "name": "claude-review", "conclusion": "success"},
+        )
+
+    def test_compact_existing_action_index_keeps_cumulative_ids(self):
+        existing = {
+            "repo": "monarch-initiative/dismech",
+            "trace_run_count": 1,
+            "trace_summaries": [{"run_id": "101"}],
+            "skipped_run_count": 2,
+            "skipped_run_ids": ["103", "102"],
+            "fetch_error_count": 1,
+            "fetch_error_keys": ["run_id:201"],
+        }
+        incoming = {
+            "repo": "monarch-initiative/dismech",
+            "trace_run_count": 2,
+            "trace_summaries": [{"run_id": "104"}, {"run_id": "101"}],
+            "skipped_run_count": 2,
+            "skipped_runs": [{"run_id": "105"}, {"run_id": "102"}],
+            "fetch_error_count": 2,
+            "fetch_errors": [
+                {"run_id": "202", "error": "HTTP 502"},
+                {"run_id": "201", "error": "HTTP 502"},
+            ],
+        }
+
+        merged = merge_index_payload(existing, incoming)
+        compact = compact_public_index_payload(merged)
+
+        self.assertEqual(
+            [summary["run_id"] for summary in compact["trace_summaries"]],
+            ["104", "101"],
+        )
+        self.assertEqual(compact["skipped_run_ids"], ["105", "103", "102"])
+        self.assertEqual(compact["skipped_run_count"], 3)
+        self.assertEqual(compact["fetch_error_keys"], ["run_id:202", "run_id:201"])
+        self.assertEqual(compact["fetch_error_count"], 2)
+        self.assertNotIn("skipped_runs", compact)
+        self.assertNotIn("fetch_errors", compact)
 
     def test_existing_manifest_fallback_scans_trace_tree(self):
         with tempfile.TemporaryDirectory() as temp_dir:
